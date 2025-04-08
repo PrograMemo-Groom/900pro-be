@@ -1,0 +1,62 @@
+name: Java CI/CD with Gradle and EC2
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 소스 코드 체크아웃
+      uses: actions/checkout@v3
+
+    - name: JDK 17 설정
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Gradlew 실행 권한 부여
+      run: chmod +x gradlew
+
+    - name: Gradle로 빌드
+      run: ./gradlew build
+
+    - name: 빌드 아티팩트 업로드
+      uses: actions/upload-artifact@v3
+      with:
+        name: application
+        path: build/libs/*.jar
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 빌드 아티팩트 다운로드
+      uses: actions/download-artifact@v3
+      with:
+        name: application
+        path: build/libs/
+
+    - name: EC2에 배포
+      env:
+        PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+        HOST: ${{ secrets.EC2_HOST }}
+        USER: ${{ secrets.EC2_USERNAME }}
+      run: |
+        echo "$PRIVATE_KEY" > private_key.pem
+        chmod 600 private_key.pem
+        scp -i private_key.pem -o StrictHostKeyChecking=no build/libs/*.jar $USER@$HOST:/home/$USER/application.jar
+        ssh -i private_key.pem -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
+          pgrep java | xargs kill -9 || true
+          nohup java -jar /home/$USER/application.jar > app.log 2>&1 &
+        EOF
+        rm -f private_key.pem
