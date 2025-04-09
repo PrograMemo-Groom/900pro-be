@@ -1,62 +1,66 @@
-name: Java CI/CD with Gradle and EC2
+name: Deploy to AWS EC2 using Docker
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
-permissions:
-  contents: read
+env:
+  DOCKER_IMAGE_NAME: saaad9/900pro   # 예: saaad9/900pro
+  EC2_HOST: ec2-xx-xxx-xxx-xxx.ap-northeast-2.compute.amazonaws.com
+  EC2_SSH_USER: ubuntu
+  PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+  CONTAINER_NAME: myapp
 
 jobs:
-  build:
+  build-and-push-docker:
+
     runs-on: ubuntu-latest
 
     steps:
-    - name: 소스 코드 체크아웃
+    - name: Checkout
       uses: actions/checkout@v3
 
-    - name: JDK 17 설정
+    - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Gradlew 실행 권한 부여
-      run: chmod +x gradlew
+    - name: Set up application.properties
+      run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.properties
 
-    - name: Gradle로 빌드
+    - name: Build with Gradle
       run: ./gradlew build -x test
 
-    - name: 빌드 아티팩트 업로드
-      uses: actions/upload-artifact@v3
-      with:
-        name: application
-        path: build/libs/*.jar
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag ${{ env.DOCKER_IMAGE_NAME }}:latest
 
-  deploy:
-    needs: build
+    - name: Login to Docker Hub
+      run: echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+    - name: Push Docker image
+      run: docker push ${{ env.DOCKER_IMAGE_NAME }}:latest
+
+  deploy-to-ec2:
+
+    needs: build-and-push-docker
     runs-on: ubuntu-latest
 
     steps:
-    - name: 빌드 아티팩트 다운로드
-      uses: actions/download-artifact@v3
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@master
       with:
-        name: application
-        path: build/libs/
+        host: ${{ env.EC2_HOST }}
+        username: ${{ env.EC2_SSH_USER }}
+        key: ${{ env.PRIVATE_KEY }}
+        script: |
+          echo "✅ 기존 컨테이너 중지 및 삭제"
+          sudo docker stop ${{ env.CONTAINER_NAME }} || true
+          sudo docker rm ${{ env.CONTAINER_NAME }} || true
 
-    - name: EC2에 배포
-      env:
-        PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-        HOST: ${{ secrets.EC2_HOST }}
-        USER: ${{ secrets.EC2_USERNAME }}
-      run: |
-        echo "$PRIVATE_KEY" > private_key.pem
-        chmod 600 private_key.pem
-        scp -i private_key.pem -o StrictHostKeyChecking=no build/libs/*.jar $USER@$HOST:/home/$USER/application.jar
-        ssh -i private_key.pem -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
-          pgrep java | xargs kill -9 || true
-          nohup java -jar /home/$USER/application.jar > app.log 2>&1 &
-        EOF
-        rm -f private_key.pem
+          echo "✅ 최신 Docker 이미지 Pull"
+          sudo docker pull ${{ env.DOCKER_IMAGE_NAME }}:latest
+
+          echo "✅ 컨테이너 실행"
+          sudo docker run --name ${{ env.CONTAINER_NAME }} -d -p 80:8080 -e TZ=Asia/Seoul ${{ env.DOCKER_IMAGE_NAME }}:latest
