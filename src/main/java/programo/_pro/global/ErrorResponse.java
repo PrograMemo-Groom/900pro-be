@@ -21,4 +21,4 @@ public class ErrorResponse {
     public static ErrorResponse of(int status, String message, String path, String error) {
         return new ErrorResponse(status, message, path, error);
     }
-} 
+}

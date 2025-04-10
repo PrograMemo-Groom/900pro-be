@@ -100,4 +100,4 @@ class UserQueueServiceTest {
         // then
         verify(redisService).pop(PROCESSING, TEST_EMAIL);
     }
-} 
+}

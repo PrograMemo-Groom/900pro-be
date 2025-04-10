@@ -33,4 +33,4 @@ public class TestRedisConfiguration {
         redisTemplate.setDefaultSerializer(new StringRedisSerializer());
         return redisTemplate;
     }
-} 
+}

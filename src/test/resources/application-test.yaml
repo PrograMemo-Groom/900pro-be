@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     username: sa
-    password: 
+    password:
     driver-class-name: org.h2.Driver
   jpa:
     hibernate:
@@ -20,4 +20,4 @@ spring:
 jwt:
   secret: test_jwt_secret_key_for_testing_purpose_only_need_to_be_longer_for_security
   refresh_secret: test_jwt_refresh_secret_key_for_testing_purpose_only_need_to_be_longer_for_security
-  expiration_time: 30  # 30분 
+  expiration_time: 30  # 30분

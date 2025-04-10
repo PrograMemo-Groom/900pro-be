@@ -42,7 +42,7 @@ public class RedisService {
     public void pop(String processingQueue, long id) {
         redisTemplate.opsForZSet().remove(processingQueue, Long.toString(id));
     }
-    
+
     public void pop(String processingQueue, String key) {
         redisTemplate.opsForZSet().remove(processingQueue, key);
     }

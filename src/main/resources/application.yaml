@@ -1,78 +1,78 @@
 # ✅ 공통 설정
 spring:
-    application:
-        name: 900pro
+  application:
+    name: 900pro
 
-    jpa:
-        show-sql: true
-        properties:
-            hibernate:
-                format_sql: true
-        hibernate:
-            naming:
-                physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    config:
-        import: optional:file:.env[.properties]
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  config:
+    import: optional:file:.env[.properties]
 
 # JWT 공통 설정
 jwt:
-    header: Authorization
-    expiration_time: 720 # 기본 12시간 (720분)
+  header: Authorization
+  expiration_time: 720 # 기본 12시간 (720분)
 ---
 
 # ✅ 로컬 프로필
 spring:
-    profiles:
-        active: dev
-    datasource:
-        url: jdbc:mariadb://localhost:3306/${MYSQL_DATABASE}
-        username: ${MYSQL_USER}
-        password: ${MYSQL_PASSWORD}
-        driver-class-name: org.mariadb.jdbc.Driver
-    sql:
-        init:
-            mode: always
-            schema-locations:
-                - classpath:db/schema.sql
-    jpa:
-        hibernate:
-            ddl-auto: create # schema.sql 사용하므로 none으로 설정
-        properties:
-            hibernate:
-                dialect: org.hibernate.dialect.MariaDBDialect
-                # format_sql: true
-                # show_sql: true
-    data:
-        redis:
-            host: localhost
-            port: 6379
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:mariadb://localhost:3306/${MYSQL_DATABASE}
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+    driver-class-name: org.mariadb.jdbc.Driver
+  sql:
+    init:
+      mode: always
+      schema-locations:
+        - classpath:db/schema.sql
+  jpa:
+    hibernate:
+      ddl-auto: create # schema.sql 사용하므로 none으로 설정
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+        # format_sql: true
+        # show_sql: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 # JWT 개발 환경 설정
 jwt:
-    secret: ${JWT_SECRET}
-    refresh_secret: ${JWT_REFRESH_SECRET}
-    expiration_time: 720 # 개발환경 12시간 (720분)
+  secret: ${JWT_SECRET}
+  refresh_secret: ${JWT_REFRESH_SECRET}
+  expiration_time: 720 # 개발환경 12시간 (720분)
 ---
 
 # ✅ 배포(운영) 프로필
 spring:
-    config:
-        activate:
-            on-profile: prod
+  config:
+    activate:
+      on-profile: prod
 
-    datasource:
-        url: ${DB_URL}
-        username: ${DB_USERNAME}
-        password: ${DB_PASSWORD}
-        driver-class-name: org.mariadb.jdbc.Driver
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.mariadb.jdbc.Driver
 
-    data:
-        redis:
-            host: ${REDIS_HOST}
-            port: ${REDIS_PORT}
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
 
 # JWT 운영 환경 설정
 jwt:
-    secret: ${JWT_SECRET}
-    refresh_secret: ${JWT_REFRESH_SECRET}
-    expiration_time: 1440 # 운영환경 24시간 (1440분)
+  secret: ${JWT_SECRET}
+  refresh_secret: ${JWT_REFRESH_SECRET}
+  expiration_time: 1440 # 운영환경 24시간 (1440분)
