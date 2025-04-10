@@ -42,9 +42,17 @@ public class RedisService {
     public void pop(String processingQueue, long id) {
         redisTemplate.opsForZSet().remove(processingQueue, Long.toString(id));
     }
+    
+    public void pop(String processingQueue, String key) {
+        redisTemplate.opsForZSet().remove(processingQueue, key);
+    }
 
     public Long count(String queueName) {
         return redisTemplate.opsForZSet().size(queueName);
+    }
+
+    public void deleteValue(String key) {
+        redisTemplate.delete(key);
     }
 
 }

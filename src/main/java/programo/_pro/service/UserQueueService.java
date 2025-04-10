@@ -15,11 +15,11 @@ public class UserQueueService {
     private static final String PROCESSING = "processing";
     private final RedisService redisService;
 
-    public Long registerWaitingList(long userId) {
+    public Long registerWaitingList(String email) {
         long unixTimestamp = Instant.now().getEpochSecond();
-        Boolean result = redisService.add(WAITING, Long.toString(userId), unixTimestamp);
+        Boolean result = redisService.add(WAITING, email, unixTimestamp);
         if(Objects.nonNull(result))
-            return redisService.getRank(WAITING, Long.toString(userId));
+            return redisService.getRank(WAITING, email);
         return 0L;
     }
 
@@ -30,8 +30,8 @@ public class UserQueueService {
         else log.info("Current Processing Queue Size is Maximum!");
     }
 
-    public void exit(Long userId){
-        redisService.pop(PROCESSING, userId);
+    public void exit(String email){
+        redisService.pop(PROCESSING, email);
     }
 
     private long calculateCapacity() {

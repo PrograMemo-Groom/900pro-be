@@ -1,0 +1,43 @@
+# 900pro 프로젝트 개발 환경 설정
+# 로컬 개발 시 docker 폴더에서 간단히 아래 명령어로 실행:
+# docker compose up -d
+
+name: webide
+
+services:
+  # 개발환경에서는 앱을 로컬에서 실행하고 DB/Redis만 컨테이너로 사용
+  mariadb:
+    container_name: webide-mariadb
+    image: mariadb:latest
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    restart: unless-stopped
+    networks:
+      - dev-network
+
+  redis:
+    container_name: webide-redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes  # 데이터 지속성 활성화
+    restart: unless-stopped
+    networks:
+      - dev-network
+
+volumes:
+  mariadb-data:  # MariaDB 데이터 지속성을 위한 볼륨
+  redis-data:    # Redis 데이터 지속성을 위한 볼륨
+
+networks:
+  dev-network:
+    driver: bridge

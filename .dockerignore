@@ -1,0 +1,64 @@
+# Git
+.git
+.gitignore
+
+# Gradle
+.gradle/
+build/
+!build/libs/*.jar
+.gradletasknamecache
+gradle-app.setting
+
+# IDE 관련 파일
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.project
+.classpath
+.factorypath
+.settings
+.sts4-cache
+.toolstarget
+.vs
+.apt_generated
+.springBeans
+.nb-gradle
+nbproject/private
+nbbuild
+nbdist
+
+# 로그 파일
+*.log
+.mtj.tmp
+
+# 환경설정 파일
+.env
+*.properties
+!src/main/resources/application.properties
+secrets.dev.yaml
+values.dev.yaml
+
+# Java 관련
+*.class
+hs_err_pid*
+replay_pid*
+
+# 맥 OS 시스템 파일
+**/.DS_Store
+
+# 기타
+README.md
+LICENSE
+*.md
+node_modules/
+tmp/
+dist/
+*.dbmdl
+*.jfm
+
+# Docker 관련
+docker/Dockerfile*
+docker-compose*
+compose.y*ml 
