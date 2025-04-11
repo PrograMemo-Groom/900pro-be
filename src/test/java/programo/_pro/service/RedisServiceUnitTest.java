@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
  * RedisService에 대한 유닛 테스트
  */
 @ExtendWith(MockitoExtension.class)
-class RedisServiceTest {
+class RedisServiceUnitTest {
 
     @Mock
     private RedisTemplate<String, String> redisTemplate;
