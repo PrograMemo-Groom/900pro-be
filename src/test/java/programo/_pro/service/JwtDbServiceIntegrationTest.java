@@ -49,12 +49,12 @@ import static org.mockito.Mockito.*;
     "spring.jpa.properties.hibernate.format_sql=true",
     "spring.jpa.hibernate.generate-ddl=true",
     "spring.sql.init.mode=never",
-    "jwt.secret=" + JwtServiceIntegrationTest.SECRET_KEY,
-    "jwt.refresh_secret=" + JwtServiceIntegrationTest.REFRESH_SECRET_KEY,
+    "jwt.secret=" + JwtDbServiceIntegrationTest.SECRET_KEY,
+    "jwt.refresh_secret=" + JwtDbServiceIntegrationTest.REFRESH_SECRET_KEY,
     "jwt.expiration_time=30"
 })
 @ActiveProfiles("test") // 테스트 프로필 사용
-class JwtServiceIntegrationTest {
+class JwtDbServiceIntegrationTest {
 
     // 테스트용 Base64 인코딩된 시크릿 키
     public static final String SECRET_KEY = "dGhpc2lzdGVzdHNlY3JldGtleWZvcmp3dHNlcnZpY2VpbnRlZ3JhdGlvbnRlc3RpdG11c3RiZWxvbmdlbm91Z2hmb3JoczI1NmFsZ29yaXRobQ==";
