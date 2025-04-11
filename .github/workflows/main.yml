@@ -7,7 +7,7 @@ on:
 
 env:
   DOCKER_IMAGE_NAME: saaad9/900pro   # 예: saaad9/900pro
-  EC2_HOST: ec2-xx-xxx-xxx-xxx.ap-northeast-2.compute.amazonaws.com
+  EC2_HOST: 3.39.135.118
   EC2_SSH_USER: ubuntu
   PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
   CONTAINER_NAME: myapp
