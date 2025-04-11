@@ -47,6 +47,16 @@ spring:
       host: localhost
       port: 6379
 
+  springdoc:
+    api-docs:
+      enabled: true
+      path: /v3/api-docs
+    swagger-ui:
+      path: /swagger-ui.html
+      url: /docs/swagger.yaml
+      config-url: /v3/api-docs/swagger-config
+
+
 # JWT 개발 환경 설정
 jwt:
   secret: ${JWT_SECRET}
