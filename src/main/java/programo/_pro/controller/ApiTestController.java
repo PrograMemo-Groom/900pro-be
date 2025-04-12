@@ -14,6 +14,6 @@ public class ApiTestController {
 
     @GetMapping("/data")
     public String data(){
-        return "연결 테스트 제발 돼라 자동화 제발요";
+        return "연결 테스트 너 아깐 안됐잖아 왜 되는척해 ? ";
     }
 }
