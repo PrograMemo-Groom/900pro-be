@@ -12,5 +12,5 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- 예제 데이터 삽입
-INSERT INTO users (username, email, password, flag) VALUES
+INSERT INTO users (user_name, email, password, flag) VALUES
     ('user1', 'user1@example.com', 'password123', 1);
