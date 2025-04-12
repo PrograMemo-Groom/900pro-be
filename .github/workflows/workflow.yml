@@ -45,6 +45,11 @@ jobs:
         script: |
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/900pro:latest
           sudo docker stop $(sudo docker ps -a -q)
-          sudo docker run -d --log-driver=syslog -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/900pro:latest
           sudo docker rm $(sudo docker ps --filter 'status=exited' -a -q)
+          sudo docker run -d \
+            --env-file /home/ubuntu/.ssh/900pro-be/.env \
+            --log-driver=syslog \
+            -p 8080:8080 \
+            --name myapp \
+            ${{ secrets.DOCKER_USERNAME }}/900pro:latest
           sudo docker image prune -a -f
