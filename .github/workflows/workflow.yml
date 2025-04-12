@@ -47,9 +47,10 @@ jobs:
           sudo docker stop $(sudo docker ps -a -q)
           sudo docker rm $(sudo docker ps --filter 'status=exited' -a -q)
           sudo docker run -d \
-            --env-file /home/ubuntu/.ssh/900pro-be/.env \
-            --log-driver=syslog \
-            -p 8080:8080 \
-            --name myapp \
-            ${{ secrets.DOCKER_USERNAME }}/900pro:latest
+          --env-file /home/ubuntu/.ssh/900pro-be/.env \
+          --log-driver=syslog \
+          -p 8080:8080 \
+          --name myapp \
+          ${{ secrets.DOCKER_USERNAME }}/900pro:latest \
+          --spring.profiles.active=prod
           sudo docker image prune -a -f
