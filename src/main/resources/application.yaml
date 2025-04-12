@@ -74,6 +74,11 @@ spring:
     activate:
       on-profile: prod
 
+  # prod 에서는 schema.sql 실행 안하도록 설정
+  sql:
+    init:
+      mode: never
+
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
