@@ -44,14 +44,14 @@ jobs:
         key: ${{ secrets.EC2_PRIVATE_KEY }}
         script: |
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/900pro:latest
-          sudo docker stop $(sudo docker ps -a -q)
-          sudo docker rm $(sudo docker ps --filter 'status=exited' -a -q)
-          sudo docker run -d \
-          --env-file /home/ubuntu/.ssh/900pro-be/.env \
-          --log-driver=syslog \
-          -p 8080:8080 \
-          --name myapp \
-          ${{ secrets.DOCKER_USERNAME }}/900pro:latest \
-          --spring.profiles.active=prod
-          sudo docker image prune -a -f
+          docker pull ${{ secrets.DOCKER_USERNAME }}/900pro:latest
+          docker stop $(docker ps -a -q)
+          docker rm $(docker ps --filter 'status=exited' -a -q)
+          docker run -d \
+            --env-file /home/ubuntu/.ssh/900pro-be/.env \
+            --log-driver=syslog \
+            -p 8080:8080 \
+            --name myapp \
+            ${{ secrets.DOCKER_USERNAME }}/900pro:latest \
+            --spring.profiles.active=prod
+          docker image prune -a -f
