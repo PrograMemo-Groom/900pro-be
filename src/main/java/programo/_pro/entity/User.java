@@ -20,10 +20,10 @@ public class User {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "email", unique = true)
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @Column(name = "username")
+    @Column(name = "user_name", nullable = false)
     private String username;
 
     @Column(name = "password")
