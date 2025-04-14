@@ -40,10 +40,12 @@ spring:
         - classpath:db/schema.sql
 
   jpa:
+    show-sql: true
     hibernate:
-      ddl-auto: create # schema.sql 사용하므로 none으로 설정
+      ddl-auto: none # schema.sql 사용하므로 none으로 설정
     properties:
       hibernate:
+        format_sql: true
         dialect: org.hibernate.dialect.MariaDBDialect
         # format_sql: true
         # show_sql: true
@@ -59,6 +61,11 @@ spring:
       path: /v3/api-docs
     swagger-ui:
       path: /swagger-ui.html
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
 # JWT 개발 환경 설정
 jwt:
