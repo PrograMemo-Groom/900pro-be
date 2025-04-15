@@ -17,8 +17,18 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
 
-    public List<TeamCardDto> getAllTeams(String level, String sort) {
+    public List<TeamCardDto> getAllTeams(String keyword, String level, String sort) {
         List<Team> teams = teamRepository.findByIsActiveTrue();
+
+        // 키워드 필터링 (팀이름에 포함되는 경우), 대소문자 구분없이 검색가능
+        if (keyword != null && !keyword.isBlank()) {
+            String lowerKeyword = keyword.toLowerCase();
+            teams = teams.stream()
+                    .filter(team ->
+                            team.getTeamName().toLowerCase().contains(lowerKeyword)
+                    )
+                    .collect(Collectors.toList());
+        }
 
         // 난이도 선택 안할경우 all이 디폴트
         if (level != null && !level.equalsIgnoreCase("all")) {

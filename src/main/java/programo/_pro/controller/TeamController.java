@@ -20,10 +20,11 @@ public class TeamController {
 
     @GetMapping
     public ResponseEntity<List<TeamCardDto>> getAllTeams(
+            @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "level", required = false) String level,
             @RequestParam(value = "sort", required = false) String sort
     ) {
-        List<TeamCardDto> teamCards = teamService.getAllTeams(level, sort);
+        List<TeamCardDto> teamCards = teamService.getAllTeams(keyword, level, sort);
         return ResponseEntity.ok(teamCards);
     }
 }
