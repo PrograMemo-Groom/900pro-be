@@ -33,6 +33,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 			String userId = jwtTokenProvider.getUserIdFromToken(token);
 			attributes.put("userId", userId);
 			log.info("[WebSocket] JWT validation successful. userId: {}", userId);
+			return true;
 		}
 		log.warn("[WebSocket] JWT validation failed. Connection denied.");
 		return false;
