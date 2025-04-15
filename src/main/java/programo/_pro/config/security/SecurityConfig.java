@@ -51,6 +51,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
+                        // websocket 경로는 permitAll()로 명시
+                        .requestMatchers("/ws-chat/**").permitAll()
                         // 개발환경에서는 모든 요청 허용
                         .anyRequest().permitAll()
                 )
