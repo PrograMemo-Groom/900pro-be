@@ -9,6 +9,7 @@ import programo._pro.repository.TeamRepository;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -37,12 +38,14 @@ public class TeamService {
             teams.sort(Comparator.comparing(Team::getCurrentMembers).reversed());
         }
 
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
         return teams.stream()
                 .map(team -> TeamCardDto.builder()
                         .teamId(team.getId())
                         .teamName(team.getTeamName())
                         .level(team.getLevel().name())
-                        .startTime(team.getStartTime().toString()) //포맷 변경 필요 !!!!!
+                        .startTime(team.getStartTime().format(timeFormatter))
                         .problemCount(team.getProblemCount())
                         .currentMembers(team.getCurrentMembers())
                         .build())
