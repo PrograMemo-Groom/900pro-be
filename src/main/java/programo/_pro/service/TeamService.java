@@ -1,5 +1,6 @@
 package programo._pro.service;
 
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,12 +11,14 @@ import programo._pro.dto.TeamMemberDto;
 import programo._pro.entity.Team;
 import programo._pro.entity.TeamMember;
 import programo._pro.entity.User;
+import programo._pro.global.exception.AlreadyJoinedTeamException;
 import programo._pro.global.exception.NotFoundTeamException;
+import programo._pro.global.exception.NotFoundUserException;
+import programo._pro.global.exception.NotJoinedTeamException;
 import programo._pro.repository.TeamRepository;
 import programo._pro.repository.TeamMemberRepository;
 import programo._pro.repository.UserRepository;
 
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -99,7 +102,7 @@ public class TeamService {
     public Long createTeam(TeamCreateRequest dto, Long userId) {
         // ( 로그인된 ) 유저 id 받기 / 인증구현 완료전까진 컨트롤러에서 @RequestParam로 받아와서 쓰겠습니다
         User loginedUser = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+                .orElseThrow(NotFoundUserException::new);
 
         // 팀 생성
         Team team = Team.builder()
@@ -129,4 +132,39 @@ public class TeamService {
         return team.getId();
     }
 
+    @Transactional
+    public void joinTeam(Long teamId, Long userId) {
+        if (teamMemberRepository.existsByUserId(userId)) {
+            throw new AlreadyJoinedTeamException();
+        }
+
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(NotFoundTeamException::new);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(NotFoundUserException::new);
+
+        team.setCurrentMembers(team.getCurrentMembers() + 1);
+
+        TeamMember teamMember = TeamMember.builder()
+                .team(team)
+                .user(user)
+                .isLeader(false)
+                .build();
+
+        teamMemberRepository.save(teamMember);
+    }
+
+    @Transactional
+    public void leaveTeam(Long teamId, Long userId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(NotFoundTeamException::new);
+
+        TeamMember member = teamMemberRepository.findByTeamIdAndUserId(teamId, userId)
+                .orElseThrow(NotJoinedTeamException::new);
+
+        team.setCurrentMembers(team.getCurrentMembers() - 1);
+
+        teamMemberRepository.delete(member);
+    }
 }
