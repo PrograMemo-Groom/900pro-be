@@ -104,7 +104,7 @@ class AuthControllerTest {
                 .email(TEST_NEW_EMAIL)
                 .username(TEST_NEW_USERNAME)
                 .password(TEST_NEW_PASSWORD)
-                .flag(1)
+                .isActive(true)
                 .build();
 
         // when
@@ -168,7 +168,7 @@ class AuthControllerTest {
                 .email(TEST_NEW_EMAIL)
                 .username(TEST_NEW_USERNAME)
                 .password(TEST_NEW_PASSWORD)
-                .flag(1)
+                .isActive(true)
                 .build();
 
         SignUpDto signUpDto = new SignUpDto();
