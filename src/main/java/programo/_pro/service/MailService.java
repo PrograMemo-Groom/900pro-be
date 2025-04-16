@@ -20,33 +20,33 @@ public class MailService {
     private final JavaMailSender javaMailSender;
     private static int number;
 
-    // 랜덤으로 숫자 생성
+    // 랜덤 인증번호 생성
     public static void createNumber() {
-        number = (int)(Math.random() * (90000)) + 100000; //(int) Math.random() * (최댓값-최소값+1) + 최소값
+        number = (int) (Math.random() * (90000)) + 100000; //(int) Math.random() * (최댓값-최소값+1) + 최소값
     }
 
-    public MimeMessage CreateMail(String email) {
+    public MimeMessage CreateMail(String email) throws MessagingException {
+        // 랜덤 인증번호 생성
         createNumber();
         MimeMessage message = javaMailSender.createMimeMessage();
 
-        try {
-            message.setFrom(username);
-            message.setRecipients(MimeMessage.RecipientType.TO, email);
-            message.setSubject("이메일 인증");
-            String body = "";
-            body += "<h3>" + "요청하신 인증 번호입니다." + "</h3>";
-            body += "<h1>" + number + "</h1>";
-            body += "<h3>" + "감사합니다." + "</h3>";
-            message.setText(body,"UTF-8", "html");
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            log.error("예외 메시지: {}", e.getMessage());
-        }
+        // 전송자, 수신자 설정
+        message.setFrom(username);
+        message.setRecipients(MimeMessage.RecipientType.TO, email);
+        message.setSubject("이메일 인증");
+
+        // 요청 양식
+        String body = "";
+        body += "<h3>" + "요청하신 인증 번호입니다." + "</h3>";
+        body += "<h1>" + number + "</h1>";
+        body += "<h3>" + "감사합니다." + "</h3>";
+        message.setText(body, "UTF-8", "html");
 
         return message;
     }
 
-    public int sendMail(EmailRequest emailRequest) {
+    // 이메일 전송 함수
+    public int sendMail(EmailRequest emailRequest) throws MessagingException {
         MimeMessage message = CreateMail(emailRequest.getEmail());
         javaMailSender.send(message);
 
