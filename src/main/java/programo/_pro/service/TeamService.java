@@ -4,14 +4,18 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import programo._pro.dto.TeamCardDto;
+import programo._pro.dto.TeamCreateRequest;
 import programo._pro.dto.TeamMainDto;
 import programo._pro.dto.TeamMemberDto;
 import programo._pro.entity.Team;
 import programo._pro.entity.TeamMember;
+import programo._pro.entity.User;
 import programo._pro.global.exception.NotFoundTeamException;
 import programo._pro.repository.TeamRepository;
 import programo._pro.repository.TeamMemberRepository;
+import programo._pro.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +27,7 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
+    private final UserRepository userRepository;
 
     public List<TeamCardDto> getAllTeams(String keyword, String level, String sort) {
         List<Team> teams = teamRepository.findByIsActiveTrue();
@@ -88,6 +93,40 @@ public class TeamService {
                 .toList();
 
         return new TeamMainDto(team, memberDtos);
+    }
+
+    @Transactional
+    public Long createTeam(TeamCreateRequest dto, Long userId) {
+        // ( 로그인된 ) 유저 id 받기 / 인증구현 완료전까진 컨트롤러에서 @RequestParam로 받아와서 쓰겠습니다
+        User loginedUser = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+
+        // 팀 생성
+        Team team = Team.builder()
+                .teamName(dto.getTeamName())
+                .description(dto.getDescription())
+                .level(dto.getLevel())
+                .problemCount(dto.getProblemCount())
+                .startTime(dto.getStartTime())
+                .durationTime(dto.getDurationTime())
+                .currentMembers(1)
+                .leader(loginedUser)
+                .isActive(true)
+                .build();
+
+        teamRepository.save(team);
+
+        // 팀멤버에 추가, 팀장 등록
+        TeamMember teamMember = TeamMember.builder()
+                .team(team)
+                .user(loginedUser)
+                .isLeader(true)
+                .build();
+
+        teamMemberRepository.save(teamMember);
+
+        // 팀id 반환
+        return team.getId();
     }
 
 }
