@@ -25,10 +25,13 @@ code-executor:
   container:
     java-name: webide-java-executor
     python-name: webide-python-executor
+    gcc-name: webide-gcc-executor
   timeout:
     container-check: 5 # 컨테이너 상태 확인 타임아웃(초)
     java-execution: 15 # Java 코드 실행 타임아웃(초)
     python-execution: 10 # Python 코드 실행 타임아웃(초)
+    c-execution: 10 # C 코드 실행 타임아웃(초)
+    cpp-execution: 10 # C++ 코드 실행 타임아웃(초)
 
 ---
 

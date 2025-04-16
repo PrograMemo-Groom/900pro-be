@@ -29,4 +29,16 @@ public class CodeExecutorController {
         CodeExecutionResponse result = codeExecutorService.executeJavaCode(request.getCode());
         return ResponseEntity.ok(result);
     }
+
+    @PostMapping("/execute/c")
+    public ResponseEntity<CodeExecutionResponse> executeCCode(@RequestBody CodeExecutionRequest request) {
+        CodeExecutionResponse result = codeExecutorService.executeCCode(request.getCode());
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/execute/cpp")
+    public ResponseEntity<CodeExecutionResponse> executeCppCode(@RequestBody CodeExecutionRequest request) {
+        CodeExecutionResponse result = codeExecutorService.executeCppCode(request.getCode());
+        return ResponseEntity.ok(result);
+    }
 }
