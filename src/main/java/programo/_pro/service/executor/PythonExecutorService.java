@@ -14,13 +14,16 @@ import java.util.concurrent.TimeoutException;
 @Service
 public class PythonExecutorService extends AbstractExecutorService {
 
-    private final String pythonContainerName = "webide-python-executor";
+    private final String pythonContainerName;
     private boolean pythonContainerAvailable = false;
+    private static final int MAX_CODE_SIZE = 1024 * 50; // 최대 50KB 코드 크기 제한
 
     public PythonExecutorService(
             ResultParserService resultParserService,
-            ErrorHandlingService errorHandlingService) {
-        super(resultParserService, errorHandlingService);
+            ErrorHandlingService errorHandlingService,
+            CodeExecutorProperties properties) {
+        super(resultParserService, errorHandlingService, properties);
+        this.pythonContainerName = properties.getContainer().getPythonName();
     }
 
     @PostConstruct
@@ -38,6 +41,14 @@ public class PythonExecutorService extends AbstractExecutorService {
      * @return 실행 결과(출력, 오류 등)
      */
     public CodeExecutionResponse executePythonCode(String code) {
+        // 코드 크기 검증
+        if (code.length() > MAX_CODE_SIZE) {
+            return CodeExecutionResponse.builder()
+                    .status("error")
+                    .error(errorHandlingService.handleSizeExceededError("Python", MAX_CODE_SIZE))
+                    .build();
+        }
+
         // 컨테이너 실행 가능 여부 확인
         if (!ensurePythonContainerAvailability()) {
             return CodeExecutionResponse.builder()
@@ -46,7 +57,7 @@ public class PythonExecutorService extends AbstractExecutorService {
                     .build();
         }
 
-        return executeCode(code, pythonContainerName, pythonContainerAvailable);
+        return executeCode(code, pythonContainerName);
     }
 
     /**
@@ -68,8 +79,12 @@ public class PythonExecutorService extends AbstractExecutorService {
         // 도커 실행 명령 준비
         ProcessBuilder pb = new ProcessBuilder(
             "docker", "exec", "-i",
+            // 환경 변수 제한: PATH만 전달
+            "--env", "PATH=/usr/local/bin:/usr/bin:/bin",
+            // PYTHONPATH를 설정하지 않아 시스템 라이브러리만 사용 가능하도록 제한
+            "--env", "PYTHONPATH=",
             pythonContainerName,
-            "python3", "/code/run.py"
+            "/bin/bash", "-c", "head -c " + MAX_CODE_SIZE + " | python3 /code/run.py"
         );
 
         pb.redirectErrorStream(true);
@@ -84,7 +99,7 @@ public class PythonExecutorService extends AbstractExecutorService {
         }
 
         // 타임아웃 설정
-        boolean completed = process.waitFor(10, TimeUnit.SECONDS);
+        boolean completed = process.waitFor(properties.getTimeout().getPythonExecution(), TimeUnit.SECONDS);
 
         // 결과 읽기
         StringBuilder output = new StringBuilder();

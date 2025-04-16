@@ -14,13 +14,16 @@ import java.util.concurrent.TimeoutException;
 @Service
 public class JavaExecutorService extends AbstractExecutorService {
 
-    private final String javaContainerName = "webide-java-executor";
+    private final String javaContainerName;
     private boolean javaContainerAvailable = false;
+    private static final int MAX_CODE_SIZE = 1024 * 50; // 최대 50KB 코드 크기 제한
 
     public JavaExecutorService(
             ResultParserService resultParserService,
-            ErrorHandlingService errorHandlingService) {
-        super(resultParserService, errorHandlingService);
+            ErrorHandlingService errorHandlingService,
+            CodeExecutorProperties properties) {
+        super(resultParserService, errorHandlingService, properties);
+        this.javaContainerName = properties.getContainer().getJavaName();
     }
 
     @PostConstruct
@@ -38,6 +41,14 @@ public class JavaExecutorService extends AbstractExecutorService {
      * @return 실행 결과(출력, 오류 등)
      */
     public CodeExecutionResponse executeJavaCode(String code) {
+        // 코드 크기 검증
+        if (code.length() > MAX_CODE_SIZE) {
+            return CodeExecutionResponse.builder()
+                    .status("error")
+                    .error(errorHandlingService.handleSizeExceededError("Java", MAX_CODE_SIZE))
+                    .build();
+        }
+
         // 컨테이너 실행 가능 여부 확인
         if (!ensureJavaContainerAvailability()) {
             return CodeExecutionResponse.builder()
@@ -46,7 +57,7 @@ public class JavaExecutorService extends AbstractExecutorService {
                     .build();
         }
 
-        return executeCode(code, javaContainerName, javaContainerAvailable);
+        return executeCode(code, javaContainerName);
     }
 
     /**
@@ -69,7 +80,7 @@ public class JavaExecutorService extends AbstractExecutorService {
         ProcessBuilder pb = new ProcessBuilder(
             "docker", "exec", "-i",
             javaContainerName,
-            "/bin/bash", "/code/run.sh"
+            "/bin/bash", "-c", "head -c " + MAX_CODE_SIZE + " | /code/run.sh"
         );
 
         pb.redirectErrorStream(true);
@@ -84,7 +95,7 @@ public class JavaExecutorService extends AbstractExecutorService {
         }
 
         // 타임아웃 설정
-        boolean completed = process.waitFor(15, TimeUnit.SECONDS);
+        boolean completed = process.waitFor(properties.getTimeout().getJavaExecution(), TimeUnit.SECONDS);
 
         // 결과 읽기
         StringBuilder output = new StringBuilder();
