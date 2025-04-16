@@ -1,9 +1,11 @@
 package programo._pro.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import programo._pro.dto.EmailRequest;
+import programo._pro.global.ApiResponse;
 import programo._pro.service.MailService;
 
 import java.util.HashMap;
@@ -17,7 +19,7 @@ public class MailController {
 
     // 인증 이메일 전송
     @PostMapping("/mailSend")
-    public HashMap<String, Object> mailSend(@RequestBody EmailRequest email) {
+    public ResponseEntity<ApiResponse<HashMap<String, Object>>> mailSend(@RequestBody EmailRequest email) {
         HashMap<String, Object> map = new HashMap<>();
 
         try {
@@ -31,7 +33,7 @@ public class MailController {
             map.put("error", e.getMessage());
         }
 
-        return map;
+        return ResponseEntity.ok(ApiResponse.success(map, "인증 이메일이 정상적으로 전송되었습니다."));
     }
 
     // 인증번호 일치여부 확인
