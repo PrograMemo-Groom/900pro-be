@@ -29,10 +29,13 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "flag")
-    private Integer flag;
+    @Column(name = "is_active")
+    private Boolean isActive = true;
 
-    public boolean isActive() {
-        return flag == 1;
-    }
+//    @Column(name = "flag")
+//    private Integer flag;
+//
+//    public boolean isActive() {
+//        return flag == 1;
+//    }
 }
