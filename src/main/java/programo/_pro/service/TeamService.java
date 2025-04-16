@@ -1,10 +1,16 @@
 package programo._pro.service;
 
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import programo._pro.dto.TeamCardDto;
+import programo._pro.dto.TeamMainDto;
+import programo._pro.dto.TeamMemberDto;
 import programo._pro.entity.Team;
+import programo._pro.entity.TeamMember;
+import programo._pro.global.exception.NotFoundTeamException;
 import programo._pro.repository.TeamRepository;
+import programo._pro.repository.TeamMemberRepository;
 
 import java.util.Comparator;
 import java.util.List;
@@ -16,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 public class TeamService {
 
     private final TeamRepository teamRepository;
+    private final TeamMemberRepository teamMemberRepository;
 
     public List<TeamCardDto> getAllTeams(String keyword, String level, String sort) {
         List<Team> teams = teamRepository.findByIsActiveTrue();
@@ -61,4 +68,26 @@ public class TeamService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+
+    @Transactional(readOnly = true)
+    public TeamMainDto getTeamMain(Long teamId) {
+
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(NotFoundTeamException::new);
+
+        // 해당 팀 팀원들만 조회
+        List<TeamMember> teamMembers = teamMemberRepository.findByTeam_Id(teamId);
+
+        List<TeamMemberDto> memberDtos = teamMembers.stream()
+                .map(tm -> new TeamMemberDto(
+                        tm.getUser().getId(),
+                        tm.getUser().getUsername(),
+                        tm.isLeader()
+                ))
+                .toList();
+
+        return new TeamMainDto(team, memberDtos);
+    }
+
 }
