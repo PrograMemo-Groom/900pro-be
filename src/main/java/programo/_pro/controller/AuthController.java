@@ -21,7 +21,11 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthService authService;
 
-    @Operation(summary = "회원가입", description = "이메일, 이름, 비밀번호를 입력해 회원가입을 합니다")
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<String>> signIn(@RequestBody @Valid SignInDto signInDto) {
+        return ResponseEntity.ok(ApiResponse.success(authService.signIn(signInDto.getEmail(), signInDto.getPassword())));
+    }
+
     @PostMapping("/join")
     public ResponseEntity<ApiResponse<User>> signUp(@RequestBody @Valid SignUpDto signUpDto) {
         return ResponseEntity.ok(ApiResponse.success(authService.signUp(signUpDto.toService())));
