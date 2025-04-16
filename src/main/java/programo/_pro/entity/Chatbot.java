@@ -21,7 +21,7 @@ public class Chatbot {
 	@JoinColumn(name = "team_id", nullable = false)
 	private Team team;
 
-	@Column(name = "test__date", nullable = false)
+	@Column(name = "test_date", nullable = false)
 	private LocalDateTime testDate;
 
 	@Column(nullable = false)
