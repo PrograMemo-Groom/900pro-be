@@ -1,5 +1,6 @@
 package programo._pro.global.exception;
 
+import jakarta.mail.MessagingException;
 import jakarta.persistence.NoResultException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -75,5 +76,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleEmptyResultException(EmptyResultDataAccessException ex) {
         ApiResponse<?> response = ApiResponse.fail("결과가 존재하지 않습니다.");
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(MessagingException.class)
+    public ResponseEntity<ApiResponse<?>> handleMessagingException(MessagingException ex) {
+        ApiResponse<?> response = ApiResponse.fail(ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
