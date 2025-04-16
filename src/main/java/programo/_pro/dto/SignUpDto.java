@@ -23,6 +23,7 @@ public class SignUpDto {
     @Size(min = 8, max = 20, message = "비밀번호는 8~20자여야 합니다.")
     private String password;
 
+    // 내부 처리용 DTO
     public UserInfo toService() {
         return UserInfo.builder()
                 .email(email)
