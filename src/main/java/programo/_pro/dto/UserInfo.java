@@ -27,7 +27,7 @@ public class UserInfo implements Serializable {
                 .email(email)
                 .username(username)
                 .password(encodedPassword)
-                .flag(1)
+                .isActive(true)
                 .build();
     }
 }
