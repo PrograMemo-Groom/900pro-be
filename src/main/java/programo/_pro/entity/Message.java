@@ -17,25 +17,22 @@ public class Message {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "team_id", nullable = false)
-	private Team team;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "chat_room_id", nullable = false)
+	private ChatRoom chatRoom;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
 
 	@Column(nullable = false, columnDefinition = "TEXT")
 	private String content;
 
-	@Column(name = "is_bot", nullable = false)
-	private boolean isBot = false;
-
-	@Column(name = "created_at", nullable = false)
-	private LocalDateTime createdAt;
+	@Column(name = "send_at")
+	private LocalDateTime sendAt;
 
 	@PrePersist
-	public void setCreatedAt() {
-		this.createdAt = LocalDateTime.now();
+	public void prePersist() {
+		this.sendAt = LocalDateTime.now();
 	}
 }
