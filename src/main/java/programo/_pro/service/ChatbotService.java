@@ -54,7 +54,7 @@ public class ChatbotService {
 		Long teamId = chatbot.getTeam().getId();
 		log.info("[메시지 전송] teamId={} 메시지: {}", teamId, chatbot.getMessage());
 
-		ChatRoom chatRoom = chatRoomRepository.findByTeamId(teamId)
+		ChatRoom chatRoom = chatRoomRepository.findByTeam_Id(teamId)
 				.orElseThrow(() -> new IllegalArgumentException("ChatRoom not found"));
 
 		String messageContent = "[" + LocalDate.now() + "]\n";
