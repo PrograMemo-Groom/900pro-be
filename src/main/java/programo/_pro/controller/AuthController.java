@@ -1,5 +1,6 @@
 package programo._pro.controller;
 
+import jakarta.validation.Valid;
 import programo._pro.dto.SignInDto;
 import programo._pro.dto.SignUpDto;
 import programo._pro.entity.User;
@@ -18,12 +19,12 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<String>> signIn(@RequestBody SignInDto signInDto) {
+    public ResponseEntity<ApiResponse<String>> signIn(@RequestBody @Valid SignInDto signInDto) {
         return ResponseEntity.ok(ApiResponse.success(authService.signIn(signInDto.getEmail(), signInDto.getPassword())));
     }
 
     @PostMapping("/join")
-    public ResponseEntity<ApiResponse<User>> signUp(@RequestBody SignUpDto signUpDto) {
+    public ResponseEntity<ApiResponse<User>> signUp(@RequestBody @Valid SignUpDto signUpDto) {
         return ResponseEntity.ok(ApiResponse.success(authService.signUp(signUpDto.toService())));
     }
 }
