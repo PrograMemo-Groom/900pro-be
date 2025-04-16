@@ -4,11 +4,6 @@ name: webide
 
 # 코드 실행 엔진 서비스 템플릿
 x-code-executor-template: &code-executor-template
-  build:
-    context: ./sandbox
-    dockerfile: Dockerfile
-  labels:
-    com.docker.compose.service: code-executor
   security_opt:
     - no-new-privileges=true
   restart: unless-stopped
@@ -18,6 +13,25 @@ x-code-executor-template: &code-executor-template
 
 services:
   # Python 코드 실행 엔진 (단일 인스턴스)
-  code-executor:
+  python-executor:
     <<: *code-executor-template
-    container_name: webide-code-executor
+    build:
+      context: ./sandbox/python
+      dockerfile: Dockerfile
+    container_name: webide-python-executor
+    labels:
+      com.docker.compose.service: python-executor
+
+  # Java 코드 실행 엔진 (단일 인스턴스)
+  java-executor:
+    <<: *code-executor-template
+    build:
+      context: ./sandbox/java
+      dockerfile: Dockerfile
+    container_name: webide-java-executor
+    labels:
+      com.docker.compose.service: java-executor
+    # Java에 더 많은 메모리 할당
+    mem_limit: 512m
+    memswap_limit: 512m
+    mem_reservation: 256m
