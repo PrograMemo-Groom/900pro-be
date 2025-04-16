@@ -1,9 +1,13 @@
-package programo._pro.service.executor;
+package programo._pro.service.executor.languages;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.PostConstruct;
 import programo._pro.dto.CodeExecutionResponse;
+import programo._pro.service.executor.AbstractExecutorService;
+import programo._pro.service.executor.CodeExecutorProperties;
+import programo._pro.service.executor.ErrorHandlingService;
+import programo._pro.service.executor.ResultParserService;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -12,13 +16,13 @@ import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @Service
-public class CppExecutorService extends AbstractExecutorService {
+public class CExecutorService extends AbstractExecutorService {
 
     private final String gccContainerName;
     private boolean gccContainerAvailable = false;
     private static final int MAX_CODE_SIZE = 1024 * 50; // 최대 50KB 코드 크기 제한
 
-    public CppExecutorService(
+    public CExecutorService(
             ResultParserService resultParserService,
             ErrorHandlingService errorHandlingService,
             CodeExecutorProperties properties) {
@@ -30,22 +34,22 @@ public class CppExecutorService extends AbstractExecutorService {
     public void initialize() {
         gccContainerAvailable = checkContainerAvailability(gccContainerName);
         if (gccContainerAvailable) {
-            log.info("C++ 코드 실행 컨테이너 초기화 완료: {}", gccContainerName);
+            log.info("C 코드 실행 컨테이너 초기화 완료: {}", gccContainerName);
         }
     }
 
     /**
-     * C++ 코드를 실행하고 결과를 반환합니다.
+     * C 코드를 실행하고 결과를 반환합니다.
      *
-     * @param code 실행할 C++ 코드
+     * @param code 실행할 C 코드
      * @return 실행 결과(출력, 오류 등)
      */
-    public CodeExecutionResponse executeCppCode(String code) {
+    public CodeExecutionResponse executeCCode(String code) {
         // 코드 크기 검증
         if (code.length() > MAX_CODE_SIZE) {
             return CodeExecutionResponse.builder()
                     .status("error")
-                    .error(errorHandlingService.handleSizeExceededError("C++", MAX_CODE_SIZE))
+                    .error(errorHandlingService.handleSizeExceededError("C", MAX_CODE_SIZE))
                     .build();
         }
 
@@ -61,7 +65,7 @@ public class CppExecutorService extends AbstractExecutorService {
     }
 
     /**
-     * C++ 컨테이너 실행 가능 여부를 확인하고, 필요시 재확인합니다.
+     * C 컨테이너 실행 가능 여부를 확인하고, 필요시 재확인합니다.
      */
     private boolean ensureGccContainerAvailability() {
         if (!gccContainerAvailable) {
@@ -71,7 +75,7 @@ public class CppExecutorService extends AbstractExecutorService {
     }
 
     /**
-     * C++ 컨테이너 내에서 코드를 실행합니다.
+     * C 컨테이너 내에서 코드를 실행합니다.
      */
     @Override
     protected ProcessResult executeCodeInContainer(String code)
@@ -80,7 +84,7 @@ public class CppExecutorService extends AbstractExecutorService {
         ProcessBuilder pb = new ProcessBuilder(
             "docker", "exec", "-i",
             gccContainerName,
-            "/bin/bash", "-c", "head -c " + MAX_CODE_SIZE + " | /code/run.sh cpp"
+            "/bin/bash", "-c", "head -c " + MAX_CODE_SIZE + " | /code/run.sh c"
         );
 
         // 표준 출력과 에러 출력을 분리 - 실행 상태 메시지는 stderr에 나오고 실제 프로그램 출력은 stdout에 나오므로
@@ -97,7 +101,7 @@ public class CppExecutorService extends AbstractExecutorService {
         }
 
         // 타임아웃 설정
-        boolean completed = process.waitFor(properties.getTimeout().getCppExecution(), TimeUnit.SECONDS);
+        boolean completed = process.waitFor(properties.getTimeout().getCExecution(), TimeUnit.SECONDS);
 
         // 표준 출력 읽기 (프로그램의 실제 출력)
         StringBuilder stdout = new StringBuilder();
@@ -136,17 +140,17 @@ public class CppExecutorService extends AbstractExecutorService {
         // 상태 메시지 확인을 위해 stderr 로깅
         String stderrString = stderr.toString().trim();
         if (!stderrString.isEmpty()) {
-            log.debug("C++ 실행 상태 및 에러 메시지: {}", stderrString);
+            log.debug("C 실행 상태 및 에러 메시지: {}", stderrString);
         }
 
         // 컴파일/실행 중 에러가 발생했는지 확인
         if (process.exitValue() != 0) {
             // 에러가 발생한 경우 stderr의 내용을 결과로 반환
-            log.error("C++ 코드 실행 실패: {}", stderrString);
+            log.error("C 코드 실행 실패: {}", stderrString);
             return new ProcessResult(stderrString, process.exitValue());
         }
 
         // 성공적인 경우 stdout만 결과로 반환
         return new ProcessResult(stdout.toString().trim(), process.exitValue());
     }
-}
+} 

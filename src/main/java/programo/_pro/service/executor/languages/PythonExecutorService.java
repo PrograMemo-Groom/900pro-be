@@ -1,9 +1,13 @@
-package programo._pro.service.executor;
+package programo._pro.service.executor.languages;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.PostConstruct;
 import programo._pro.dto.CodeExecutionResponse;
+import programo._pro.service.executor.AbstractExecutorService;
+import programo._pro.service.executor.CodeExecutorProperties;
+import programo._pro.service.executor.ErrorHandlingService;
+import programo._pro.service.executor.ResultParserService;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -12,66 +16,66 @@ import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @Service
-public class JavaExecutorService extends AbstractExecutorService {
+public class PythonExecutorService extends AbstractExecutorService {
 
-    private final String javaContainerName;
-    private boolean javaContainerAvailable = false;
+    private final String pythonContainerName;
+    private boolean pythonContainerAvailable = false;
     private static final int MAX_CODE_SIZE = 1024 * 50; // 최대 50KB 코드 크기 제한
 
-    public JavaExecutorService(
+    public PythonExecutorService(
             ResultParserService resultParserService,
             ErrorHandlingService errorHandlingService,
             CodeExecutorProperties properties) {
         super(resultParserService, errorHandlingService, properties);
-        this.javaContainerName = properties.getContainer().getJavaName();
+        this.pythonContainerName = properties.getContainer().getPythonName();
     }
 
     @PostConstruct
     public void initialize() {
-        javaContainerAvailable = checkContainerAvailability(javaContainerName);
-        if (javaContainerAvailable) {
-            log.info("자바 코드 실행 컨테이너 초기화 완료: {}", javaContainerName);
+        pythonContainerAvailable = checkContainerAvailability(pythonContainerName);
+        if (pythonContainerAvailable) {
+            log.info("파이썬 코드 실행 컨테이너 초기화 완료: {}", pythonContainerName);
         }
     }
 
     /**
-     * Java 코드를 실행하고 결과를 반환합니다.
+     * Python 코드를 실행하고 결과를 반환합니다.
      *
-     * @param code 실행할 Java 코드
+     * @param code 실행할 Python 코드
      * @return 실행 결과(출력, 오류 등)
      */
-    public CodeExecutionResponse executeJavaCode(String code) {
+    public CodeExecutionResponse executePythonCode(String code) {
         // 코드 크기 검증
         if (code.length() > MAX_CODE_SIZE) {
             return CodeExecutionResponse.builder()
                     .status("error")
-                    .error(errorHandlingService.handleSizeExceededError("Java", MAX_CODE_SIZE))
+                    .error(errorHandlingService.handleSizeExceededError("Python", MAX_CODE_SIZE))
                     .build();
         }
 
         // 컨테이너 실행 가능 여부 확인
-        if (!ensureJavaContainerAvailability()) {
+        if (!ensurePythonContainerAvailability()) {
             return CodeExecutionResponse.builder()
                     .status("error")
-                    .error(errorHandlingService.handleContainerError(javaContainerName))
+                    .error(errorHandlingService.handleContainerError(pythonContainerName))
                     .build();
         }
 
-        return executeCode(code, javaContainerName);
+        return executeCode(code, pythonContainerName);
     }
 
     /**
-     * 자바 컨테이너 실행 가능 여부를 확인하고, 필요시 재확인합니다.
+     * 파이썬 컨테이너 실행 가능 여부를 확인하고, 필요시 재확인합니다.
      */
-    private boolean ensureJavaContainerAvailability() {
-        if (!javaContainerAvailable) {
-            javaContainerAvailable = checkContainerAvailability(javaContainerName);
+    private boolean ensurePythonContainerAvailability() {
+        if (!pythonContainerAvailable) {
+            pythonContainerAvailable = checkContainerAvailability(pythonContainerName);
         }
-        return javaContainerAvailable;
+        return pythonContainerAvailable;
     }
 
     /**
-     * 자바 컨테이너 내에서 코드를 실행합니다.
+     * 파이썬 컨테이너 내에서 코드를 실행합니다.
      */
     @Override
     protected ProcessResult executeCodeInContainer(String code)
@@ -79,8 +83,12 @@ public class JavaExecutorService extends AbstractExecutorService {
         // 도커 실행 명령 준비
         ProcessBuilder pb = new ProcessBuilder(
             "docker", "exec", "-i",
-            javaContainerName,
-            "/bin/bash", "-c", "head -c " + MAX_CODE_SIZE + " | /code/run.sh"
+            // 환경 변수 제한: PATH만 전달
+            "--env", "PATH=/usr/local/bin:/usr/bin:/bin",
+            // PYTHONPATH를 설정하지 않아 시스템 라이브러리만 사용 가능하도록 제한
+            "--env", "PYTHONPATH=",
+            pythonContainerName,
+            "/bin/bash", "-c", "head -c " + MAX_CODE_SIZE + " | python3 /code/run.py"
         );
 
         pb.redirectErrorStream(true);
@@ -95,7 +103,7 @@ public class JavaExecutorService extends AbstractExecutorService {
         }
 
         // 타임아웃 설정
-        boolean completed = process.waitFor(properties.getTimeout().getJavaExecution(), TimeUnit.SECONDS);
+        boolean completed = process.waitFor(properties.getTimeout().getPythonExecution(), TimeUnit.SECONDS);
 
         // 결과 읽기
         StringBuilder output = new StringBuilder();
@@ -119,4 +127,4 @@ public class JavaExecutorService extends AbstractExecutorService {
 
         return new ProcessResult(output.toString().trim(), process.exitValue());
     }
-}
+} 
