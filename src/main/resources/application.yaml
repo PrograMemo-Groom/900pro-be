@@ -41,6 +41,16 @@ jwt:
   header: Authorization
   expiration_time: 720 # 기본 12시간 (720분)
 
+# 코드 실행 관련 설정
+code-executor:
+  container:
+    java-name: webide-java-executor
+    python-name: webide-python-executor
+  timeout:
+    container-check: 5 # 컨테이너 상태 확인 타임아웃(초)
+    java-execution: 15 # Java 코드 실행 타임아웃(초)
+    python-execution: 10 # Python 코드 실행 타임아웃(초)
+
 ---
 
 # ✅ 로컬 프로필

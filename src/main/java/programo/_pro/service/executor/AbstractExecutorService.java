@@ -16,50 +16,35 @@ public abstract class AbstractExecutorService {
 
     protected final ResultParserService resultParserService;
     protected final ErrorHandlingService errorHandlingService;
+    protected final CodeExecutorProperties properties;
 
     protected AbstractExecutorService(
             ResultParserService resultParserService,
-            ErrorHandlingService errorHandlingService) {
+            ErrorHandlingService errorHandlingService,
+            CodeExecutorProperties properties) {
         this.resultParserService = resultParserService;
         this.errorHandlingService = errorHandlingService;
+        this.properties = properties;
     }
 
     /**
      * 코드를 실행하고 결과를 반환합니다.
      */
-    protected CodeExecutionResponse executeCode(String code, String containerName, boolean containerAvailable) {
-        // 컨테이너 실행 가능 여부 확인
-        if (!containerAvailable) {
-            return CodeExecutionResponse.builder()
-                    .status("error")
-                    .error(errorHandlingService.handleContainerError(containerName))
-                    .build();
-        }
-
+    protected CodeExecutionResponse executeCode(String code, String containerName) {
         try {
             // 프로세스 실행 및 결과 획득
             ProcessResult processResult = executeCodeInContainer(code);
 
             // 결과 파싱 및 응답 생성
             return resultParserService.parseExecutionResult(processResult.getOutput(), processResult.getExitCode());
-        } catch (IOException e) {
-            log.error("코드 실행 중 I/O 오류 발생", e);
-            return CodeExecutionResponse.builder()
-                    .status("error")
-                    .error(errorHandlingService.handleSystemException(e))
-                    .build();
-        } catch (InterruptedException e) {
-            log.error("코드 실행 중 인터럽트 발생", e);
-            Thread.currentThread().interrupt();
-            return CodeExecutionResponse.builder()
-                    .status("error")
-                    .error(errorHandlingService.handleSystemException(e))
-                    .build();
         } catch (TimeoutException e) {
             log.error("코드 실행 시간 초과", e);
             return resultParserService.createTimeoutResponse();
         } catch (Exception e) {
-            log.error("코드 실행 중 예상치 못한 오류 발생", e);
+            log.error("코드 실행 중 오류 발생", e);
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             return CodeExecutionResponse.builder()
                     .status("error")
                     .error(errorHandlingService.handleSystemException(e))
@@ -93,7 +78,7 @@ public abstract class AbstractExecutorService {
                 }
             }
 
-            process.waitFor(5, TimeUnit.SECONDS);
+            process.waitFor(properties.getTimeout().getContainerCheck(), TimeUnit.SECONDS);
             log.warn("코드 실행 컨테이너를 찾을 수 없습니다. 컨테이너가 실행 중인지 확인하세요: {}", containerName);
             return false;
         } catch (IOException e) {

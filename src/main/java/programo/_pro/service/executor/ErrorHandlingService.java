@@ -6,7 +6,10 @@ import org.springframework.stereotype.Service;
 import programo._pro.dto.CodeExecutionResponse.ErrorInfo;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
 
 /**
  * 코드 실행 중 발생하는 다양한 에러를 처리하는 서비스
@@ -14,6 +17,22 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 @Service
 public class ErrorHandlingService {
+
+    // 에러 타입별 감지 패턴
+    private final Map<ErrorType, Pattern> errorPatterns = new HashMap<>();
+
+    /**
+     * 생성자. 에러 감지를 위한 패턴을 초기화합니다.
+     */
+    public ErrorHandlingService() {
+        // 구문 오류 패턴
+        errorPatterns.put(ErrorType.EXECUTION_SYNTAX_ERROR,
+                Pattern.compile("(?i)(SyntaxError|구문\\s*오류|syntax\\s*error|parse\\s*error|invalid\\s*syntax|문법\\s*오류)"));
+
+        // 컴파일 오류 패턴
+        errorPatterns.put(ErrorType.EXECUTION_COMPILE_ERROR,
+                Pattern.compile("(?i)(compilation\\s*error|compiler\\s*error|컴파일\\s*오류|compile\\s*error|cannot\\s*find\\s*symbol)"));
+    }
 
     /**
      * 컨테이너 관련 에러를 처리합니다.
@@ -23,6 +42,18 @@ public class ErrorHandlingService {
                 .code(ErrorType.CONTAINER_NOT_AVAILABLE.getCode())
                 .message(ErrorType.CONTAINER_NOT_AVAILABLE.getDefaultMessage())
                 .detail(String.format("%s 컨테이너가 실행 중이 아닙니다. Docker를 확인해주세요.", containerName))
+                .source("system")
+                .build();
+    }
+
+    /**
+     * 코드 크기 제한 초과 에러를 처리합니다.
+     */
+    public ErrorInfo handleSizeExceededError(String language, int maxSize) {
+        return ErrorInfo.builder()
+                .code(ErrorType.CODE_SIZE_EXCEEDED.getCode())
+                .message(ErrorType.CODE_SIZE_EXCEEDED.getDefaultMessage())
+                .detail(String.format("%s 코드 크기가 최대 허용 크기(%dKB)를 초과했습니다.", language, maxSize / 1024))
                 .source("system")
                 .build();
     }
@@ -54,18 +85,11 @@ public class ErrorHandlingService {
 
     /**
      * 실행 결과 출력에서 에러 타입을 감지하고 처리합니다.
+     * 정교한 패턴 매칭을 통해 오류 유형을 식별합니다.
      */
     public ErrorInfo handleExecutionError(String errorOutput) {
-        ErrorType errorType;
+        ErrorType errorType = determineErrorType(errorOutput);
         String source = "execution";
-
-        if (errorOutput.contains("SyntaxError") || errorOutput.contains("구문 오류")) {
-            errorType = ErrorType.EXECUTION_SYNTAX_ERROR;
-        } else if (errorOutput.contains("compilation error") || errorOutput.contains("컴파일 오류")) {
-            errorType = ErrorType.EXECUTION_COMPILE_ERROR;
-        } else {
-            errorType = ErrorType.EXECUTION_RUNTIME_ERROR;
-        }
 
         return ErrorInfo.builder()
                 .code(errorType.getCode())
@@ -73,6 +97,28 @@ public class ErrorHandlingService {
                 .detail(errorOutput)
                 .source(source)
                 .build();
+    }
+
+    /**
+     * 에러 출력을 분석하여 에러 타입을 결정합니다.
+     * @param errorOutput 에러 출력 문자열
+     * @return 감지된 에러 타입
+     */
+    private ErrorType determineErrorType(String errorOutput) {
+        if (errorOutput == null || errorOutput.isEmpty()) {
+            return ErrorType.EXECUTION_RUNTIME_ERROR;
+        }
+
+        // 각 에러 타입에 대한 패턴 매칭 시도
+        for (Map.Entry<ErrorType, Pattern> entry : errorPatterns.entrySet()) {
+            if (entry.getValue().matcher(errorOutput).find()) {
+                log.debug("에러 유형 감지: {}", entry.getKey());
+                return entry.getKey();
+            }
+        }
+
+        // 기본 에러 타입
+        return ErrorType.EXECUTION_RUNTIME_ERROR;
     }
 
     /**

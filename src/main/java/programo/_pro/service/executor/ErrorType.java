@@ -12,6 +12,7 @@ public enum ErrorType {
     EXECUTION_SYNTAX_ERROR("EXEC_001", "코드 구문에 오류가 있습니다"),
     EXECUTION_RUNTIME_ERROR("EXEC_002", "코드 실행 중 오류가 발생했습니다"),
     EXECUTION_COMPILE_ERROR("EXEC_003", "코드 컴파일 중 오류가 발생했습니다"),
+    CODE_SIZE_EXCEEDED("EXEC_004", "코드 크기가 제한을 초과했습니다"),
 
     // 시스템 관련 에러
     SYSTEM_IO_ERROR("SYS_001", "입출력 오류가 발생했습니다"),
