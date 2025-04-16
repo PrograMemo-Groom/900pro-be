@@ -23,15 +23,17 @@ public class CodeExecutorProperties {
         private String javaName = "webide-java-executor";  // 기본값
         private String pythonName = "webide-python-executor";  // 기본값
         private String gccName = "webide-gcc-executor";  // 기본값
+        private String javascriptName = "webide-javascript-executor";  // 기본값
     }
 
     @Getter
     @Setter
     public static class Timeout {
         private int containerCheck = 5;  // 컨테이너 상태 확인 타임아웃(초) 기본값
-        private int javaExecution = 15;  // Java 코드 실행 타임아웃(초) 기본값
         private int pythonExecution = 10;  // Python 코드 실행 타임아웃(초) 기본값
-        private int cExecution = 10;  // C 코드 실행 타임아웃(초) 기본값
-        private int cppExecution = 10;  // C++ 코드 실행 타임아웃(초) 기본값
+        private int javaScriptExecution = 10;  // JavaScript 코드 실행 타임아웃(초) 기본값
+        private int javaExecution = 5;  // Java 코드 실행 타임아웃(초) 기본값
+        private int cppExecution = 3;  // C++ 코드 실행 타임아웃(초) 기본값
+        private int cExecution = 3;  // C 코드 실행 타임아웃(초) 기본값
     }
 }

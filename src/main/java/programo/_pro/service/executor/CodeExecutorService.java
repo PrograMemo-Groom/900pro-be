@@ -6,6 +6,7 @@ import programo._pro.dto.CodeExecutionResponse;
 import programo._pro.service.executor.languages.CExecutorService;
 import programo._pro.service.executor.languages.CppExecutorService;
 import programo._pro.service.executor.languages.JavaExecutorService;
+import programo._pro.service.executor.languages.JavaScriptExecutorService;
 import programo._pro.service.executor.languages.PythonExecutorService;
 
 @Slf4j
@@ -16,16 +17,19 @@ public class CodeExecutorService {
     private final JavaExecutorService javaExecutor;
     private final CExecutorService cExecutor;
     private final CppExecutorService cppExecutor;
+    private final JavaScriptExecutorService javaScriptExecutor;
 
     public CodeExecutorService(
             PythonExecutorService pythonExecutor,
             JavaExecutorService javaExecutor,
             CExecutorService cExecutor,
-            CppExecutorService cppExecutor) {
+            CppExecutorService cppExecutor,
+            JavaScriptExecutorService javaScriptExecutor) {
         this.pythonExecutor = pythonExecutor;
         this.javaExecutor = javaExecutor;
         this.cExecutor = cExecutor;
         this.cppExecutor = cppExecutor;
+        this.javaScriptExecutor = javaScriptExecutor;
         log.info("코드 실행 서비스 초기화 완료");
     }
 
@@ -40,6 +44,16 @@ public class CodeExecutorService {
     }
 
     /**
+     * JavaScript 코드를 실행하고 결과를 반환합니다.
+     *
+     * @param code 실행할 JavaScript 코드
+     * @return 실행 결과(출력, 오류 등)
+     */
+    public CodeExecutionResponse executeJavaScriptCode(String code) {
+        return javaScriptExecutor.executeJavaScriptCode(code);
+    }
+
+    /**
      * Java 코드를 실행하고 결과를 반환합니다.
      *
      * @param code 실행할 Java 코드
@@ -50,16 +64,6 @@ public class CodeExecutorService {
     }
 
     /**
-     * C 코드를 실행하고 결과를 반환합니다.
-     *
-     * @param code 실행할 C 코드
-     * @return 실행 결과(출력, 오류 등)
-     */
-    public CodeExecutionResponse executeCCode(String code) {
-        return cExecutor.executeCCode(code);
-    }
-
-    /**
      * C++ 코드를 실행하고 결과를 반환합니다.
      *
      * @param code 실행할 C++ 코드
@@ -67,5 +71,15 @@ public class CodeExecutorService {
      */
     public CodeExecutionResponse executeCppCode(String code) {
         return cppExecutor.executeCppCode(code);
+    }
+
+    /**
+     * C 코드를 실행하고 결과를 반환합니다.
+     *
+     * @param code 실행할 C 코드
+     * @return 실행 결과(출력, 오류 등)
+     */
+    public CodeExecutionResponse executeCCode(String code) {
+        return cExecutor.executeCCode(code);
     }
 }
