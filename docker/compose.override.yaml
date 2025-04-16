@@ -45,3 +45,13 @@ services:
     container_name: webide-gcc-executor
     labels:
       com.docker.compose.service: gcc-executor
+
+  # JavaScript 코드 실행 엔진 (단일 인스턴스)
+  javascript-executor:
+    <<: *code-executor-template
+    build:
+      context: ./sandbox/javascript
+      dockerfile: Dockerfile
+    container_name: webide-javascript-executor
+    labels:
+      com.docker.compose.service: javascript-executor
