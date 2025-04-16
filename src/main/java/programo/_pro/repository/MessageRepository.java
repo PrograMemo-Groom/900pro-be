@@ -6,5 +6,5 @@ import programo._pro.entity.Message;
 import java.util.List;
 
 public interface MessageRepository extends JpaRepository<Message, Long> {
-	List<Message> findByTeamIdOrderByCreatedAtAsc(Long teamId);
+	List<Message> findByChatRoom_Id(Long chatRoomId);
 }
