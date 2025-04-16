@@ -15,8 +15,8 @@ def set_resource_limits():
         resource.setrlimit(resource.RLIMIT_CPU, (10, 10))
         # 메모리 제한 (바이트)
         resource.setrlimit(resource.RLIMIT_AS, (1024 * 1024 * 1024, 1024 * 1024 * 1024))  # 1GB
-        # 프로세스 수 제한 - 값을 매우 높게 설정
-        resource.setrlimit(resource.RLIMIT_NPROC, (1000, 1000))
+        # 프로세스 수 제한
+        resource.setrlimit(resource.RLIMIT_NPROC, (100, 100))
         # 파일 디스크립터 수 제한
         resource.setrlimit(resource.RLIMIT_NOFILE, (100, 100))
     except Exception as e:

@@ -19,9 +19,8 @@ docker compose up -d
 
 - **MariaDB**: 데이터베이스 서버 (포트 3307)
 - **Redis**: 캐시 및 메시지 큐 (포트 6379)
-- **Python 코드 실행 엔진**: 단일 컨테이너로 구성
-  - 자동 리소스 제한 및 샌드박스 환경 제공
-  - REST API를 통해 코드 실행 가능
+- **Python 코드 실행 엔진**: 파이썬 코드 실행 컨테이너
+- **Java 코드 실행 엔진**: 자바 코드 실행 컨테이너
 
 ## 환경 관리
 
@@ -37,6 +36,13 @@ Python 코드 실행:
 curl -X POST http://localhost:8080/api/code/execute/python \
   -H "Content-Type: application/json" \
   -d '{"code": "print(\"Hello, World!\")"}'
+```
+
+Java 코드 실행:
+```bash
+curl -X POST http://localhost:8080/api/code/execute/java \
+  -H "Content-Type: application/json" \
+  -d '{"code": "public class Main { public static void main(String[] args) { System.out.println(\"Hello, Java World!\"); } }"}'
 ```
 
 ## 주의사항
