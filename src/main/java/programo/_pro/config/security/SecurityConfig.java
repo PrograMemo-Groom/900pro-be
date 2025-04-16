@@ -26,11 +26,13 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
+//   사용자 인증을 처리하는 핵심 매니저 객체를 꺼내서 Bean으로 등록하는 함수
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
+//    클라이언트가 로그인 요청을 보냈을 때, 아이디/비밀번호를 인증하고 JWT를 생성하는 필터
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
         JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtService);
@@ -38,12 +40,15 @@ public class SecurityConfig {
         return filter;
     }
 
+    // 보안 필터를 아예 적용하지 않을 URL 패턴을 지정합니다.
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        // 개발 환경에서는 더 많은 경로를 허용합니다
+        // 개발 환경에서는 모든 요청에 대해 필터링을 적용하지 않습니다
+        // 운영 환경에서는 절대 사용 금지 ****************************
         return webSecurity -> webSecurity.ignoring().requestMatchers("/**");
     }
 
+    // 전체 HTTP 보안 정책과 필터 체인을 정의하는 핵심 설정
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -53,11 +58,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         // websocket 경로는 permitAll()로 명시
                         .requestMatchers("/ws-chat/**").permitAll()
-                        // 개발환경에서는 모든 요청 허용
+                        // 개발환경에서는 모든 요청 허용 -> 추후 운영서버는 수정
                         .anyRequest().permitAll()
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtService), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new JwtAuthFilter(customUserDetailsService, jwtService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtService), UsernamePasswordAuthenticationFilter.class) // JWT 검증 필터 삽입
+                .addFilterAfter(new JwtAuthFilter(customUserDetailsService, jwtService), UsernamePasswordAuthenticationFilter.class) // JWT 검증 필터 삽입
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint));
         return http.build();
     }

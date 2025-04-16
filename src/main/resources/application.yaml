@@ -15,6 +15,23 @@ spring:
   config:
     import: optional:file:.env[.properties]
 
+  mail:
+    host: smtp.gmail.com
+    port: 587 # Gmail SMTP서버는 587번 포트 사용
+    username: ${MAIL_USERNAME} # 이메일 전송용 계정의 이메일 주소
+    password: ${MAIL_PASSWORD} # 앱 비밀번호
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000 # 클라이언트-SMTP 연결 설정 간 서버 대기 시간 설정
+          timeout: 5000 # 서버에서 응답이 오지 않는 경우 대기시간
+          writetimeout: 5000 # 이메일을 SMTP 서버로 전송하는 데 걸리는 시간을 제한
+    auth-code-expiration-millis: 1800000  # 이메일 인증 코드의 만료 시간 30 * 60 * 1000 == 30분
+
 # JWT 공통 설정
 jwt:
   header: Authorization
