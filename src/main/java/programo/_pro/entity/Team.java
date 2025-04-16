@@ -41,8 +41,9 @@ public class Team {
 	@Column(name = "current_members", nullable = false)
 	private int currentMembers;
 
-	@Column(name = "leader_id", nullable = false)
-	private Long leaderId; // FK
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "leader_id", nullable = false)
+	private User leader;
 
 	@CreationTimestamp
 	@Column(name = "created_at", updatable = false)
