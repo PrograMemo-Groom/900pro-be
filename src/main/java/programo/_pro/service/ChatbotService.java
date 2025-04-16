@@ -4,13 +4,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import programo._pro.entity.ChatRoom;
 import programo._pro.entity.Chatbot;
 import programo._pro.entity.Team;
+import programo._pro.entity.User;
 import programo._pro.repository.ChatRoomRepository;
 import programo._pro.repository.ChatbotRepository;
 import programo._pro.repository.TeamRepository;
+import programo._pro.repository.UserRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,13 +28,18 @@ public class ChatbotService {
 	private final ChatRoomRepository chatRoomRepository;
 	private final SimpMessagingTemplate messagingTemplate;
 	private final TeamRepository teamRepository;
+	private final UserRepository userRepository;
 
 	@Scheduled(cron = "0 0 0 * * *")
 	public void sendScheduledMessages() {
 		LocalDateTime now = LocalDateTime.now();
 		log.info("[스케줄러 실행] 현재 시간 : {}", now);
 
-		List<Team> teams = teamRepository.findAll();
+		Long userId = getCurrentUserId();  // 로그인된 사용자 ID를 가져오는 메서드 호출
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+		List<Team> teams = teamRepository.findByUserId(userId);
 
 		for (Team team : teams) {
 			LocalDateTime testEndTime = calculateTestEndTime(team.getStartTime(), team.getDurationTime());
@@ -41,13 +50,22 @@ public class ChatbotService {
 
 				List<Chatbot> chatbots = chatbotRepository.findByTeam_Id(team.getId());
 
-				for (Chatbot chatbot : chatbots) {
-					sendMessageToChatRoom(chatbot, team);
+				if (!chatbots.isEmpty()) {
+					for (Chatbot chatbot : chatbots) {
+						sendMessageToChatRoom(chatbot, team);
+					}
+				} else {
+					log.warn("[팀 처리] 팀 {}의 챗봇 메시지가 존재하지 않습니다.", team.getTeamName());
 				}
-			} else{
+			} else {
 				log.info("[팀 처리] 팀 {}의 테스트가 아직 종료되지 않았습니다.", team.getTeamName());
 			}
 		}
+	}
+
+	private Long getCurrentUserId() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return Long.parseLong(authentication.getName());
 	}
 
 	private void sendMessageToChatRoom(Chatbot chatbot, Team team) {
