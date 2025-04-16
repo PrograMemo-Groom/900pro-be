@@ -30,12 +30,7 @@ public class User {
     @Column(name = "user_name", nullable = false)
     private String username;
 
-    // 한글, 공백, 이모지 자동 차단
-    @Pattern(
-            regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[~!@#$%^&*?])[A-Za-z\\d~!@#$%^&*?]{8,20}$",
-            message = "비밀번호는 8~20자이며, 영문자, 숫자, ~!@#$%^&*? 중 하나 이상의 특수문자를 포함해야 합니다."
-    )
-    @Size(min = 8, max = 20, message = "비밀번호는 8~20자여야 합니다.")
+
     @Column(name = "password")
     private String password;
 
