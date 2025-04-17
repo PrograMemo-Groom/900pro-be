@@ -3,6 +3,7 @@ package programo._pro.global.exception;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.NoResultException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import programo._pro.global.ApiResponse;
 
 @Slf4j
 @RestControllerAdvice
+@ConditionalOnProperty(name = "springdoc.api-docs.enabled", havingValue = "false", matchIfMissing = false)
 public class GlobalExceptionHandler {
 
     // 기타 예외 처리
