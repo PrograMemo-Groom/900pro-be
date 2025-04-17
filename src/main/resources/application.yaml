@@ -41,6 +41,21 @@ jwt:
   header: Authorization
   expiration_time: 720 # 기본 12시간 (720분)
 
+# 코드 실행 관련 설정
+code-executor:
+  container:
+    java-name: webide-java-executor
+    python-name: webide-python-executor
+    gcc-name: webide-gcc-executor
+    javascript-name: webide-javascript-executor
+  timeout:
+    container-check: ${CONTAINER_CHECK_TIMEOUT:5}
+    python-execution: ${PYTHON_EXECUTION_TIMEOUT:10}
+    java-script-execution: ${JAVASCRIPT_EXECUTION_TIMEOUT:10}
+    java-execution: ${JAVA_EXECUTION_TIMEOUT:5}
+    cpp-execution: ${C_EXECUTION_TIMEOUT:3}
+    c-execution: ${C_EXECUTION_TIMEOUT:3}
+
 ---
 
 # ✅ 로컬 프로필
