@@ -9,6 +9,7 @@ import programo._pro.dto.ChatMessageRequest;
 import programo._pro.entity.ChatRoom;
 import programo._pro.entity.Message;
 import programo._pro.entity.User;
+import programo._pro.global.exception.NotFoundChatException;
 import programo._pro.repository.ChatRoomRepository;
 import programo._pro.repository.MessageRepository;
 import programo._pro.repository.UserRepository;
@@ -27,14 +28,14 @@ public class ChatService {
 		log.info("[채팅 메시지 수신] ChatRoomId={}, UserId={}, Content={}",
 				request.getChatRoomId(), request.getUserId(), request.getContent());
 
-		ChatRoom chatRoomId = chatRoomRepository.findById(request.getChatRoomId())
-				.orElseThrow(() -> new IllegalArgumentException("ChatRoom not found"));
+		ChatRoom chatRoom = chatRoomRepository.findById(request.getChatRoomId())
+				.orElseThrow(NotFoundChatException::NotFoundChatRoomException);
 
 		User user = userRepository.findById(request.getUserId())
-					.orElseThrow(() -> new IllegalArgumentException("User not found"));
+				.orElseThrow(NotFoundChatException::NotFoundUserException);
 
 		Message message = Message.builder()
-				.chatRoom(chatRoomId)
+				.chatRoom(chatRoom)
 				.user(user)
 				.content(request.getContent())
 				.build();
