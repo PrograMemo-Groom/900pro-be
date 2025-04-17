@@ -47,8 +47,8 @@ public class TeamController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Map.of(
                         "status", HttpStatus.CREATED.value(),
-                        "teamId", teamId,
-                        "message", "팀 생성 완료"
+                        "message", "team ID " + teamId + "번 팀을 생성함",
+                        "teamId", teamId
                 ));
     }
 
