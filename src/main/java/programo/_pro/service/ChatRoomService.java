@@ -22,4 +22,9 @@ public class ChatRoomService {
 				.build();
 		return chatRoomRepository.save(chatRoom);
 	}
+
+	public ChatRoom getChatRoomByTeamId(Long teamId) {
+		return chatRoomRepository.findByTeam_Id(teamId)
+				.orElseThrow(() -> new IllegalArgumentException("ChatRoom not found for teamId=" + teamId));
+	}
 }

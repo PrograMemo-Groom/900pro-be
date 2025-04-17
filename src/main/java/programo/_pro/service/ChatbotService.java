@@ -83,4 +83,12 @@ public class ChatbotService {
 		log.info("[종료 시간 계산 완료] 종료 시간: {}", endTime);
 		return endTime;
 	}
+
+	public List<Chatbot> getChatbotsByTeamId(Long teamId) {
+		return chatbotRepository.findByTeam_Id(teamId);
+	}
+
+	public void createChatbotMessage(Chatbot chatbot) {
+		chatbotRepository.save(chatbot);
+	}
 }
