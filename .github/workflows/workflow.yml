@@ -40,16 +40,34 @@ jobs:
         host: ${{ secrets.EC2_HOST }}
         username: ubuntu
         key: ${{ secrets.EC2_PRIVATE_KEY }}
+        # script: |
+        #   echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        #   docker pull ${{ secrets.DOCKER_USERNAME }}/900pro:latest
+        #   docker stop $(docker ps -a -q)
+        #   docker rm $(docker ps --filter 'status=exited' -a -q)
+        #   docker run -d \
+        #     --env-file /home/ubuntu/.ssh/900pro-be/.env \
+        #     --log-driver=syslog \
+        #     -p 8080:8080 \
+        #     --name myapp \
+        #     ${{ secrets.DOCKER_USERNAME }}/900pro:latest \
+        #     --spring.profiles.active=prod
+        #   docker image prune -a -f
+
         script: |
+          cd ~/.ssh/900pro-be
+
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
           docker pull ${{ secrets.DOCKER_USERNAME }}/900pro:latest
-          docker stop $(docker ps -a -q)
-          docker rm $(docker ps --filter 'status=exited' -a -q)
-          docker run -d \
-            --env-file /home/ubuntu/.ssh/900pro-be/.env \
-            --log-driver=syslog \
-            -p 8080:8080 \
-            --name myapp \
-            ${{ secrets.DOCKER_USERNAME }}/900pro:latest \
-            --spring.profiles.active=prod
-          docker image prune -a -f
+
+          # 기존 컨테이너 및 네트워크 종료
+          docker compose down
+
+          # 이미지 정리
+          docker image prune -af
+
+          # 재배포
+          docker compose up -d --force-recreate
+
+          # 컨테이너 상태 확인
+          docker ps
