@@ -5,8 +5,8 @@ package programo._pro.service.executor;
  */
 public enum ErrorType {
     // 컨테이너 관련 에러
-    CONTAINER_NOT_AVAILABLE("CONTAINER_001", "실행 환경을 사용할 수 없습니다"),
-    CONTAINER_TIMEOUT("CONTAINER_002", "실행 시간이 초과되었습니다"),
+    CONTAINER_NOT_AVAILABLE("CONTAINER_001", "컨테이너 실행 환경을 사용할 수 없습니다"),
+    CONTAINER_TIMEOUT("CONTAINER_002", "컨테이너 실행 시간이 초과되었습니다"),
 
     // 코드 실행 관련 에러
     EXECUTION_SYNTAX_ERROR("EXEC_001", "코드 구문에 오류가 있습니다"),
