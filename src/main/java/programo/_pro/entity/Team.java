@@ -3,6 +3,7 @@ package programo._pro.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import programo._pro.dto.TeamCreateRequest;
 
 import java.time.LocalDateTime;
 
@@ -51,4 +52,15 @@ public class Team {
 
 	@Column(name = "is_active")
 	private boolean isActive = true;
+
+	//도메인메서드 : setter 대신 사용
+	//teamUpdate가 TeamCreateRequest와 같은 포멧이라 dto 재활용하겠습니당
+	public void updateInfo(TeamCreateRequest req) {
+		this.teamName = req.getTeamName();
+		this.description = req.getDescription();
+		this.level = req.getLevel();
+		this.problemCount = req.getProblemCount();
+		this.startTime = req.getStartTime();
+		this.durationTime = req.getDurationTime();
+	}
 }
