@@ -10,23 +10,27 @@ x-code-executor-template: &code-executor-template
   tty: true
   networks:
     - dev-network
+  environment:
+    - CODE_EXECUTION_TIMEOUT=${C_EXECUTION_TIMEOUT:-3}
 
 services:
   # Python 코드 실행 엔진 (단일 인스턴스)
   python-executor:
     <<: *code-executor-template
     build:
-      context: ./sandbox/python
+      context: docker/sandbox/python
       dockerfile: Dockerfile
     container_name: webide-python-executor
     labels:
       com.docker.compose.service: python-executor
+    environment:
+      - CODE_EXECUTION_TIMEOUT=${PYTHON_EXECUTION_TIMEOUT:-10}
 
   # Java 코드 실행 엔진 (단일 인스턴스)
   java-executor:
     <<: *code-executor-template
     build:
-      context: ./sandbox/java
+      context: docker/sandbox/java
       dockerfile: Dockerfile
     container_name: webide-java-executor
     labels:
@@ -35,23 +39,29 @@ services:
     mem_limit: 512m
     memswap_limit: 512m
     mem_reservation: 256m
+    environment:
+      - CODE_EXECUTION_TIMEOUT=${JAVA_EXECUTION_TIMEOUT:-5}
 
   # GCC 코드 실행 엔진 (C/C++ 용, 단일 인스턴스)
   gcc-executor:
     <<: *code-executor-template
     build:
-      context: ./sandbox/gcc
+      context: docker/sandbox/gcc
       dockerfile: Dockerfile
     container_name: webide-gcc-executor
     labels:
       com.docker.compose.service: gcc-executor
+    environment:
+      - CODE_EXECUTION_TIMEOUT=${C_EXECUTION_TIMEOUT:-3}
 
   # JavaScript 코드 실행 엔진 (단일 인스턴스)
   javascript-executor:
     <<: *code-executor-template
     build:
-      context: ./sandbox/javascript
+      context: docker/sandbox/javascript
       dockerfile: Dockerfile
     container_name: webide-javascript-executor
     labels:
       com.docker.compose.service: javascript-executor
+    environment:
+      - CODE_EXECUTION_TIMEOUT=${JAVASCRIPT_EXECUTION_TIMEOUT:-10}

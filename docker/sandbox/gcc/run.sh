@@ -5,6 +5,9 @@
 # - C 코드 실행: 표준 입력으로 C 코드를 받아 "c" 인자를 전달
 # - C++ 코드 실행: 표준 입력으로 C++ 코드를 받아 "cpp" 인자를 전달
 
+# 환경변수에서 실행 시간 제한 가져오기 (초 단위)
+EXECUTION_TIMEOUT=${CODE_EXECUTION_TIMEOUT:-3}
+
 # 실행 언어 확인
 LANG="${1:-c}"  # 기본값은 C
 
@@ -38,12 +41,12 @@ chmod +x main
 echo "{ \"status\": \"running\" }" >&2
 
 # 실행 및 결과 출력 (표준 출력 및 표준 오류를 모두 캡처)
-timeout 5s ./main 2> run_err.txt
+timeout ${EXECUTION_TIMEOUT}s ./main 2> run_err.txt
 EXIT_CODE=$?
 
 # 실행 결과 처리
 if [ $EXIT_CODE -eq 124 ] || [ $EXIT_CODE -eq 137 ]; then
-    echo "{ \"status\": \"error\", \"message\": \"실행 시간 초과\" }" >&2
+    echo "{ \"status\": \"error\", \"message\": \"실행 시간 초과 (${EXECUTION_TIMEOUT}초)\" }" >&2
     exit 2
 elif [ $EXIT_CODE -ne 0 ]; then
     ERROR=$(cat run_err.txt)

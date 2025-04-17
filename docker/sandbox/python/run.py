@@ -8,11 +8,14 @@ import subprocess
 from io import StringIO
 from contextlib import redirect_stdout, redirect_stderr
 
+# 환경변수에서 실행 시간 제한 가져오기 (초 단위)
+EXECUTION_TIMEOUT = int(os.environ.get('CODE_EXECUTION_TIMEOUT', 10))
+
 def set_resource_limits():
     """시스템 리소스 제한 설정"""
     try:
         # 실행 시간 제한 (초)
-        resource.setrlimit(resource.RLIMIT_CPU, (10, 10))
+        resource.setrlimit(resource.RLIMIT_CPU, (EXECUTION_TIMEOUT, EXECUTION_TIMEOUT))
         # 메모리 제한 (바이트)
         resource.setrlimit(resource.RLIMIT_AS, (1024 * 1024 * 1024, 1024 * 1024 * 1024))  # 1GB
         # 프로세스 수 제한
@@ -68,7 +71,7 @@ def execute_python_code(code_str):
             ["python3", code_file],
             capture_output=True,
             text=True,
-            timeout=10,  # 시간 제한 증가
+            timeout=EXECUTION_TIMEOUT,  # 환경변수에서 가져온 타임아웃 값 사용
             env=os.environ.copy()  # 환경 변수 전달
         )
 
@@ -82,7 +85,7 @@ def execute_python_code(code_str):
 
     except subprocess.TimeoutExpired:
         result["status"] = "timeout"
-        result["error"] = "코드 실행 시간이 초과되었습니다 (10초)"
+        result["error"] = f"코드 실행 시간이 초과되었습니다 ({EXECUTION_TIMEOUT}초)"
     except Exception as e:
         result["status"] = "error"
         result["error"] = str(e)
