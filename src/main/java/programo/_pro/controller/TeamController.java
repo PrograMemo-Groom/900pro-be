@@ -40,8 +40,9 @@ public class TeamController {
     // 현재는 @RequestParam 사용 : 쿼리파라미터에 로그인된 사용자의 id를 넣고 사용하면 됩니다
     // ex : /api/teams?userId=3
     @PostMapping
-    public ResponseEntity<?> createTeam(@RequestParam("userId") Long userId,
-                                        @RequestBody @Valid TeamCreateRequest request) {
+    public ResponseEntity<?> createTeam(
+            @RequestParam("userId") Long userId,
+            @RequestBody @Valid TeamCreateRequest request) {
         Long teamId = teamService.createTeam(request, userId);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Map.of(
@@ -49,6 +50,40 @@ public class TeamController {
                         "teamId", teamId,
                         "message", "팀 생성 완료"
                 ));
+    }
+
+    // 마찬가지로 인증 구현 완료 후 수정할 부분 22
+    @PostMapping("/{teamId}/members")
+    public ResponseEntity<?> joinTeam(
+            @PathVariable("teamId") Long teamId,
+            @RequestParam("userId") Long userId
+    ) {
+        teamService.joinTeam(teamId, userId);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                Map.of(
+                        "status", HttpStatus.CREATED.value(),
+                        "message", "team ID " + teamId + "번 팀에 가입됨",
+                        "teamId", teamId
+                )
+        );
+    }
+
+    // 마찬가지로 인증 구현 완료 후 수정할 부분 333
+    @DeleteMapping("/{teamId}/members")
+    public ResponseEntity<?> leaveTeam(
+            @PathVariable("teamId") Long teamId,
+            @RequestParam("userId") Long userId
+    ) {
+        teamService.leaveTeam(teamId, userId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(
+                Map.of(
+                        "status", HttpStatus.NO_CONTENT.value(),
+                        "message", "team ID " + teamId + "번 팀에서 탈퇴함",
+                        "teamId", teamId
+                )
+        );
     }
 
 }
