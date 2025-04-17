@@ -2,6 +2,7 @@ package programo._pro.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +27,7 @@ public class MailService {
     private final JavaMailSender javaMailSender;
 
     // 이메일 전송 함수
+    @Transactional
     public void sendMail(EmailRequest emailRequest) throws MessagingException {
         MimeMessage message = CreateMail(emailRequest.getEmail());
         javaMailSender.send(message);
@@ -63,6 +65,7 @@ public class MailService {
         return message;
     }
 
+    @Transactional
     public boolean mailCheck(String email, int code) {
         // 받아온 이메일을 키값으로 사용하고 기존의 테이블과 인증번호가 일치하는지 확인
         Optional<EmailVerification> verificationOptional =
