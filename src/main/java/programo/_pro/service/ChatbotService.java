@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import programo._pro.entity.*;
+import programo._pro.global.exception.NotFoundChatException;
 import programo._pro.repository.*;
 
 import java.time.LocalDate;
@@ -47,6 +48,7 @@ public class ChatbotService {
 					}
 				} else {
 					log.warn("[팀 처리] 팀 {}의 챗봇 메시지가 존재하지 않습니다.", team.getTeamName());
+					throw NotFoundChatException.NotFoundChatbotException();
 				}
 			} else {
 				log.info("[팀 처리] 팀 {}의 테스트가 아직 종료되지 않았습니다.", team.getTeamName());
@@ -64,7 +66,7 @@ public class ChatbotService {
 		log.info("[메시지 전송] teamId={} 메시지: {}", teamId, chatbot.getMessage());
 
 		ChatRoom chatRoom = chatRoomRepository.findByTeam_Id(teamId)
-				.orElseThrow(() -> new IllegalArgumentException("ChatRoom not found"));
+				.orElseThrow(NotFoundChatException::NotFoundChatRoomException);
 
 		String messageContent = "[" + LocalDate.now() + "]\n";
 		messageContent += "응시하느라 고생하셨습니다!\n";
@@ -82,5 +84,13 @@ public class ChatbotService {
 		LocalDateTime endTime = startTime.plusMinutes(durationTimeInMinutes);
 		log.info("[종료 시간 계산 완료] 종료 시간: {}", endTime);
 		return endTime;
+	}
+
+	public List<Chatbot> getChatbotsByTeamId(Long teamId) {
+		return chatbotRepository.findByTeam_Id(teamId);
+	}
+
+	public void createChatbotMessage(Chatbot chatbot) {
+		chatbotRepository.save(chatbot);
 	}
 }

@@ -85,4 +85,13 @@ public class GlobalExceptionHandler {
         ApiResponse<?> response = ApiResponse.fail(ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    // 채팅 관련 예외 처리
+    @ExceptionHandler(NotFoundChatException.class)
+    public ResponseEntity<ApiResponse<?>> handleNotFoundChatException(NotFoundChatException ex) {
+        ApiResponse<?> response = ApiResponse.fail(ex.getMessage());
+        log.error(ex.getMessage(), ex);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
 }
