@@ -28,12 +28,12 @@ code-executor:
     gcc-name: webide-gcc-executor
     javascript-name: webide-javascript-executor
   timeout:
-    container-check: 5 # 컨테이너 상태 확인 타임아웃(초)
-    python-execution: 10 # Python 코드 실행 타임아웃(초)
-    java-script-execution: 10 # JavaScript 코드 실행 타임아웃(초)
-    java-execution: 5 # Java 코드 실행 타임아웃(초)
-    cpp-execution: 3 # C++ 코드 실행 타임아웃(초)
-    c-execution: 3 # C 코드 실행 타임아웃(초)
+    container-check: ${CONTAINER_CHECK_TIMEOUT:5}
+    python-execution: ${PYTHON_EXECUTION_TIMEOUT:10}
+    java-script-execution: ${JAVASCRIPT_EXECUTION_TIMEOUT:10}
+    java-execution: ${JAVA_EXECUTION_TIMEOUT:5}
+    cpp-execution: ${C_EXECUTION_TIMEOUT:3}
+    c-execution: ${C_EXECUTION_TIMEOUT:3}
 
 ---
 

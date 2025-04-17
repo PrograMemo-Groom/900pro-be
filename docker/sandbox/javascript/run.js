@@ -7,8 +7,10 @@ const util = require('util');
 const childProcess = require('child_process');
 const exec = util.promisify(childProcess.exec);
 
+// 환경변수에서 타임아웃 값 가져오기 (초 단위)
+const EXECUTION_TIMEOUT = parseInt(process.env.CODE_EXECUTION_TIMEOUT || '10', 10);
 // 리소스 제한 상수
-const EXECUTION_TIMEOUT_MS = 60000; // 60초
+const EXECUTION_TIMEOUT_MS = EXECUTION_TIMEOUT * 1000; // 밀리초로 변환
 const MAX_MEMORY_MB = 500; // 500MB
 
 /**
@@ -78,7 +80,7 @@ async function executeJavaScriptCode(code) {
         result.status = 'error';
 
         if (error.message.includes('Script execution timed out')) {
-            result.error = '코드 실행 시간이 초과되었습니다 (60초)';
+            result.error = `코드 실행 시간이 초과되었습니다 (${EXECUTION_TIMEOUT}초)`;
         } else {
             result.error = error.message;
             result.stderr = error.stack;

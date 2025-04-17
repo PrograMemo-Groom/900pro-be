@@ -1,7 +1,10 @@
 #!/bin/bash
 
+# 환경변수에서 실행 시간 제한 가져오기 (초 단위)
+EXECUTION_TIMEOUT=${CODE_EXECUTION_TIMEOUT:-5}
+
 # 시스템 리소스 제한 설정
-ulimit -t 10      # CPU 시간 10초 제한
+ulimit -t $EXECUTION_TIMEOUT  # CPU 시간 제한
 ulimit -v 2097152 # 가상 메모리 2GB로 제한 (증가됨)
 ulimit -n 100     # 파일 디스크립터 100개로 제한
 
@@ -40,7 +43,7 @@ if [ $compile_status -ne 0 ]; then
 fi
 
 # 타임아웃 설정과 함께 자바 실행 (JVM 옵션 추가)
-timeout 5s java -Xms64m -Xmx256m -XX:MaxMetaspaceSize=64m -XX:+UseSerialGC Main > output.txt 2> error.txt
+timeout ${EXECUTION_TIMEOUT}s java -Xms64m -Xmx256m -XX:MaxMetaspaceSize=64m -XX:+UseSerialGC Main > output.txt 2> error.txt
 run_status=$?
 
 # 표준 출력 및 표준 오류 읽기
@@ -50,7 +53,7 @@ stderr=$(cat error.txt)
 # 종료 상태에 따른 결과 처리
 if [ $run_status -eq 124 ]; then
   # 실행 시간 초과
-  result=$(jq --arg error "실행 시간 초과" \
+  result=$(jq --arg error "실행 시간 초과 (${EXECUTION_TIMEOUT}초)" \
             --arg stdout "$stdout" \
             --arg stderr "$stderr" \
             '.status = "timeout" | .error = $error | .stdout = $stdout | .stderr = $stderr | .exit_code = 124' \
