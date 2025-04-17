@@ -77,13 +77,7 @@ public class TeamController {
     ) {
         teamService.leaveTeam(teamId, userId);
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(
-                Map.of(
-                        "status", HttpStatus.NO_CONTENT.value(),
-                        "message", "team ID " + teamId + "번 팀에서 탈퇴함",
-                        "teamId", teamId
-                )
-        );
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }
