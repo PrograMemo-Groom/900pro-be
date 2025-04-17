@@ -133,6 +133,13 @@ public class TeamService {
     }
 
     @Transactional
+    public void updateTeam(Long teamId, TeamCreateRequest request) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(NotFoundTeamException::new);
+        team.updateInfo(request);
+    }
+
+    @Transactional
     public void joinTeam(Long teamId, Long userId) {
         if (teamMemberRepository.existsByUserId(userId)) {
             throw new AlreadyJoinedTeamException();

@@ -52,6 +52,19 @@ public class TeamController {
                 ));
     }
 
+    @PatchMapping("/{teamId}")
+    public ResponseEntity<?> updateTeam(
+            @PathVariable("teamId") Long teamId,
+            @RequestBody @Valid TeamCreateRequest request
+    ) {
+        teamService.updateTeam(teamId, request);
+        return ResponseEntity.ok(Map.of(
+                "status", 200,
+                "message", "team ID " + teamId + "번 팀 정보를 수정함",
+                "teamId", teamId
+        ));
+    }
+
     // 마찬가지로 인증 구현 완료 후 수정할 부분 22
     @PostMapping("/{teamId}/members")
     public ResponseEntity<?> joinTeam(
