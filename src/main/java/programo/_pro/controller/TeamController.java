@@ -71,6 +71,16 @@ public class TeamController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @DeleteMapping("/{teamId}/members/{userId}")
+    public ResponseEntity<?> kickMember(
+            @PathVariable("teamId") Long teamId,
+            @PathVariable("userId") Long userId
+    ) {
+        teamService.kickMember(teamId, userId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+
 
     // 마찬가지로 인증 구현 완료 후 수정할 부분 22
     @PostMapping("/{teamId}/members")

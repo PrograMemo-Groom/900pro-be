@@ -150,6 +150,18 @@ public class TeamService {
         team.setNotActive();
     }
 
+    @Transactional
+    public void kickMember(Long teamId, Long userId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(NotFoundTeamException::new);
+
+        TeamMember teamMember = teamMemberRepository.findByTeamIdAndUserId(teamId, userId)
+                .orElseThrow(NotJoinedTeamException::new);
+
+        teamMemberRepository.delete(teamMember);
+        team.setCurrentMembers(team.getCurrentMembers() - 1);
+    }
+
 
     @Transactional
     public void joinTeam(Long teamId, Long userId) {
@@ -186,4 +198,5 @@ public class TeamService {
 
         teamMemberRepository.delete(member);
     }
+
 }
