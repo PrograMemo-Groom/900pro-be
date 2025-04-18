@@ -32,10 +32,6 @@ spring:
           writetimeout: 5000 # 이메일을 SMTP 서버로 전송하는 데 걸리는 시간을 제한
     auth-code-expiration-millis: 1800000  # 이메일 인증 코드의 만료 시간 30 * 60 * 1000 == 30분
 
-springdoc:
-  api-docs:
-    enabled: true
-
 # JWT 공통 설정
 jwt:
   header: Authorization
