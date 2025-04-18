@@ -1,10 +1,9 @@
 package programo._pro.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import programo._pro.dto.TeamCreateRequest;
 
 import java.time.LocalDateTime;
 
@@ -12,7 +11,9 @@ import java.time.LocalDateTime;
 @Table(name = "team")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Team {
 
 	@Id
@@ -41,8 +42,9 @@ public class Team {
 	@Column(name = "current_members", nullable = false)
 	private int currentMembers;
 
-	@Column(name = "leader_id", nullable = false)
-	private Long leaderId; // FK
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "leader_id", nullable = false)
+	private User leader;
 
 	@CreationTimestamp
 	@Column(name = "created_at", updatable = false)
@@ -50,4 +52,20 @@ public class Team {
 
 	@Column(name = "is_active")
 	private boolean isActive = true;
+
+	//도메인메서드 : setter 대신 사용
+	//teamUpdate가 TeamCreateRequest와 같은 포멧이라 dto 재활용하겠습니당
+	public void updateInfo(TeamCreateRequest req) {
+		this.teamName = req.getTeamName();
+		this.description = req.getDescription();
+		this.level = req.getLevel();
+		this.problemCount = req.getProblemCount();
+		this.startTime = req.getStartTime();
+		this.durationTime = req.getDurationTime();
+	}
+
+	public void setNotActive() {
+		this.isActive = false;
+	}
+
 }
