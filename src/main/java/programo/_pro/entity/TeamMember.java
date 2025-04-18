@@ -11,18 +11,18 @@ import lombok.*;
 @Builder
 public class TeamMember {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;  // FK → user.id
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;  // FK → user.id
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_id", nullable = false)
-    private Team team;  // FK → team.id
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "team_id", nullable = false)
+	private Team team;  // FK → team.id
 
-    @Column(name = "is_leader", nullable = false)
-    private boolean isLeader = false;
+	@Column(name = "is_leader", nullable = false)
+	private boolean isLeader = false;
 }

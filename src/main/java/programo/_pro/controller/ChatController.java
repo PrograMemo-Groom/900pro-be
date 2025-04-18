@@ -1,27 +1,52 @@
 package programo._pro.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import programo._pro.dto.ChatMessageRequest;
+import programo._pro.service.ChatService;
 
-@RestController
+@Controller
+@RequiredArgsConstructor
+@Tag(name = "Chat", description = "채팅 메시지 전송 API")
 @RequestMapping("/api/chat")
-@Tag(name = "Chat", description = "채팅 관련 API")
 public class ChatController {
 
-	@PostMapping("/send")
-	@Operation(summary = "채팅 메시지 전송", description = "팀 채팅방에 메시지를 전송합니다.")
-	public ResponseEntity<String> sendMessage(@RequestBody ChatMessageRequest request) {
-		// 실제 저장 로직은 생략 (예시용)
-		return ResponseEntity.ok("메시지 전송 완료: " + request.getMessage());
+	private final ChatService chatService;
+
+	@Operation(
+			summary = "채팅 메시지 전송",
+			description = "사용자가 채팅방에 메시지를 전송하면 이를 처리하는 API입니다.",
+			responses = {
+					@ApiResponse(responseCode = "200", description = "메시지 전송 성공"),
+					@ApiResponse(responseCode = "400", description = "잘못된 요청: 요청 파라미터 오류"),
+					@ApiResponse(responseCode = "500", description = "서버 오류: 메시지 전송 처리 중 문제가 발생했습니다.")
+			})
+	@PostMapping("/message")
+	public void receiveMessage(
+			@Parameter(description = "채팅 메시지 요청 정보")
+			@RequestBody ChatMessageRequest messageRequest) {
+		chatService.handleChatMessage(messageRequest);
 	}
 
-	@GetMapping("/team/{teamId}")
-	@Operation(summary = "채팅 메시지 조회", description = "특정 팀의 전체 메시지를 조회합니다.")
-	public ResponseEntity<String> getMessages(@PathVariable Long teamId) {
-		// 실제 조회 로직은 생략 (예시용)
-		return ResponseEntity.ok("팀 ID " + teamId + "의 메시지 목록");
+	@Operation(
+			summary = "WebSocket 메시지 수신",
+			description = "WebSocket을 통해 채팅방에서 메시지를 수신합니다.",
+			responses = {
+					@ApiResponse(responseCode = "200", description = "메시지 수신 성공"),
+					@ApiResponse(responseCode = "400", description = "잘못된 요청: WebSocket 메시지 수신 오류"),
+					@ApiResponse(responseCode = "500", description = "서버 오류: 메시지 수신 처리 중 문제가 발생했습니다.")
+			})
+	@MessageMapping("/chat/message") // /pub/chat/message
+	public void receiveWebSocketMessage(@Payload ChatMessageRequest messageRequest) {
+		chatService.handleChatMessage(messageRequest);
 	}
 }

@@ -1,0 +1,12 @@
+{
+  "name": "javascript-executor",
+  "version": "1.0.0",
+  "description": "JavaScript code executor for WebIDE",
+  "main": "run.js",
+  "scripts": {
+    "start": "node run.js"
+  },
+  "dependencies": {
+    "vm2": "^3.9.19"
+  }
+}

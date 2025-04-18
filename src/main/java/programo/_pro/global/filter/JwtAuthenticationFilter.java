@@ -29,9 +29,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     public JwtAuthenticationFilter(JwtService jwtService) {
         this.jwtService = jwtService;
-        setFilterProcessesUrl("/api/v1/auth/login");
+        setFilterProcessesUrl("/api/v1/auth/login"); // 이 필터가 처리할 url 직접 지정
     }
 
+    // 로그인 시도에 대한 실제 인증 처리 로직
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         if (postOnly && !request.getMethod().equals("POST")) {
@@ -41,9 +42,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 SignInDto requestDto = new ObjectMapper().readValue(request.getInputStream(), SignInDto.class);
                 String email = requestDto.getEmail();
                 String password = requestDto.getPassword();
+
+                // 받아온 이메일, 패스워드 정보를 이용해 이메일이 존재하고, 비밀번호가 일치하면 성공 -> 성공시 인증정보가 담긴 객체 반환
                 return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(email, password));
 
             } catch (IOException e) {
+                // 추후 구체화 된 예외로 변경
                 throw new RuntimeException(e);
             }
         }

@@ -16,8 +16,11 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         this.resolver = resolver;
     }
 
+
+    // 로그인 하지 않은 사용자가 인증이 필요한 API를 호출했을 때 어떻게 처리할지 정의
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
+        // 에러를 전역 예외 처리기로 떠넘김
         resolver.resolveException(request, response, null, authException);
     }
 }
