@@ -3,6 +3,7 @@ package programo._pro.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -18,5 +19,6 @@ public class ChatMessageRequest {
 	@Schema(description = "메시지 내용", example = "안녕하세요 팀원 여러분!", required = true)
 	private String content;
 
-
+	@Schema(description = "메시지 전송 시간", example = "2025-04-10T15:44:00")
+	private LocalDateTime sendAt;
 }
