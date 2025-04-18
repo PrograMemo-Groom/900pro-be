@@ -63,4 +63,9 @@ public class Team {
 		this.startTime = req.getStartTime();
 		this.durationTime = req.getDurationTime();
 	}
+
+	public void setNotActive() {
+		this.isActive = false;
+	}
+
 }

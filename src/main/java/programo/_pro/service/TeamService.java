@@ -1,6 +1,5 @@
 package programo._pro.service;
 
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -138,6 +137,19 @@ public class TeamService {
                 .orElseThrow(NotFoundTeamException::new);
         team.updateInfo(request);
     }
+
+    @Transactional
+    public void deleteTeam(Long teamId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(NotFoundTeamException::new);
+
+        // 팀에 속한 멤버 삭제
+        teamMemberRepository.deleteByTeam_Id(teamId);
+
+        // 팀 비활성화
+        team.setNotActive();
+    }
+
 
     @Transactional
     public void joinTeam(Long teamId, Long userId) {

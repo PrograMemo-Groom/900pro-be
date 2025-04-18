@@ -65,6 +65,13 @@ public class TeamController {
         ));
     }
 
+    @DeleteMapping("/{teamId}")
+    public ResponseEntity<?> deleteTeam(@PathVariable("teamId") Long teamId) {
+        teamService.deleteTeam(teamId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+
     // 마찬가지로 인증 구현 완료 후 수정할 부분 22
     @PostMapping("/{teamId}/members")
     public ResponseEntity<?> joinTeam(
