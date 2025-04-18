@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import programo._pro.dto.ChatbotRequest;
 import programo._pro.entity.*;
 import programo._pro.global.exception.NotFoundChatException;
 import programo._pro.repository.*;
@@ -90,7 +91,19 @@ public class ChatbotService {
 		return chatbotRepository.findByTeam_Id(teamId);
 	}
 
-	public void createChatbotMessage(Chatbot chatbot) {
+	public void createChatbotMessage(ChatbotRequest chatbotRequest) {
+		Chatbot chatbot = new Chatbot();
+		chatbot.setTeamId(chatbotRequest.getTeamId());
+		chatbot.setTestDate(chatbotRequest.getTestDate().atStartOfDay());
+		chatbot.setMessage(chatbotRequest.getMessage());
+		chatbot.setSendAt(LocalDateTime.now());
+
+		String messageContent = chatbotRequest.getMessage() + "\n오늘의 문제 번호: ";
+		for (Integer problemNumber : chatbotRequest.getProblemNumbers()) {
+			messageContent += problemNumber + " ";
+		}
+		chatbot.setMessage(messageContent);
+
 		chatbotRepository.save(chatbot);
 	}
 }
