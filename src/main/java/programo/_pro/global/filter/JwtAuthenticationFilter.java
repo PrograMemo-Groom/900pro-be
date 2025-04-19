@@ -29,7 +29,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     public JwtAuthenticationFilter(JwtService jwtService) {
         this.jwtService = jwtService;
-        setFilterProcessesUrl("/api/v1/auth/login"); // 이 필터가 처리할 url 직접 지정
+        setFilterProcessesUrl("/api/auth/login"); // 이 필터가 처리할 url 직접 지정
     }
 
     // 로그인 시도에 대한 실제 인증 처리 로직
