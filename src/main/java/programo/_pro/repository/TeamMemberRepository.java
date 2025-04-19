@@ -11,13 +11,12 @@ import java.util.Optional;
 public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
 
     List<TeamMember> findByUserId(Long userId);
-    // teamId로 해당 팀 팀원들만 조회
+
     List<TeamMember> findByTeam_Id(Long teamId);
 
     boolean existsByUserId(Long userId);
 
     Optional<TeamMember> findByTeamIdAndUserId(Long teamId, Long userId);
 
-    @Modifying(clearAutomatically = true)
     void deleteByTeam_Id(Long teamId);
 }
