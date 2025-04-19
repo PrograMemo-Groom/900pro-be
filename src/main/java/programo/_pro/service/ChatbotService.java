@@ -35,10 +35,10 @@ public class ChatbotService {
 
 		for (TeamMember teamMember : teamMembers) {
 			Team team = teamMember.getTeam();
-			LocalDateTime testEndTime = calculateTestEndTime(team.getStartTime(), team.getDurationTime());
-			log.info("[팀 처리] 팀명: {}, 테스트 종료 시간: {}", team.getTeamName(), testEndTime);
+			LocalDateTime testStartTime = team.getStartTime();
+			log.info("[팀 처리] 팀명: {}, 테스트 시작 시간: {}", team.getTeamName(), testStartTime);
 
-			if (now.isAfter(testEndTime)) {
+			if (now.isEqual(testStartTime) || now.isAfter(testStartTime)) {
 				log.info("[팀 처리] 팀 {}의 테스트가 종료되었습니다.", team.getTeamName());
 
 				List<Chatbot> chatbots = chatbotRepository.findByTeam_Id(team.getId());
@@ -52,7 +52,7 @@ public class ChatbotService {
 					throw NotFoundChatException.NotFoundChatbotException();
 				}
 			} else {
-				log.info("[팀 처리] 팀 {}의 테스트가 아직 종료되지 않았습니다.", team.getTeamName());
+				log.info("[팀 처리] 팀 {}의 테스트가 아직 시작되지 않았습니다.", team.getTeamName());
 			}
 		}
 	}
@@ -78,13 +78,6 @@ public class ChatbotService {
 
 		messagingTemplate.convertAndSend("/sub/chat/room/" + chatRoom.getId(), messageContent);
 		log.info("[Chatbot 메시지 전송] teamId={} 메시지={}", chatRoom.getId(), chatbot.getMessage());
-	}
-
-	public LocalDateTime calculateTestEndTime(LocalDateTime startTime, int durationTimeInMinutes) {
-		log.info("[종료 시간 계산] 시작 시간: {}, durationTimeInMinutes: {}", startTime, durationTimeInMinutes);
-		LocalDateTime endTime = startTime.plusMinutes(durationTimeInMinutes);
-		log.info("[종료 시간 계산 완료] 종료 시간: {}", endTime);
-		return endTime;
 	}
 
 	public List<Chatbot> getChatbotsByTeamId(Long teamId) {
