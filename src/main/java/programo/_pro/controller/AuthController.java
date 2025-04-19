@@ -57,7 +57,7 @@ public class AuthController {
     }
 
     // 비밀번호 초기화 후 임시비밀번호를 입력해서 로그인 시도할 때 값 검증 메서드
-    @PostMapping("/auth")
+    @PostMapping("/verify")
     public ResponseEntity<ApiResponse<String>> authenticate(@RequestBody @Valid SignInDto signInDto) {
         boolean isMatch = authService.authenticate(signInDto.getEmail(), signInDto.getPassword());
 
