@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import programo._pro.dto.ChatRoomRequest;
 import programo._pro.entity.ChatRoom;
 import programo._pro.service.ChatRoomService;
 
@@ -28,8 +27,8 @@ public class ChatRoomController {
 	@PostMapping
 	public ChatRoom createChatRoom(
 			@Parameter(description = "새로 생성할 팀 ID")
-			@RequestBody ChatRoomRequest chatRoomRequest) {
-		return chatRoomService.createChatRoom(chatRoomRequest.getTeamId());
+			@RequestParam Long teamId) {
+		return chatRoomService.createChatRoom(teamId);
 	}
 
 	@Operation(summary = "팀 ID로 채팅방 조회",
