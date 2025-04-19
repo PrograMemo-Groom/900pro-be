@@ -122,6 +122,7 @@ CREATE TABLE code
     language     VARCHAR(50),
     submit_code  TEXT   NOT NULL,
     submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    status       ENUM('응시 중', '응시 완료', '불참') NOT NULL,
     FOREIGN KEY (test_id) REFERENCES test (id),
     FOREIGN KEY (problem_id) REFERENCES problem (id),
     FOREIGN KEY (user_id) REFERENCES user (id)
@@ -131,13 +132,15 @@ CREATE TABLE code
 CREATE TABLE code_highlight
 (
     id        BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id   BIGINT NOT NULL,
     code_id   BIGINT NOT NULL,
     start_pos TEXT   NOT NULL,
     end_pos   TEXT   NOT NULL,
     color     ENUM('red', 'yellow', 'green', 'blue', 'pink', 'orange') DEFAULT 'yellow',
     memo      TEXT,
     is_active BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (code_id) REFERENCES code (id)
+    FOREIGN KEY (code_id) REFERENCES code (id),
+    FOREIGN KEY (user_id) REFERENCES user (id)
 );
 
 -- ✅ 알림봇 테이블
@@ -175,12 +178,9 @@ CREATE TABLE email_verification
 -- ✅ 비밀번호 초기화 토큰 테이블
 CREATE TABLE password_reset_token
 (
-    id         BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id    BIGINT       NOT NULL,
-    token      VARCHAR(255) NOT NULL UNIQUE,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    expired_at DATETIME     NOT NULL,
-    is_used    BOOLEAN  DEFAULT FALSE,
+    id              BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id         BIGINT       NOT NULL,
+    tempPassword    VARCHAR(255) NOT NULL UNIQUE,
     FOREIGN KEY (user_id) REFERENCES user (id)
 );
 

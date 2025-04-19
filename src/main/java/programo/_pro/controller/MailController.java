@@ -8,6 +8,7 @@ import programo._pro.dto.EmailRequest;
 import programo._pro.dto.EmailVerficationRequest;
 import programo._pro.global.ApiResponse;
 import programo._pro.service.MailService;
+import programo._pro.service.UserService;
 
 import java.util.HashMap;
 
@@ -16,7 +17,7 @@ import java.util.HashMap;
 @RequestMapping("/api/mail")
 public class MailController {
     private final MailService mailService;
-
+    private final UserService userService;
     // 인증 이메일 전송
     @PostMapping("/mailSend")
     @Operation(summary = "인증 이메일 전송", description = "입력받은 이메일로 인증코드를 전송합니다")
@@ -46,5 +47,17 @@ public class MailController {
         } else {
             return ResponseEntity.ok(ApiResponse.fail("인증코드가 일치하지 않습니다."));
         }
+    }
+
+    @PostMapping("/reset-password")
+    @Operation(summary = "초기화 비밀번호 전송", description = "입력받은 이메일이 존재하는지 확인하고, 초기화 비밀번호를 제공합니다.")
+    public ResponseEntity<ApiResponse<String>> resetPassword(@RequestBody EmailRequest emailVerificationRequest) {
+
+        boolean isExist = mailService.resetPassword(emailVerificationRequest.getEmail());
+
+        if(isExist) {
+            return ResponseEntity.ok(ApiResponse.success("success", "입력한 이메일로 임시 비밀번호를 전송했습니다."));
+        }
+        return ResponseEntity.ok(ApiResponse.fail("fail", "입력한 이메일은 가입되어있지 않습니다."));
     }
 }

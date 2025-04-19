@@ -2,6 +2,7 @@ package programo._pro.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,12 +11,14 @@ import programo._pro.dto.UserInfo;
 import programo._pro.entity.User;
 import programo._pro.repository.UserRepository;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AuthService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
     @Transactional
@@ -41,6 +44,22 @@ public class AuthService {
         }
         // 사용 가능한 이메일일 때
         return true;
+    }
+
+    // 아이디와 비밀번호가 일치하는 지 검증
+    @Transactional
+    public boolean authenticate(String email, String rawPassword) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+
+        if (optionalUser.isEmpty()) {
+            return false;
+        }
+
+        User user = optionalUser.get();
+        String encodedPassword = user.getPassword();
+
+        // 입력 비밀번호(rawPassword)와 저장된 암호화 비밀번호 비교
+        return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 }
 
