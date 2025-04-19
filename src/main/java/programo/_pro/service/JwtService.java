@@ -4,7 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import programo._pro.dto.JwtUserInfoDto;
-import programo._pro.global.exception.NotFoundUserException;
+import programo._pro.global.exception.userException.NotFoundUserException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,13 +49,15 @@ public class JwtService {
         refreshTokenExpireTime = ONE_MINUTE * (accessTokenExpiresTime * 2); // 24 hours (1440 min)
     }
 
+    // 토큰 생성 및 저장
     public String createToken(JwtUserInfoDto member) {
         String accessToken = generateAccessToken(member);
         String refreshToken = generateRefreshToken(member);
-        saveToRedis(accessToken, refreshToken);
+        saveToRedis(accessToken, refreshToken); // Redis 저장
         return accessToken;
     }
 
+    // 토큰 만료 시간을 외부에서 지정하는 경우 사용
     public String createToken(JwtUserInfoDto member, Instant expiredTime) {
         Claims claims = Jwts.claims();
         claims.put(EMAIL_KEY, member.getEmail());
@@ -64,6 +66,8 @@ public class JwtService {
         return makeToken(key, claims, expires);
     }
 
+    // 사용자의 이메일을 Claims 객체에 담아 Access Token 생성(현재 시간 기준 + 만료시간 설정)
+    // Claims 객체는 토큰에 정보들을 담는 객체라고 한다
     private String generateAccessToken(Claims claims) {
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime expires = now.plusSeconds(accessTokenExpireTime); // CurrentTime + ExpireTime
@@ -71,6 +75,8 @@ public class JwtService {
         return makeToken(key, claims, Date.from(now.toInstant()), Date.from(expires.toInstant()));
     }
 
+    // 사용자의 이메일을 Claims 객체에 담아 Access Token 생성(현재 시간 기준 + 만료시간 설정)
+    // Claims 객체는 토큰에 정보들을 담는 객체라고 한다
     private String generateAccessToken(JwtUserInfoDto member) {
         Claims claims = Jwts.claims();
         claims.put(EMAIL_KEY, member.getEmail());
@@ -81,6 +87,7 @@ public class JwtService {
         return makeToken(key, claims, expires);
     }
 
+    // RefreshToken도 Claims에 이메일을 담아서 생성
     private String generateRefreshToken(JwtUserInfoDto member) {
         Claims claims = Jwts.claims();
         claims.put(EMAIL_KEY, member.getEmail());
@@ -89,6 +96,7 @@ public class JwtService {
         return makeToken(refreshKey, claims, Date.from(now.toInstant()), Date.from(expires.toInstant()));
     }
 
+    // 최소한의 정보로 토큰 생성
     private String makeToken(Key secretKey, Claims claims, Date expires) {
         return Jwts.builder()
                 .setClaims(claims)
@@ -97,6 +105,7 @@ public class JwtService {
                 .compact();
     }
 
+    // 시작 시간을 포함하는 경우 사용
     private String makeToken(Key secretKey, Claims claims, Date start, Date expires) {
         return Jwts.builder()
                 .setClaims(claims)

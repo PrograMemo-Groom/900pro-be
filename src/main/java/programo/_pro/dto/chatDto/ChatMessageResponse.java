@@ -1,4 +1,4 @@
-package programo._pro.dto;
+package programo._pro.dto.chatDto;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -10,10 +10,10 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import programo._pro.dto.EmailRequest;
+import programo._pro.dto.mailDto.EmailRequest;
 import programo._pro.entity.EmailVerification;
 import programo._pro.entity.User;
-import programo._pro.global.exception.NotFoundUserException;
+import programo._pro.global.exception.userException.NotFoundUserException;
 import programo._pro.repository.EmailVerificationRepository;
 import programo._pro.repository.UserRepository;
 

@@ -2,6 +2,7 @@ package programo._pro.global.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import programo._pro.dto.*;
+import programo._pro.dto.authDto.SignInDto;
 import programo._pro.global.ApiResponse;
 import programo._pro.global.ErrorResponse;
 import programo._pro.service.JwtService;
@@ -29,10 +30,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     public JwtAuthenticationFilter(JwtService jwtService) {
         this.jwtService = jwtService;
-        setFilterProcessesUrl("/api/v1/auth/login"); // 이 필터가 처리할 url 직접 지정
+        setFilterProcessesUrl("/api/auth/login"); // 이 필터가 처리할 url 직접 지정
     }
 
-    // 로그인 시도에 대한 실제 인증 처리 로직
+    // 로그인 시도 시 자동 호출하고 인증 로직 처리 로직 실행
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         if (postOnly && !request.getMethod().equals("POST")) {
@@ -53,19 +54,23 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         }
     }
 
-    // 로그인 성공 시
+    // 로그인 성공 시 스프링 시큐리티 내부에서 자동 호출
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         String email = ((AuthenticationToken) authResult.getPrincipal()).getUsername();
-        String token = jwtService.createToken(new JwtUserInfoDto(email));
+        String token = jwtService.createToken(new JwtUserInfoDto(email)); // 이메일을 이용해 JWT Token 생성
+
+        // 이 부분에서 사용자 정보가 담긴 토큰이 응답객체에 담김!@@#!#@!@@@@@@@
         ApiResponse<String> responseMessage = ApiResponse.success(token);
+
+        // 응답 객체 설정
         String responseJSON = new ObjectMapper().writeValueAsString(responseMessage);
         response.setContentType("application/json; charset=UTF-8"); // JSON 타입 + UTF-8 설정
         response.setCharacterEncoding("UTF-8"); // 한글 인코딩 설정 추가
         response.getWriter().write(responseJSON);
     }
 
-    // 로그인 실패 시
+    // 로그인 실패 시 스프링 시큐리티 내부에서 자동 호출
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
         ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.UNAUTHORIZED.value(), failed.getMessage(), "/login", "id and password invalid");

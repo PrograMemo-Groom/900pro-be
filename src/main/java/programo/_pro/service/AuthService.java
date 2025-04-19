@@ -3,11 +3,10 @@ package programo._pro.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import programo._pro.dto.DupCheckDto;
-import programo._pro.dto.UserInfo;
+import programo._pro.dto.authDto.DupCheckDto;
+import programo._pro.dto.userDto.UserInfo;
 import programo._pro.entity.User;
 import programo._pro.repository.UserRepository;
 

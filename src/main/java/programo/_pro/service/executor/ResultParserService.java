@@ -5,8 +5,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import programo._pro.dto.CodeExecutionResponse;
-import programo._pro.dto.CodeExecutionResponse.ErrorInfo;
+import programo._pro.dto.codeDto.CodeExecutionResponse;
+import programo._pro.dto.codeDto.CodeExecutionResponse.ErrorInfo;
 
 import java.util.Map;
 import java.util.regex.Pattern;

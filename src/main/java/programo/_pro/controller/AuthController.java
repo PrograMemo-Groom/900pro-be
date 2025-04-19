@@ -3,12 +3,10 @@ package programo._pro.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import programo._pro.dto.DupCheckDto;
-import programo._pro.dto.SignInDto;
-import programo._pro.dto.SignUpDto;
+import programo._pro.dto.authDto.DupCheckDto;
+import programo._pro.dto.authDto.SignInDto;
+import programo._pro.dto.authDto.SignUpDto;
 import programo._pro.entity.User;
 import programo._pro.global.ApiResponse;
 import programo._pro.repository.UserRepository;
@@ -17,8 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor

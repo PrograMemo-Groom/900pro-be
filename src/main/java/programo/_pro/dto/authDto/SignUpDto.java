@@ -1,4 +1,4 @@
-package programo._pro.dto;
+package programo._pro.dto.authDto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import programo._pro.dto.userDto.UserInfo;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class) // camelCase -> snake_case 자동변환
