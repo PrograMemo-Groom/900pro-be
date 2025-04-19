@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.time.format.DateTimeFormatter;
 
+
 @Service
 @RequiredArgsConstructor
 public class TeamService {
@@ -31,6 +32,7 @@ public class TeamService {
     private final TeamMemberRepository teamMemberRepository;
     private final UserRepository userRepository;
 
+    @Transactional(readOnly = true)
     public List<TeamCardDto> getAllTeams(String keyword, String level, String sort) {
         List<Team> teams = teamRepository.findByIsActiveTrue();
 
