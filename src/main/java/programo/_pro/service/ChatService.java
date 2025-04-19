@@ -14,6 +14,8 @@ import programo._pro.repository.ChatRoomRepository;
 import programo._pro.repository.MessageRepository;
 import programo._pro.repository.UserRepository;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -38,6 +40,7 @@ public class ChatService {
 				.chatRoom(chatRoom)
 				.user(user)
 				.content(request.getContent())
+				.sendAt(LocalDateTime.now())
 				.build();
 
 		messageRepository.save(message);

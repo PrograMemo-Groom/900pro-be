@@ -18,7 +18,7 @@ public class ChatRoomController {
 	private final ChatRoomService chatRoomService;
 
 	@Operation(summary = "채팅방 생성",
-			description = "새로운 채팅방을 생성합니다.",
+			description = "팀 생성과 함께, 새로운 채팅방을 생성합니다.",
 			responses = {
 					@ApiResponse(responseCode = "201", description = "채팅방 생성 성공"),
 					@ApiResponse(responseCode = "400", description = "잘못된 요청: 팀 ID가 존재하지 않거나 유효하지 않습니다."),
@@ -37,6 +37,7 @@ public class ChatRoomController {
 					@ApiResponse(responseCode = "200", description = "채팅방 조회 성공"),
 					@ApiResponse(responseCode = "404", description = "채팅방을 찾을 수 없음")
 			})
+
 	@GetMapping("/{teamId}")
 	public ChatRoom getChatRoomByTeamId(
 			@Parameter(description = "조회할 팀의 ID")

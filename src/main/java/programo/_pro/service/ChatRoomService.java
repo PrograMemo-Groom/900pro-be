@@ -2,6 +2,7 @@ package programo._pro.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import programo._pro.entity.ChatRoom;
 import programo._pro.entity.Team;
 import programo._pro.global.exception.NotFoundChatException;
@@ -14,6 +15,7 @@ public class ChatRoomService {
 	private final ChatRoomRepository chatRoomRepository;
 	private final TeamRepository teamRepository;
 
+	@Transactional
 	public ChatRoom createChatRoom(Long teamId) {
 		Team team = teamRepository.findById(teamId)
 				.orElseThrow(NotFoundChatException::NotFoundChatRoomException);
