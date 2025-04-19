@@ -32,11 +32,12 @@ public class TeamService {
     private final TeamMemberRepository teamMemberRepository;
     private final UserRepository userRepository;
 
+
+    // 팀 리스트 조회. 검색어, 난이도, 정렬 기준 적용 가능.
     @Transactional(readOnly = true)
     public List<TeamCardDto> getAllTeams(String keyword, String level, String sort) {
         List<Team> teams = teamRepository.findByIsActiveTrue();
 
-        // 키워드 필터링 (팀이름에 포함되는 경우), 대소문자 구분없이 검색가능
         if (keyword != null && !keyword.isBlank()) {
             String lowerKeyword = keyword.toLowerCase();
             teams = teams.stream()
@@ -46,14 +47,12 @@ public class TeamService {
                     .collect(Collectors.toList());
         }
 
-        // 난이도 선택 안할경우 all이 디폴트
         if (level != null && !level.equalsIgnoreCase("all")) {
             teams = teams.stream()
                     .filter(team -> team.getLevel().name().equalsIgnoreCase(level))
                     .collect(Collectors.toList());
         }
 
-        // 정렬 선택 안할경우 최신순이 디폴트
         if (sort == null || sort.isBlank() || sort.equalsIgnoreCase("createdAt")) {
             teams.sort(Comparator.comparing(Team::getCreatedAt).reversed());
         } else if ("problemCount".equals(sort)) {
@@ -79,13 +78,13 @@ public class TeamService {
     }
 
 
+    // 팀의 상세 정보와 팀원 목록(권한 포함)을 조회
     @Transactional(readOnly = true)
     public TeamMainDto getTeamMain(Long teamId) {
 
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(NotFoundTeamException::new);
 
-        // 해당 팀 팀원들만 조회
         List<TeamMember> teamMembers = teamMemberRepository.findByTeam_Id(teamId);
 
         List<TeamMemberDto> memberDtos = teamMembers.stream()
@@ -99,13 +98,14 @@ public class TeamService {
         return new TeamMainDto(team, memberDtos);
     }
 
+
+    // 팀 생성
     @Transactional
     public Long createTeam(TeamCreateRequest dto, Long userId) {
         // ( 로그인된 ) 유저 id 받기 / 인증구현 완료전까진 컨트롤러에서 @RequestParam로 받아와서 쓰겠습니다
         User loginedUser = userRepository.findById(userId)
                 .orElseThrow(NotFoundUserException::new);
 
-        // 팀 생성
         Team team = Team.builder()
                 .teamName(dto.getTeamName())
                 .description(dto.getDescription())
@@ -120,7 +120,6 @@ public class TeamService {
 
         teamRepository.save(team);
 
-        // 팀멤버에 추가, 팀장 등록
         TeamMember teamMember = TeamMember.builder()
                 .team(team)
                 .user(loginedUser)
@@ -129,10 +128,11 @@ public class TeamService {
 
         teamMemberRepository.save(teamMember);
 
-        // 팀id 반환
         return team.getId();
     }
 
+
+    // 팀 수정 (팀장 권한)
     @Transactional
     public void updateTeam(Long teamId, TeamCreateRequest request) {
         Team team = teamRepository.findById(teamId)
@@ -140,6 +140,8 @@ public class TeamService {
         team.updateInfo(request);
     }
 
+
+    // 팀 삭제 (팀장 권한)
     @Transactional
     public void deleteTeam(Long teamId) {
         Team team = teamRepository.findById(teamId)
@@ -152,6 +154,8 @@ public class TeamService {
         team.setNotActive();
     }
 
+
+    // 팀원 내보내기 (팀장 권한)
     @Transactional
     public void kickMember(Long teamId, Long userId) {
         Team team = teamRepository.findById(teamId)
@@ -165,6 +169,7 @@ public class TeamService {
     }
 
 
+    // 팀 가입
     @Transactional
     public void joinTeam(Long teamId, Long userId) {
         if (teamMemberRepository.existsByUserId(userId)) {
@@ -188,6 +193,8 @@ public class TeamService {
         teamMemberRepository.save(teamMember);
     }
 
+
+    // 팀 탈퇴 (팀원 권한)
     @Transactional
     public void leaveTeam(Long teamId, Long userId) {
         Team team = teamRepository.findById(teamId)

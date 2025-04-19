@@ -17,7 +17,7 @@ import programo._pro.dto.TeamMainDto;
 import programo._pro.service.TeamService;
 
 import java.util.List;
-import java.util.Map;
+
 
 @Tag(name = "Team", description = "팀 관련 API")
 @RestController
@@ -27,6 +27,8 @@ public class TeamController {
 
     private final TeamService teamService;
 
+
+    // 팀 리스트 조회
     @Operation(
             summary = "팀 리스트 조회",
             description = "모든 팀의 간단한 정보를 리스트 형식으로 조회합니다. 검색어, 난이도, 정렬 기준 적용 가능."
@@ -42,6 +44,7 @@ public class TeamController {
     }
 
 
+    // 팀 상세 정보 & 팀원 정보 조회
     @Operation(
             summary = "팀 상세 정보 & 팀원 정보 조회",
             description = "팀의 상세 정보와 팀원 목록(권한 포함)을 조회합니다."
@@ -55,6 +58,7 @@ public class TeamController {
     }
 
 
+    // 팀 생성
     // 인증기능 구현 완료 후 수정할 부분입니다 !!!!!
     // 현재는 @RequestParam 사용 : 쿼리파라미터에 로그인된 사용자의 id를 넣고 사용하면 됩니다
     // ex : /api/teams?userId=3
@@ -77,6 +81,7 @@ public class TeamController {
     }
 
 
+    // 팀 정보 수정
     @Operation(
             summary = "팀 정보 수정",
             description = "팀장 권한의 멤버가 팀의 정보를 수정합니다.",
@@ -95,6 +100,7 @@ public class TeamController {
     }
 
 
+    // 팀 삭제
     @Operation(
             summary = "팀 삭제",
             description = "팀장 권한의 멤버가 팀을 삭제합니다.",
@@ -112,6 +118,7 @@ public class TeamController {
 
 
 
+    // 팀원 내보내기
     @Operation(
             summary = "팀원 내보내기",
             description = "팀장 권한의 멤버가 특정 팀원을 팀에서 내보냅니다.",
@@ -130,6 +137,7 @@ public class TeamController {
 
 
 
+    // 팀 가입
     // 마찬가지로 인증 구현 완료 후 수정할 부분 22
     @Operation(
             summary = "팀 가입",
@@ -152,6 +160,7 @@ public class TeamController {
 
 
 
+    // 팀 탈퇴
     // 마찬가지로 인증 구현 완료 후 수정할 부분 333
     @Operation(
             summary = "팀 탈퇴",
