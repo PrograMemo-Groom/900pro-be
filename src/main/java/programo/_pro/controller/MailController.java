@@ -56,8 +56,8 @@ public class MailController {
         boolean isExist = mailService.resetPassword(emailVerificationRequest.getEmail());
 
         if(isExist) {
-            return ResponseEntity.ok(ApiResponse.success("success", "테스트"));
+            return ResponseEntity.ok(ApiResponse.success("success", "입력한 이메일로 임시 비밀번호를 전송했습니다."));
         }
-        return ResponseEntity.ok(ApiResponse.success("success", "테스트"));
+        return ResponseEntity.ok(ApiResponse.fail("fail", "입력한 이메일은 가입되어있지 않습니다."));
     }
 }
