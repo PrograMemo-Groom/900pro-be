@@ -42,7 +42,7 @@ public class ChatbotController {
 					@ApiResponse(responseCode = "500", description = "서버 오류: 메시지 조회 중 문제가 발생했습니다.")
 			})
 	@GetMapping("/{teamId}")
-	public List<Chatbot> getChatbotsByTeamId(
+	public List<Chatbot> getChatbotMessagesByTeamId(
 			@Parameter(description = "조회할 팀의 ID", required = true)
 			@PathVariable Long teamId) {
 		return chatbotService.getChatbotsByTeamId(teamId);
