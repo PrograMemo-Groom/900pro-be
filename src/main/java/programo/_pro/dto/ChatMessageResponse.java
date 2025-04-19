@@ -3,18 +3,18 @@ package programo._pro.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 public class ChatMessageResponse {
-	private Long messageId;
-	private Long chatRoomId;
-	private Long userId;
 	private String content;
+	private LocalDateTime sendAt;
+	private String userName;
 
-	public ChatMessageResponse(Long messageId, Long chatRoomId, Long userId, String content) {
-		this.messageId = messageId;
-		this.chatRoomId = chatRoomId;
-		this.userId = userId;
+	public ChatMessageResponse(String content, LocalDateTime sendAt, String userName) {
 		this.content = content;
+		this.sendAt = sendAt;
+		this.userName = userName;
 	}
 }
