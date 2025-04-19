@@ -22,7 +22,7 @@ public class TeamCreateRequest {
     @Schema(description = "팀 설명", example = "안녕하세요 “프로그램(Program)”과 “Memo(기억, 기록)”를 합쳐, 함께 개발하며 기억에 남는 성과를 만들어가는  팀 “프로그래모(PrograMemo)” 입니다")
     private String description;
 
-    @Schema(description = "팀 난이도", example = "하")
+    @Schema(description = "팀 난이도", example = "하", implementation = Level.class)
     @NotNull
     private Level level;
 
