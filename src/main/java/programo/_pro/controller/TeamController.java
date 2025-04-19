@@ -2,6 +2,8 @@ package programo._pro.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -70,11 +72,7 @@ public class TeamController {
     {
         Long teamId = teamService.createTeam(request, userId);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(Map.of(
-                        "status", HttpStatus.CREATED.value(),
-                        "message", "team ID " + teamId + "번 팀을 생성함",
-                        "teamId", teamId
-                ));
+                .body(programo._pro.global.ApiResponse.success(teamId, teamId+"번 팀을 생성함!"));
     }
 
 
@@ -91,11 +89,7 @@ public class TeamController {
             @RequestBody @Valid TeamCreateRequest request
     ) {
         teamService.updateTeam(teamId, request);
-        return ResponseEntity.ok(Map.of(
-                "status", 200,
-                "message", "team ID " + teamId + "번 팀 정보를 수정함",
-                "teamId", teamId
-        ));
+        return ResponseEntity.ok(programo._pro.global.ApiResponse.success(teamId, teamId+"번 팀 정보를 수정함!"));
     }
 
 
@@ -149,13 +143,8 @@ public class TeamController {
     ) {
         teamService.joinTeam(teamId, userId);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                Map.of(
-                        "status", HttpStatus.CREATED.value(),
-                        "message", "team ID " + teamId + "번 팀에 가입됨",
-                        "teamId", teamId
-                )
-        );
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(programo._pro.global.ApiResponse.success(teamId, teamId+"번 팀에 가입함!"));
     }
 
 
