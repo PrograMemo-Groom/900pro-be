@@ -1,4 +1,4 @@
-package programo._pro.global.exception;
+package programo._pro.global.exception.userException;
 
 public class NotFoundUserException extends RuntimeException {
     public NotFoundUserException() {

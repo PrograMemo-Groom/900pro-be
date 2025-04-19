@@ -3,7 +3,7 @@ package programo._pro.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import programo._pro.dto.TeamCreateRequest;
+import programo._pro.dto.teamDto.TeamCreateRequest;
 
 import java.time.LocalDateTime;
 

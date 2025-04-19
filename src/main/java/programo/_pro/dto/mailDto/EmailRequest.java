@@ -1,4 +1,4 @@
-package programo._pro.dto;
+package programo._pro.dto.mailDto;
 
 import lombok.Data;
 

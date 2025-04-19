@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import programo._pro.entity.ChatRoom;
 import programo._pro.entity.Team;
-import programo._pro.global.exception.NotFoundChatException;
+import programo._pro.global.exception.chatException.NotFoundChatException;
 import programo._pro.repository.ChatRoomRepository;
 import programo._pro.repository.TeamRepository;
 

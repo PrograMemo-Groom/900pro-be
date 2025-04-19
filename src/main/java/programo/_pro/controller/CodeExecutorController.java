@@ -1,8 +1,8 @@
 package programo._pro.controller;
 
 import lombok.RequiredArgsConstructor;
-import programo._pro.dto.CodeExecutionRequest;
-import programo._pro.dto.CodeExecutionResponse;
+import programo._pro.dto.codeDto.CodeExecutionRequest;
+import programo._pro.dto.codeDto.CodeExecutionResponse;
 import programo._pro.service.executor.CodeExecutorService;
 import programo._pro.global.ApiResponse;
 

@@ -1,9 +1,8 @@
-package programo._pro.dto;
+package programo._pro.dto.teamDto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import programo._pro.entity.Team;
-import programo._pro.entity.User;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;

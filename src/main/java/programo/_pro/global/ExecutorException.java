@@ -5,10 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import programo._pro.dto.CodeExecutionResponse;
-import programo._pro.global.exception.ExecutorIOException;
-import programo._pro.global.exception.ExecutorInterruptedException;
-import programo._pro.global.exception.ExecutorTimeoutException;
+import programo._pro.dto.codeDto.CodeExecutionResponse;
+import programo._pro.global.exception.codeException.ExecutorIOException;
+import programo._pro.global.exception.codeException.ExecutorInterruptedException;
+import programo._pro.global.exception.codeException.ExecutorTimeoutException;
 import programo._pro.service.executor.ErrorHandlingService;
 
 @Slf4j

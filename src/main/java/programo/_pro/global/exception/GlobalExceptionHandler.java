@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import programo._pro.global.ApiResponse;
+import programo._pro.global.exception.chatException.NotFoundChatException;
 
 @Slf4j
 @RestControllerAdvice

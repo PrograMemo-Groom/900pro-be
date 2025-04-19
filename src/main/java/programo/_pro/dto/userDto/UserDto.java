@@ -1,9 +1,6 @@
-package programo._pro.dto;
+package programo._pro.dto.userDto;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import lombok.Builder;
 import lombok.Getter;

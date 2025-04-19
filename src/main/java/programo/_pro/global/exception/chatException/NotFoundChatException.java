@@ -1,4 +1,4 @@
-package programo._pro.global.exception;
+package programo._pro.global.exception.chatException;
 
 public class NotFoundChatException extends RuntimeException {
 

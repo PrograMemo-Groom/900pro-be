@@ -3,7 +3,7 @@ package programo._pro.service.executor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import programo._pro.dto.CodeExecutionResponse.ErrorInfo;
+import programo._pro.dto.codeDto.CodeExecutionResponse.ErrorInfo;
 
 import java.io.IOException;
 import java.util.HashMap;

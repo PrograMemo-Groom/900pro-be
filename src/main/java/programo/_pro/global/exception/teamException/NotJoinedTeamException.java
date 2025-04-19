@@ -1,4 +1,4 @@
-package programo._pro.global.exception;
+package programo._pro.global.exception.teamException;
 
 public class NotJoinedTeamException extends RuntimeException {
     public NotJoinedTeamException() {

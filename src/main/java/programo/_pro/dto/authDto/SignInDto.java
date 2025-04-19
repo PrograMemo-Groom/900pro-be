@@ -1,4 +1,4 @@
-package programo._pro.dto;
+package programo._pro.dto.authDto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

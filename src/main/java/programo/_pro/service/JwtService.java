@@ -4,7 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import programo._pro.dto.JwtUserInfoDto;
-import programo._pro.global.exception.NotFoundUserException;
+import programo._pro.global.exception.userException.NotFoundUserException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

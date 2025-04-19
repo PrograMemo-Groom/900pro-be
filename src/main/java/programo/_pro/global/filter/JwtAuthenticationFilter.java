@@ -2,6 +2,7 @@ package programo._pro.global.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import programo._pro.dto.*;
+import programo._pro.dto.authDto.SignInDto;
 import programo._pro.global.ApiResponse;
 import programo._pro.global.ErrorResponse;
 import programo._pro.service.JwtService;

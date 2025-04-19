@@ -2,7 +2,7 @@ package programo._pro.service.executor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import programo._pro.dto.CodeExecutionResponse;
+import programo._pro.dto.codeDto.CodeExecutionResponse;
 import programo._pro.service.executor.languages.CExecutorService;
 import programo._pro.service.executor.languages.CppExecutorService;
 import programo._pro.service.executor.languages.JavaExecutorService;

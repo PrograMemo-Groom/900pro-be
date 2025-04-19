@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import programo._pro.dto.UserDto;
-import programo._pro.entity.User;
+import programo._pro.dto.userDto.UserDto;
 import programo._pro.global.ApiResponse;
 import programo._pro.service.UserService;
 

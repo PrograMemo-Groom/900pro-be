@@ -11,9 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import programo._pro.dto.TeamCardDto;
-import programo._pro.dto.TeamCreateRequest;
-import programo._pro.dto.TeamMainDto;
+import programo._pro.dto.teamDto.TeamCardDto;
+import programo._pro.dto.teamDto.TeamCreateRequest;
+import programo._pro.dto.teamDto.TeamMainDto;
 import programo._pro.service.TeamService;
 
 import java.util.List;

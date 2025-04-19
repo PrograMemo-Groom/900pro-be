@@ -1,4 +1,4 @@
-package programo._pro.global.exception;
+package programo._pro.global.exception.codeException;
 
 public class ExecutorIOException extends RuntimeException {
     public ExecutorIOException(String message) {
