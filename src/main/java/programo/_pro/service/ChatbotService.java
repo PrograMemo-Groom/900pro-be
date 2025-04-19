@@ -11,9 +11,10 @@ import programo._pro.dto.ChatbotRequest;
 import programo._pro.entity.*;
 import programo._pro.global.exception.NotFoundChatException;
 import programo._pro.repository.*;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -87,9 +88,9 @@ public class ChatbotService {
 	public void createChatbotMessage(ChatbotRequest chatbotRequest) {
 		Chatbot chatbot = new Chatbot();
 		chatbot.setTeamId(chatbotRequest.getTeamId());
-		chatbot.setTestDate(chatbotRequest.getTestDate().atStartOfDay());
+		chatbot.setTestDate(chatbotRequest.getTestDate().atStartOfDay().atZone(ZoneId.of("Asia/Seoul")));
 		chatbot.setMessage(chatbotRequest.getMessage());
-		chatbot.setSendAt(LocalDateTime.now());
+		chatbot.setSendAt(ZonedDateTime.now(ZoneId.of("Asia/Seoul")));
 
 		String messageContent = chatbotRequest.getMessage() + "\n오늘의 문제 번호: ";
 		for (Integer problemNumber : chatbotRequest.getProblemNumbers()) {

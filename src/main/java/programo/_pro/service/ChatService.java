@@ -14,8 +14,8 @@ import programo._pro.global.exception.NotFoundChatException;
 import programo._pro.repository.ChatRoomRepository;
 import programo._pro.repository.MessageRepository;
 import programo._pro.repository.UserRepository;
-
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @Slf4j
 @Service
@@ -44,7 +44,7 @@ public class ChatService {
 				.chatRoom(chatRoom)
 				.user(user)
 				.content(request.getContent())
-				.sendAt(LocalDateTime.now())
+				.sendAt(ZonedDateTime.now(ZoneId.of("Asia/Seoul")))
 				.build();
 
 		// 메시지 저장
@@ -56,7 +56,7 @@ public class ChatService {
 		// 메시지 전송 (클라이언트에게 사용자 이름과 함께 메시지 전송)
 		ChatMessageResponse response = new ChatMessageResponse(
 				message.getContent(),
-				message.getSendAt(),
+				message.getSendAt().toLocalDateTime(),
 				user.getUsername()
 		);
 
