@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/queue")
+@RequestMapping("/api/queue")
 public class UserQueueController {
     private final UserQueueService userQueueService;
 
