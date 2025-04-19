@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Table(name = "password_token")
 public class PasswordToken {
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private long id;
 
