@@ -62,7 +62,8 @@ public class TeamController {
             summary = "팀 생성",
             description = "새로운 팀을 생성하고, 팀을 생성한 유저를 해당 팀 팀장으로 등록합니다.",
             responses = {
-                    @ApiResponse(responseCode = "201", description = "팀 생성 성공")
+                    @ApiResponse(responseCode = "201", description = "팀 생성 성공",
+                        content = @Content(schema = @Schema(implementation = programo._pro.global.ApiResponse.class)))
             }
     )
     @PostMapping
@@ -80,7 +81,8 @@ public class TeamController {
             summary = "팀 정보 수정",
             description = "팀장 권한의 멤버가 팀의 정보를 수정합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "팀 정보 수정 성공")
+                    @ApiResponse(responseCode = "200", description = "팀 정보 수정 성공",
+                        content = @Content(schema = @Schema(implementation = programo._pro.global.ApiResponse.class)))
             }
     )
     @PatchMapping("/{teamId}")
@@ -133,7 +135,8 @@ public class TeamController {
             summary = "팀 가입",
             description = "사용자가 특정 팀에 팀원으로 가입합니다.",
             responses = {
-                    @ApiResponse(responseCode = "201", description = "팀 가입 성공")
+                    @ApiResponse(responseCode = "201", description = "팀 가입 성공",
+                            content = @Content(schema = @Schema(implementation = programo._pro.global.ApiResponse.class)))
             }
     )
     @PostMapping("/{teamId}/members")
