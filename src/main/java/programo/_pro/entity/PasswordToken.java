@@ -21,7 +21,7 @@ public class PasswordToken {
     private long id;
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) // 지연 로딩 추가
     @JoinColumn(name = "user_id")
     private User user;
 
