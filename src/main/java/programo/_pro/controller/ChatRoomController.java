@@ -7,7 +7,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import programo._pro.entity.ChatRoom;
+import programo._pro.entity.Message;
 import programo._pro.service.ChatRoomService;
+import programo._pro.service.MessageService;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,6 +21,7 @@ import programo._pro.service.ChatRoomService;
 public class ChatRoomController {
 
 	private final ChatRoomService chatRoomService;
+	private final MessageService messageService;
 
 	@Operation(summary = "채팅방 생성",
 			description = "팀 생성과 함께, 새로운 채팅방을 생성합니다.",
@@ -43,5 +49,38 @@ public class ChatRoomController {
 			@Parameter(description = "조회할 팀의 ID")
 			@PathVariable Long teamId) {
 		return chatRoomService.getChatRoomByTeamId(teamId);
+	}
+
+	@Operation(summary = "해당 날짜로 메시지 조회",
+			description = "채팅방에서 해당 날짜의 메시지를 조회합니다.",
+			responses = {
+					@ApiResponse(responseCode = "200", description = "채팅방 메시지 조회 성공"),
+					@ApiResponse(responseCode = "404", description = "채팅방을 찾을 수 없음")
+			})
+	@GetMapping("/{teamId}/messages/{date}")
+	public List<Message> getMessagesByDate(
+			@Parameter(description = "조회할 팀의 ID", required = true)
+			@PathVariable Long teamId,
+			@Parameter(description = "조회할 날짜", required = true)
+			@PathVariable String date) {
+
+		LocalDate parsedDate = LocalDate.parse(date);
+		return messageService.getMessagesForDate(teamId, parsedDate);
+	}
+
+	@Operation(summary = "채팅방 메시지 검색",
+			description = "채팅방에서 키워드로 메시지를 검색합니다.",
+			responses = {
+					@ApiResponse(responseCode = "200", description = "메시지 검색 성공"),
+					@ApiResponse(responseCode = "400", description = "잘못된 요청: 키워드가 제공되지 않음"),
+					@ApiResponse(responseCode = "500", description = "서버 오류: 메시지 검색 중 문제가 발생했습니다.")
+			})
+	@GetMapping("/{chatRoomId}/search")
+	public List<Message> searchMessages(
+			@Parameter(description = "채팅방 ID", required = true)
+			@PathVariable Long chatRoomId,
+			@Parameter(description = "검색할 키워드", required = true)
+			@RequestParam String keyword) {
+		return messageService.searchMessagesByKeyword(chatRoomId, keyword);
 	}
 }
