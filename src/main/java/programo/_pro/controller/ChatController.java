@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/chat")
-@Tag(name = "Chat", description = "채팅방 메시지 관련 API")
+@Tag(name = "Chat", description = "채팅 API")
 public class ChatController {
 
 	private final ChatService chatService;
@@ -58,7 +58,7 @@ public class ChatController {
 
 	// 메시지 검색
 	@Operation(
-			summary = "메시지 검색",
+			summary = "채팅방 메시지 검색",
 			description = "주어진 키워드로 메시지를 검색합니다.",
 			responses = {
 					@ApiResponse(responseCode = "200", description = "메시지 검색 성공"),
