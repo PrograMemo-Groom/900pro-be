@@ -1,21 +1,26 @@
 package programo._pro.global.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import programo._pro.dto.*;
-import programo._pro.dto.authDto.SignInDto;
-import programo._pro.global.ApiResponse;
-import programo._pro.global.ErrorResponse;
-import programo._pro.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import programo._pro.dto.AuthenticationToken;
+import programo._pro.dto.JwtUserInfoDto;
+import programo._pro.dto.authDto.SignInDto;
+import programo._pro.entity.User;
+import programo._pro.global.ApiResponse;
+import programo._pro.global.ErrorResponse;
+import programo._pro.global.exception.userException.NotFoundUserException;
+import programo._pro.repository.UserRepository;
+import programo._pro.service.JwtService;
 
 import java.io.IOException;
 
@@ -24,14 +29,19 @@ import java.io.IOException;
 로그인 요청("/api/v1/auth/login")에서 사용자 자격 증명(ID/비밀번호)을 확인
 인증 성공 시 JWT 토큰 생성 및 발급
 인증 실패 시 에러 응답 반환 */
+@Slf4j
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtService jwtService;
+    private final UserRepository userRepository;
     private final boolean postOnly = true;
 
-    public JwtAuthenticationFilter(JwtService jwtService) {
+    public JwtAuthenticationFilter(JwtService jwtService, UserRepository userRepository) {
         this.jwtService = jwtService;
+        this.userRepository = userRepository;
+
         setFilterProcessesUrl("/api/auth/login"); // 이 필터가 처리할 url 직접 지정
     }
+
 
     // 로그인 시도 시 자동 호출하고 인증 로직 처리 로직 실행
     @Override
@@ -44,12 +54,28 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 String email = requestDto.getEmail();
                 String password = requestDto.getPassword();
 
+                User user = userRepository.findByEmail(email)
+                        .orElseThrow(() -> new AuthenticationServiceException("존재하지 않는 사용자입니다.")); // 로그인 실패 예외 던짐
+
+                if (!user.isActive()) {
+                    throw new AuthenticationServiceException("탈퇴한 계정이거나 존재하지 않습니다."); // 로그인 실패 예외 던짐
+                }
+
                 // 받아온 이메일, 패스워드 정보를 이용해 이메일이 존재하고, 비밀번호가 일치하면 성공 -> 성공시 인증정보가 담긴 객체 반환
                 return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(email, password));
 
             } catch (IOException e) {
-                // 추후 구체화 된 예외로 변경
-                throw new RuntimeException(e);
+
+                throw new RuntimeException(e); // 이외의 예외를 런타임 예외로 던져버림
+            }
+            catch (AuthenticationException e) { // 로그인 실패 예외를 잡음
+                // 여기서 실패 처리 메소드를 직접 호출하고 null 반환
+                try {
+                    unsuccessfulAuthentication(request, response, e); // 실페 처리 메서드 호출
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex); // 그럼에도 못잡았으면 런타임 예외 던짐
+                }
+                return null;
             }
         }
     }
@@ -71,6 +97,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     // 로그인 실패 시 스프링 시큐리티 내부에서 자동 호출
+    // 여기서 로그인 예외를 잡아서 ErrorResponse 객체로 응답
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
         ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.UNAUTHORIZED.value(), failed.getMessage(), "/login", "아이디와 비밀번호가 올바르지 않습니다.");
