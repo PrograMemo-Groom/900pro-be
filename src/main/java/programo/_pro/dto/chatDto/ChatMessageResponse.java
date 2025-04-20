@@ -8,13 +8,25 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class ChatMessageResponse {
-	private String content;
-	private LocalDateTime sendAt;
-	private String userName;
+	private Long id;              // 메시지 ID
+	private Long chatRoomId;      // 채팅방 ID
+	private Long userId;          // 사용자 ID (챗봇 메시지의 경우 null)
+	private String userName;      // 사용자 이름 (챗봇 메시지의 경우 "Chatbot" 등 고정값)
+	private String content;       // 메시지 내용
+	private LocalDateTime sendAt; // 메시지 전송 시간
+	private boolean isChatbot;   // 챗봇 여부
+	private LocalDateTime testDate;  // 챗봇 메시지에만 해당 (시험 날짜)
+	private String chatbotMessage;  // 챗봇 메시지 내용
 
-	public ChatMessageResponse(String content, LocalDateTime sendAt, String userName) {
+	public ChatMessageResponse(Long id, Long chatRoomId, Long userId, String userName, String content, LocalDateTime sendAt, boolean isChatbot, LocalDateTime testDate, String chatbotMessage) {
+		this.id = id;
+		this.chatRoomId = chatRoomId;
+		this.userId = userId;
+		this.userName = userName;
 		this.content = content;
 		this.sendAt = sendAt;
-		this.userName = userName;
+		this.isChatbot = isChatbot;
+		this.testDate = testDate;
+		this.chatbotMessage = chatbotMessage;
 	}
 }
