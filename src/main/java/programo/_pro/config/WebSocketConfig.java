@@ -26,7 +26,16 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry registry) {
-		registry.enableSimpleBroker("/sub");
+		// Reids 메시지 브로커 설정
+		registry.enableStompBrokerRelay("/sub") // "/sub" 접두사로 들어오는 메시지를 Redis에서 발행
+				.setRelayHost("localhost")  // Redis 호스트 설정
+				.setRelayPort(6379)         // Redis 포트 (기본값: 6379)
+				.setClientLogin("user")     // Redis 클라이언트 로그인
+				.setClientPasscode("pass") // Redis 클라이언트 패스워드
+				.setSystemLogin("system")  // 시스템 로그인
+				.setSystemPasscode("system-pass"); // 시스템 패스워드 설정
+
+		// 클라이언트에서 전송되는 메시지의 접두사 설정
 		registry.setApplicationDestinationPrefixes("/pub");
 	}
 }
