@@ -60,6 +60,9 @@ dependencies {
 	// email verification
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '3.0.5'
 
+	// Reactor Netty
+	implementation 'io.projectreactor.netty:reactor-netty:1.0.22'
+
 	// etc..
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
