@@ -1,4 +1,3 @@
-# ✅ 공통 설정
 spring:
   application:
     name: 900pro
@@ -13,13 +12,13 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
   config:
-    import: optional:file:.env[.properties]
+    import: "optional:file:.env.prod[.properties]"
 
   mail:
     host: smtp.gmail.com
-    port: 587 # Gmail SMTP서버는 587번 포트 사용
-    username: ${MAIL_USERNAME} # 이메일 전송용 계정의 이메일 주소
-    password: ${MAIL_PASSWORD} # 앱 비밀번호
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -27,17 +26,16 @@ spring:
           starttls:
             enable: true
             required: true
-          connectiontimeout: 5000 # 클라이언트-SMTP 연결 설정 간 서버 대기 시간 설정
-          timeout: 5000 # 서버에서 응답이 오지 않는 경우 대기시간
-          writetimeout: 5000 # 이메일을 SMTP 서버로 전송하는 데 걸리는 시간을 제한
-    auth-code-expiration-millis: 1800000  # 이메일 인증 코드의 만료 시간 30 * 60 * 1000 == 30분
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+    auth-code-expiration-millis: 1800000
 
 # JWT 공통 설정
 jwt:
   header: Authorization
-  expiration_time: 720 # 기본 12시간 (720분)
 
-# 코드 실행 관련 설정
+  # 코드 실행 관련 설정
 code-executor:
   container:
     java-name: webide-java-executor
@@ -52,85 +50,141 @@ code-executor:
     cpp-execution: ${C_EXECUTION_TIMEOUT:3}
     c-execution: ${C_EXECUTION_TIMEOUT:3}
 
----
 
-# ✅ 로컬 프로필
-spring:
-  profiles:
-    active: dev
-
-  datasource:
-    url: jdbc:mariadb://localhost:3307/${MYSQL_DATABASE}
-    username: ${MYSQL_USER}
-    password: ${MYSQL_PASSWORD}
-    driver-class-name: org.mariadb.jdbc.Driver
-
-  sql:
-    init:
-      mode: always
-      schema-locations:
-        - classpath:db/schema.sql
-
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: none # schema.sql 사용하므로 none으로 설정
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.MariaDBDialect
-        # format_sql: true
-        # show_sql: true
-
-  data:
-    redis:
-      host: localhost
-      port: 6379
-
-  springdoc:
-    api-docs:
-      enabled: true
-      path: /v3/api-docs
-    swagger-ui:
-      path: /swagger-ui.html
-
-logging:
-  level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-
-# JWT 개발 환경 설정
-jwt:
-  secret: ${JWT_SECRET}
-  refresh_secret: ${JWT_REFRESH_SECRET}
-  expiration_time: 720 # 개발환경 12시간 (720분)
-
----
-
-# ✅ 배포(운영) 프로필
-spring:
-  config:
-    activate:
-      on-profile: prod
-
-  # prod 에서는 schema.sql 실행 안하도록 설정
-  sql:
-    init:
-      mode: never
-
-  datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    driver-class-name: org.mariadb.jdbc.Driver
-
-  data:
-    redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
-
-# JWT 운영 환경 설정
-jwt:
-  secret: ${JWT_SECRET}
-  refresh_secret: ${JWT_REFRESH_SECRET}
-  expiration_time: 1440 # 운영환경 24시간 (1440분)
+## ✅ 공통 설정
+#spring:
+#  application:
+#    name: 900pro
+#
+#  jpa:
+#    show-sql: true
+#    properties:
+#      hibernate:
+#        format_sql: true
+#    hibernate:
+#      naming:
+#        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+#
+#  config:
+#    import: optional:file:.env[.properties]
+#
+#  mail:
+#    host: smtp.gmail.com
+#    port: 587 # Gmail SMTP서버는 587번 포트 사용
+#    username: ${MAIL_USERNAME} # 이메일 전송용 계정의 이메일 주소
+#    password: ${MAIL_PASSWORD} # 앱 비밀번호
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
+#            required: true
+#          connectiontimeout: 5000 # 클라이언트-SMTP 연결 설정 간 서버 대기 시간 설정
+#          timeout: 5000 # 서버에서 응답이 오지 않는 경우 대기시간
+#          writetimeout: 5000 # 이메일을 SMTP 서버로 전송하는 데 걸리는 시간을 제한
+#    auth-code-expiration-millis: 1800000  # 이메일 인증 코드의 만료 시간 30 * 60 * 1000 == 30분
+#
+## JWT 공통 설정
+#jwt:
+#  header: Authorization
+#  expiration_time: 720 # 기본 12시간 (720분)
+#
+## 코드 실행 관련 설정
+#code-executor:
+#  container:
+#    java-name: webide-java-executor
+#    python-name: webide-python-executor
+#    gcc-name: webide-gcc-executor
+#    javascript-name: webide-javascript-executor
+#  timeout:
+#    container-check: ${CONTAINER_CHECK_TIMEOUT:5}
+#    python-execution: ${PYTHON_EXECUTION_TIMEOUT:10}
+#    java-script-execution: ${JAVASCRIPT_EXECUTION_TIMEOUT:10}
+#    java-execution: ${JAVA_EXECUTION_TIMEOUT:5}
+#    cpp-execution: ${C_EXECUTION_TIMEOUT:3}
+#    c-execution: ${C_EXECUTION_TIMEOUT:3}
+#
+#---
+#
+## ✅ 로컬 프로필
+#spring:
+#  profiles:
+#    active: dev
+#
+#  datasource:
+#    url: jdbc:mariadb://localhost:3307/${MYSQL_DATABASE}
+#    username: ${MYSQL_USER}
+#    password: ${MYSQL_PASSWORD}
+#    driver-class-name: org.mariadb.jdbc.Driver
+#
+#  sql:
+#    init:
+#      mode: always
+#      schema-locations:
+#        - classpath:db/schema_dev.sql
+#
+#  jpa:
+#    show-sql: true
+#    hibernate:
+#      ddl-auto: none # schema_dev.sql 사용하므로 none으로 설정
+#    properties:
+#      hibernate:
+#        format_sql: true
+#        dialect: org.hibernate.dialect.MariaDBDialect
+#        # format_sql: true
+#        # show_sql: true
+#
+#  data:
+#    redis:
+#      host: localhost
+#      port: 6379
+#
+#  springdoc:
+#    api-docs:
+#      enabled: true
+#      path: /v3/api-docs
+#    swagger-ui:
+#      path: /swagger-ui.html
+#
+#logging:
+#  level:
+#    org.hibernate.SQL: DEBUG
+#    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+#
+## JWT 개발 환경 설정
+#jwt:
+#  secret: ${JWT_SECRET}
+#  refresh_secret: ${JWT_REFRESH_SECRET}
+#  expiration_time: 720 # 개발환경 12시간 (720분)
+#
+#---
+#
+## ✅ 배포(운영) 프로필
+#spring:
+#  config:
+#    activate:
+#      on-profile: prod
+#
+#  # prod 에서는 schema_dev.sql 실행 안하도록 설정
+#  sql:
+#    init:
+#      mode: always
+#      schema-locations:
+#        - classpath:db/schema_dev.sql
+#  datasource:
+#    url: ${DB_URL}
+#    username: ${DB_USERNAME}
+#    password: ${DB_PASSWORD}
+#    driver-class-name: org.mariadb.jdbc.Driver
+#
+#  data:
+#    redis:
+#      host: ${REDIS_HOST}
+#      port: ${REDIS_PORT}
+#
+## JWT 운영 환경 설정
+#jwt:
+#  secret: ${JWT_SECRET}
+#  refresh_secret: ${JWT_REFRESH_SECRET}
+#  expiration_time: 1440 # 운영환경 24시간 (1440분)
