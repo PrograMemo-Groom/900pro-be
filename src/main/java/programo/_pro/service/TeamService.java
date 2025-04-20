@@ -10,10 +10,8 @@ import programo._pro.dto.teamDto.TeamMemberDto;
 import programo._pro.entity.Team;
 import programo._pro.entity.TeamMember;
 import programo._pro.entity.User;
-import programo._pro.global.exception.teamException.AlreadyJoinedTeamException;
-import programo._pro.global.exception.teamException.NotFoundTeamException;
+import programo._pro.global.exception.teamException.TeamException;
 import programo._pro.global.exception.userException.NotFoundUserException;
-import programo._pro.global.exception.teamException.NotJoinedTeamException;
 import programo._pro.repository.TeamRepository;
 import programo._pro.repository.TeamMemberRepository;
 import programo._pro.repository.UserRepository;
@@ -22,6 +20,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.time.format.DateTimeFormatter;
+
+import static programo._pro.global.exception.teamException.TeamException.AlreadyJoinedTeamException;
 
 
 @Service
@@ -83,7 +83,8 @@ public class TeamService {
     public TeamMainDto getTeamMain(Long teamId) {
 
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(NotFoundTeamException::new);
+//                .orElseThrow(() -> new NotFoundTeamException("해당 팀을 찾을 수 없습니다."));
+                .orElseThrow(TeamException::NotFoundTeamException);
 
         List<TeamMember> teamMembers = teamMemberRepository.findByTeam_Id(teamId);
 
@@ -136,7 +137,8 @@ public class TeamService {
     @Transactional
     public void updateTeam(Long teamId, TeamCreateRequest request) {
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(NotFoundTeamException::new);
+//                .orElseThrow(() -> new NotFoundTeamException("해당 팀을 찾을 수 없습니다."));
+                    .orElseThrow(TeamException::NotFoundTeamException);
         team.updateInfo(request);
     }
 
@@ -145,8 +147,8 @@ public class TeamService {
     @Transactional
     public void deleteTeam(Long teamId) {
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(NotFoundTeamException::new);
-
+//                .orElseThrow(() -> new NotFoundTeamException("해당 팀을 찾을 수 없습니다."));
+                .orElseThrow(TeamException::NotFoundTeamException);
         // 팀에 속한 멤버 삭제
         teamMemberRepository.deleteByTeam_Id(teamId);
 
@@ -159,10 +161,10 @@ public class TeamService {
     @Transactional
     public void kickMember(Long teamId, Long userId) {
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(NotFoundTeamException::new);
+                .orElseThrow(TeamException::NotFoundTeamException);
 
         TeamMember teamMember = teamMemberRepository.findByTeamIdAndUserId(teamId, userId)
-                .orElseThrow(NotJoinedTeamException::new);
+                .orElseThrow(TeamException::NotJoinedTeamException);
 
         teamMemberRepository.delete(teamMember);
         team.setCurrentMembers(team.getCurrentMembers() - 1);
@@ -173,11 +175,13 @@ public class TeamService {
     @Transactional
     public void joinTeam(Long teamId, Long userId) {
         if (teamMemberRepository.existsByUserId(userId)) {
-            throw new AlreadyJoinedTeamException();
+//            throw new AlreadyJoinedTeamException("이미 가입된 팀입니다.");
+            throw AlreadyJoinedTeamException();
         }
 
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(NotFoundTeamException::new);
+//                .orElseThrow(() -> new NotFoundTeamException("해당 팀을 찾을 수 없습니다."));
+                .orElseThrow(TeamException::NotFoundTeamException);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(NotFoundUserException::byId);
@@ -198,10 +202,12 @@ public class TeamService {
     @Transactional
     public void leaveTeam(Long teamId, Long userId) {
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(NotFoundTeamException::new);
+                //.orElseThrow(() -> new NotFoundTeamException("해당 팀을 찾을 수 없습니다."));
+                .orElseThrow(TeamException::NotFoundTeamException);
 
         TeamMember member = teamMemberRepository.findByTeamIdAndUserId(teamId, userId)
-                .orElseThrow(NotJoinedTeamException::new);
+//                .orElseThrow(() -> new NotJoinedTeamException("이 팀의 팀원이 아닙니다."));
+                    .orElseThrow(TeamException::NotJoinedTeamException);
 
         team.setCurrentMembers(team.getCurrentMembers() - 1);
 
