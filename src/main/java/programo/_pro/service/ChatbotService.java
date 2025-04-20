@@ -6,7 +6,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import programo._pro.entity.*;
 import programo._pro.global.exception.chatException.NotFoundChatException;
-import programo._pro.global.exception.teamException.NotFoundTeamException;
+import programo._pro.global.exception.teamException.TeamException;
 import programo._pro.repository.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,7 +29,8 @@ public class ChatbotService {
 
 		Team team = teamMemberRepository.findById(teamId)
 				.map(TeamMember::getTeam)
-				.orElseThrow(NotFoundTeamException::new);
+//				.orElseThrow(() -> new NotFoundTeamException("해당 팀을 찾을 수 없습니다."));
+				.orElseThrow(TeamException::NotFoundTeamException);
 
 		LocalDateTime testStartTime = team.getStartTime();  // 시험 시작 시간
 		log.info("[팀 처리] 팀명: {}, 테스트 시작 시간: {}", team.getTeamName(), testStartTime);
