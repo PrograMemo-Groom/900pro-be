@@ -82,6 +82,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    //
     @ExceptionHandler(MessagingException.class)
     public ResponseEntity<ApiResponse<?>> handleMessagingException(MessagingException ex) {
         ApiResponse<?> response = ApiResponse.fail(ex.getMessage());
@@ -103,5 +104,6 @@ public class GlobalExceptionHandler {
         log.error(ex.getMessage(), ex);
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+
 
 }
