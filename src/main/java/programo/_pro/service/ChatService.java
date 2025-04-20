@@ -1,88 +1,214 @@
 package programo._pro.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import programo._pro.dto.ChatMessageRequest;
+import programo._pro.dto.chatDto.ChatMessageRequest;
 import programo._pro.dto.chatDto.ChatMessageResponse;
-import programo._pro.entity.ChatRoom;
-import programo._pro.entity.Message;
-import programo._pro.entity.User;
+import programo._pro.entity.*;
 import programo._pro.global.exception.chatException.NotFoundChatException;
-import programo._pro.repository.ChatRoomRepository;
-import programo._pro.repository.MessageRepository;
-import programo._pro.repository.UserRepository;
-import programo._pro.service.chatredis.ChatPublisherService;
+import programo._pro.global.exception.teamException.NotFoundTeamException;
 
+import programo._pro.repository.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatService {
+
 	private final ChatRoomRepository chatRoomRepository;
-	private final UserRepository userRepository;
 	private final MessageRepository messageRepository;
+	private final ChatbotRepository chatbotRepository;
+	private final TeamRepository teamRepository;
 	private final SimpMessagingTemplate messagingTemplate;
-	private final ChatPublisherService chatPublisherService;
 
-	@Transactional
-	public void handleChatMessage(ChatMessageRequest request){
-		try {
-			log.info("[채팅 메시지 수신] ChatRoomId={}, UserId={}, Content={}",
-					request.getChatRoomId(), request.getUserId(), request.getContent());
+	// 팀이 생성되면 자동으로 채팅방 생성
+	public void createChatRoom(Long teamId) {
+		Team team = teamRepository.findById(teamId)
+				.orElseThrow(NotFoundTeamException::new);
 
-			// 채팅방 조회
-			ChatRoom chatRoom = chatRoomRepository.findById(request.getChatRoomId())
-					.orElseThrow(NotFoundChatException::NotFoundChatRoomException);
+		ChatRoom chatRoom = new ChatRoom();
+		chatRoom.setTeam(team);
+		chatRoomRepository.save(chatRoom);
+	}
 
-			// 사용자 조회
-			User user = userRepository.findById(request.getUserId())
-					.orElseThrow(NotFoundChatException::NotFoundUserException);
+	public List<ChatMessageResponse> getAllMessages(Long chatRoomId) {
+		// 사용자 메시지 조회
+		List<Message> messages = messageRepository.findByChatRoom_IdOrderBySendAtAsc(chatRoomId);
+		// 챗봇 메시지 조회
+		List<Chatbot> chatbots = chatbotRepository.findByTeam_Id(chatRoomId);
 
-			// 채팅 메시지 생성
-			Message message = Message.builder()
-					.chatRoom(chatRoom)
-					.user(user)
-					.content(request.getContent())
-					.sendAt(ZonedDateTime.now(ZoneId.of("Asia/Seoul")))
-					.build();
+		// 사용자의 메시지 + 챗봇 메시지를 합친 후 정렬
+		List<ChatMessageResponse> chatMessages = messages.stream()
+				.map(message -> new ChatMessageResponse(
+						message.getId(),
+						message.getChatRoom().getId(),
+						message.getUser().getId(),
+						message.getUser().getUsername(),
+						message.getContent(),
+						message.getSendAt().toLocalDateTime(),
+						false,      // 사용자 메시지는 isChatbot = false
+						null,       // 챗봇 관련 정보는 null
+						null))      // 챗봇 관련 메시지 내용은 null
+				.collect(Collectors.toList());
 
-			// 메시지 저장
-			messageRepository.save(message);
+		// 챗봇 메시지 추가
+		chatbots.forEach(chatbot -> {
+			chatMessages.add(new ChatMessageResponse(
+					chatbot.getId(),
+					chatbot.getTeamId(),
+					null,  // 챗봇에는 사용자 ID가 없으므로 null
+					"Chatbot",  // 고정값: 챗봇 메시지
+					chatbot.getMessage(),
+					chatbot.getSendAt().toLocalDateTime(),
+					true,       // 챗봇 메시지는 isChatbot = true
+					chatbot.getTestDate().toLocalDateTime(),  // 챗봇 메시지의 시험 날짜
+					chatbot.getMessage())); // 챗봇 메시지 내용
+		});
 
-			log.info("[메시지 저장 완료] messageId={}, sendTo=/sub/chat/room/{}",
-					message.getId(), request.getChatRoomId());
+		// 메시지 시간순으로 정렬
+		chatMessages.sort((msg1, msg2) -> {
+			if (msg1.getSendAt() == null && msg2.getSendAt() == null) {
+				return 0;
+			} else if (msg1.getSendAt() == null) {
+				return 1;
+			} else if (msg2.getSendAt() == null) {
+				return -1;
+			}
+			return msg1.getSendAt().compareTo(msg2.getSendAt());
+		});
 
-			// 메시지 전송 (클라이언트에게 사용자 이름과 함께 메시지 전송)
-			ChatMessageResponse response = new ChatMessageResponse(
-					chatRoom.getId(),
-					user.getId(),
-					message.getId(),
-					user.getUsername(),
-					message.getContent(),
-					message.getSendAt().toLocalDateTime()
-			);
+		return chatMessages;
+	}
 
-			messagingTemplate.convertAndSend("/sub/chat/room/" + request.getChatRoomId(), response);
 
-			// Redis를 통해 다른 클라이언트에게 실시간으로 메시지를 발행
-			chatPublisherService.publishMessage(request.getChatRoomId().toString(), message.getContent());
+	// 날짜별 메시지 조회
+	public List<ChatMessageResponse> getMessagesByDate(Long chatRoomId, LocalDateTime start, LocalDateTime end) {
+		List<Message> messages = messageRepository.findByChatRoom_IdAndSendAtBetween(chatRoomId, start, end);
+		return messages.stream()
+				.map(message -> new ChatMessageResponse(
+						message.getId(),
+						message.getChatRoom().getId(),
+						message.getUser().getId(),
+						message.getUser().getUsername(),
+						message.getContent(),
+						message.getSendAt().toLocalDateTime(),
+						false,      // 사용자 메시지는 isChatbot = false
+						null,       // 챗봇 관련 정보는 null
+						null))      // 챗봇 관련 메시지 내용은 null
+				.collect(Collectors.toList());
+	}
 
-			log.info("[메시지 전송 완료] 대상 채널: /sub/chat/room/{}", request.getChatRoomId());
+	// 키워드로 메시지 검색
+	public List<ChatMessageResponse> searchMessagesByKeyword(Long chatRoomId, String keyword) {
+		// 검색된 메시지를 최신순으로 가져오기
+		List<Message> messages = messageRepository.findByChatRoom_IdAndContentContainingOrderBySendAtDesc(chatRoomId, keyword);
+		return messages.stream()
+				.map(message -> {
+					// 키워드 강조
+					String highlightedContent = message.getContent().replaceAll("(?i)" + keyword, "<span style='color:yellow;'>" + keyword + "</span>");
+					return new ChatMessageResponse(
+							message.getId(),
+							message.getChatRoom().getId(),
+							message.getUser().getId(),
+							message.getUser().getUsername(),
+							highlightedContent,
+							message.getSendAt().toLocalDateTime(),
+							false,
+							null,
+							null
+					);
+				})
+				.collect(Collectors.toList());
+	}
+
+	// 사용자가 채팅 메시지 전송
+	public void processUserMessage(ChatMessageRequest request) {
+		ChatRoom chatRoom = chatRoomRepository.findById(request.getChatRoomId())
+				.orElseThrow(NotFoundChatException::NotFoundChatRoomException);
+
+		// 메시지 생성 및 저장
+		Message message = new Message();
+		message.setChatRoom(chatRoom);
+		message.setUser(request.getUser());
+		message.setContent(request.getContent());
+		message.setSendAt(ZonedDateTime.now());
+
+		messageRepository.save(message);
+
+		// 메시지 전송
+		ChatMessageResponse response = new ChatMessageResponse(
+				message.getId(),
+				chatRoom.getId(),
+				message.getUser().getId(),
+				message.getUser().getUsername(),
+				message.getContent(),
+				message.getSendAt().toLocalDateTime(),
+				false,
+				null,
+				null
+		);
+
+		messagingTemplate.convertAndSend("/sub/chat/room/" + chatRoom.getId(), response);
+	}
+
+	// 챗봇 메시지 전송 (팀에 맞게 챗봇 메시지를 전송)
+	public void sendChatbotMessageToTeam(Long teamId) {
+		Team team = teamRepository.findById(teamId)
+				.orElseThrow(NotFoundTeamException::new);
+
+		// 시험 시작 시간 체크 (만약 시험 시작 시간이 지나지 않았다면 메시지 전송하지 않음)
+		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime testStartTime = team.getStartTime();
+		if (now.isBefore(testStartTime)) {
+			log.info("[팀 처리] 팀 {}의 시험 시작 시간이 아직 되지 않았습니다.", team.getTeamName());
+			return;  // 시험이 시작되지 않았다면 메서드 종료
 		}
-		catch (NotFoundChatException e) {
-			log.error("[채팅 오류] 채팅방 또는 사용자 찾을 수 없음: {}", e.getMessage());
-			// 클라이언트에게 채팅방 또는 사용자 오류 메시지 전송
-			throw e;  // 예외를 다시 던져 클라이언트에게 알릴 수 있습니다.
 
-		} catch (Exception e) {
-			log.error("[채팅 오류] 메시지 처리 중 오류 발생: {}", e.getMessage());
-			// 클라이언트에게 처리 중 오류 메시지 전송
-			throw new RuntimeException("메시지 처리 중 오류가 발생했습니다.", e);
+		log.info("[팀 처리] 팀 {}의 시험이 시작되었거나 종료되었습니다.", team.getTeamName());
+
+		// 챗봇 메시지 조회
+		List<Chatbot> chatbots = chatbotRepository.findByTeam_Id(team.getId());
+
+		if (chatbots.isEmpty()) {
+			throw NotFoundChatException.NotFoundChatbotException();
 		}
+
+		// 챗봇 메시지 전송
+		chatbots.forEach(chatbot -> createAndSendChatbotMessage(chatbot, team));
+	}
+
+	// 공통적인 챗봇 메시지 생성 및 전송 형식
+	private void createAndSendChatbotMessage(Chatbot chatbot, Team team) {
+		// 메시지 생성
+		chatbot.setSendAt(ZonedDateTime.now(ZoneId.of("Asia/Seoul")));
+		chatbot.setTestDate(LocalDate.now().atStartOfDay().atZone(ZoneId.of("Asia/Seoul")));
+		chatbot.setMessage("응시하느라 고생하셨습니다.");
+
+		// 문제 번호 메시지 추가
+		StringBuilder messageContent = new StringBuilder("오늘의 문제 번호: ");
+		for (int i = 1; i <= team.getProblemCount(); i++) {
+			messageContent.append(i).append(" ");
+		}
+		chatbot.setMessage(messageContent.toString());
+
+		// 메시지 저장
+		chatbotRepository.save(chatbot);
+
+		// 메시지 전송
+		Long teamId = chatbot.getTeam().getId();
+		ChatRoom chatRoom = chatRoomRepository.findByTeam_Id(teamId)
+				.orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다."));
+
+		messagingTemplate.convertAndSend("/sub/chat/room/" + chatRoom.getId(), messageContent.toString());
+		log.info("[메시지 전송] teamId={} 메시지: {}", teamId, chatbot.getMessage());
 	}
 }
