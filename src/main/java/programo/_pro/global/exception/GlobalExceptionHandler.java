@@ -13,10 +13,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import programo._pro.global.ApiResponse;
 import programo._pro.global.exception.chatException.NotFoundChatException;
+import programo._pro.global.exception.userException.NotFoundUserException;
 
 @Slf4j
 @RestControllerAdvice
-@ConditionalOnProperty(name = "springdoc.api-docs.enabled", havingValue = "false", matchIfMissing = false)
+//@ConditionalOnProperty(name = "springdoc.api-docs.enabled", havingValue = "false", matchIfMissing = false)
 public class GlobalExceptionHandler {
 
     // 기타 예외 처리
@@ -90,6 +91,14 @@ public class GlobalExceptionHandler {
     // 채팅 관련 예외 처리
     @ExceptionHandler(NotFoundChatException.class)
     public ResponseEntity<ApiResponse<?>> handleNotFoundChatException(NotFoundChatException ex) {
+        ApiResponse<?> response = ApiResponse.fail(ex.getMessage());
+        log.error(ex.getMessage(), ex);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    // 유저 관련 예외처리
+    @ExceptionHandler(NotFoundUserException.class)
+    public ResponseEntity<ApiResponse<?>> handleNotFoundUserException(NotFoundUserException ex) {
         ApiResponse<?> response = ApiResponse.fail(ex.getMessage());
         log.error(ex.getMessage(), ex);
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
