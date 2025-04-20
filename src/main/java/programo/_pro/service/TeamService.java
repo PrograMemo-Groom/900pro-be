@@ -31,6 +31,7 @@ public class TeamService {
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final UserRepository userRepository;
+    private final ChatService chatService;
 
 
     // 팀 리스트 조회. 검색어, 난이도, 정렬 기준 적용 가능.
@@ -127,6 +128,9 @@ public class TeamService {
                 .build();
 
         teamMemberRepository.save(teamMember);
+
+        // 팀 생성 후 채팅방 생성
+        chatService.createChatRoom(team.getId());
 
         return team.getId();
     }
