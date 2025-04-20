@@ -109,7 +109,7 @@ public class MailService {
             sendTemporaryPasswordMail(email, tempPassword);
 
             // 변경한 비밀번호로 회원정보 수정
-            User user = userRepository.findByEmail(email).orElseThrow(NotFoundUserException::new);
+            User user = userRepository.findByEmail(email).orElseThrow(NotFoundUserException::byEmail);
             String encodedPassword = passwordEncoder.encode(tempPassword); // 암호화 된 비밀번호 생성
             user.setPassword(encodedPassword); // 암호화된 임시 비밀번호 설정
 

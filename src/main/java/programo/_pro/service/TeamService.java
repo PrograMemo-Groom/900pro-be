@@ -104,7 +104,7 @@ public class TeamService {
     public Long createTeam(TeamCreateRequest dto, Long userId) {
         // ( 로그인된 ) 유저 id 받기 / 인증구현 완료전까진 컨트롤러에서 @RequestParam로 받아와서 쓰겠습니다
         User loginedUser = userRepository.findById(userId)
-                .orElseThrow(NotFoundUserException::new);
+                .orElseThrow(NotFoundUserException::byId);
 
         Team team = Team.builder()
                 .teamName(dto.getTeamName())
@@ -180,7 +180,7 @@ public class TeamService {
                 .orElseThrow(NotFoundTeamException::new);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(NotFoundUserException::new);
+                .orElseThrow(NotFoundUserException::byId);
 
         team.setCurrentMembers(team.getCurrentMembers() + 1);
 

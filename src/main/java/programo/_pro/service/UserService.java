@@ -18,7 +18,7 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
 
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(NotFoundUserException::new);
+        return userRepository.findByEmail(email).orElseThrow(NotFoundUserException::byEmail);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class UserService implements UserDetailsService {
 
     public UserDto getUserById(int userId) {
         User user = userRepository.findById((long) userId)
-                .orElseThrow(NotFoundUserException::new);
+                .orElseThrow(NotFoundUserException::byId);
 
         UserDto userDto = UserDto.builder()
                 .id(user.getId())
