@@ -132,7 +132,7 @@ public class JwtService {
             return switch (needKey) {
                 // UserDetails 인터페이스에서는 getUsername()이 실제로 이메일을 반환함
                 case EMAIL_KEY -> userDetails.getUsername();
-                default -> throw new NotFoundUserException();
+                default -> throw new NotFoundUserException("유저 정보를 찾을 수 없습니다.");
             };
         }
         return null;
