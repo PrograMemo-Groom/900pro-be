@@ -37,5 +37,11 @@ public class MyPageController {
          return ResponseEntity.ok(ApiResponse.success("success", "성공적으로 회원정보를 업데이트했습니다."));
     }
 
+    @PatchMapping("/delete/{userId}")
+    public ResponseEntity<ApiResponse<String>> deleteUser(@PathVariable int userId) {
+        myPageService.deleteUser(userId);
+
+        return ResponseEntity.ok(ApiResponse.success("success", "성공적으로 회원정보를 삭제했습니다."));
+    }
 
 }
