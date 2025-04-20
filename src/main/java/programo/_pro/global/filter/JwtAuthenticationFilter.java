@@ -61,7 +61,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String token = jwtService.createToken(new JwtUserInfoDto(email)); // 이메일을 이용해 JWT Token 생성
 
         // 이 부분에서 사용자 정보가 담긴 토큰이 응답객체에 담김!@@#!#@!@@@@@@@
-        ApiResponse<String> responseMessage = ApiResponse.success(token);
+        ApiResponse<String> responseMessage = ApiResponse.success(token, "로그인에 성공했습니다");
 
         // 응답 객체 설정
         String responseJSON = new ObjectMapper().writeValueAsString(responseMessage);
@@ -73,7 +73,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     // 로그인 실패 시 스프링 시큐리티 내부에서 자동 호출
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
-        ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.UNAUTHORIZED.value(), failed.getMessage(), "/login", "id and password invalid");
+        ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.UNAUTHORIZED.value(), failed.getMessage(), "/login", "아이디와 비밀번호가 올바르지 않습니다.");
         String responseJSON = new ObjectMapper().writeValueAsString(errorResponse);
         response.setContentType("application/json; charset=UTF-8"); // JSON 타입 + UTF-8 설정
         response.setCharacterEncoding("UTF-8"); // 한글 인코딩 설정 추가
