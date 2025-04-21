@@ -175,8 +175,9 @@ public class ChatService {
 			LocalDateTime testStartTime = team.getStartTime(); // 각 팀의 시험 시작 시간
 			LocalDateTime nowInSeoul = LocalDateTime.now(seoulZone); // 서울 시간 기준으로 현재 시간 가져오기
 
-			// 시험 시작 시간이 되면 바로 챗봇 메시지 전송
-			if (nowInSeoul.isEqual(testStartTime) || nowInSeoul.isAfter(testStartTime)) {
+			// 시험 시작 시간 이후 5분 이내에 챗봇 메시지 한 번만 보냄
+			// 5분 간격으로 반복해서 메시지를 보내는 것 아님 !! "단 한 번만 발송됩니다"
+			if (nowInSeoul.isAfter(testStartTime) && nowInSeoul.isBefore(testStartTime.plusMinutes(5))) {
 				log.info("[팀 처리] 팀 {}의 시험 시작 시간이 도래했습니다. 챗봇 메시지 전송 시작.", team.getTeamName());
 				sendChatbotMessageToChatRoom(team.getId());  // 해당 팀에 챗봇 메시지 전송
 			}
@@ -192,9 +193,10 @@ public class ChatService {
 		Team team = chatRoom.getTeam();  // 해당 채팅방에 소속된 팀을 가져옵니다.
 
 		// 시험 시작 시간 체크 (만약 시험 시작 시간이 지나지 않았다면 메시지 전송하지 않음)
-		LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
-		LocalDateTime testStartTime = team.getStartTime();
-		if (now.isBefore(testStartTime)) {
+		LocalDateTime nowInSeoul = LocalDateTime.now(ZoneId.of("Asia/Seoul"));  // 서울 시간 기준 현재 시간
+		LocalDateTime testStartTime = team.getStartTime();  // 팀의 시험 시작 시간
+
+		if (nowInSeoul.isBefore(testStartTime)) {
 			log.info("[팀 처리] 팀 {}의 시험 시작 시간이 아직 되지 않았습니다.", team.getTeamName());
 			return;  // 시험이 시작되지 않았다면 메서드 종료
 		}
@@ -208,10 +210,17 @@ public class ChatService {
 			throw NotFoundChatException.NotFoundChatbotException();
 		}
 
-		// 챗봇 메시지 필터링: 해당 날짜에 시험 시작 시간일 경우, 메시지만 전송
+		// 챗봇 메시지 필터링: 해당 날짜와 시간에 시험 시작 시간일 경우, 메시지만 전송
 		chatbots.stream()
-				.filter(chatbot -> chatbot.getTestDate().toLocalDate().isEqual(now.toLocalDate()))  // 현재 날짜와 시험 날짜가 일치하는 메시지만 전송
-				.forEach(chatbot -> createAndSendChatbotMessage(chatbot, team));  // 해당 날짜의 챗봇 메시지만 보내기
+				.filter(chatbot -> {
+					// 날짜 비교
+					boolean isSameDate = chatbot.getTestDate().toLocalDate().isEqual(nowInSeoul.toLocalDate());
+					// 시간 비교 (시험 시작 시간과 비교)
+					boolean isWithinTime = nowInSeoul.isAfter(chatbot.getTestDate().toLocalDate().atStartOfDay())
+							&& nowInSeoul.isBefore(chatbot.getTestDate().toLocalDate().atStartOfDay().plusMinutes(5));
+					return isSameDate && isWithinTime;  // 날짜와 시간이 모두 일치하는 경우만 필터링
+				})
+				.forEach(chatbot -> createAndSendChatbotMessage(chatbot, team));  // 해당 날짜 및 시간의 챗봇 메시지만 보내기
 	}
 
 
