@@ -1,5 +1,7 @@
 package programo._pro.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +22,9 @@ import programo._pro.service.UserService;
 public class UserController {
     private final UserService userService;
 
-
+    @Operation(summary = "회원정보 조회", description = "userId 값으로 해당 회원 정보 조회")
     @GetMapping("/{userId}")
-    public ResponseEntity<ApiResponse<UserDto>> getUserById(@PathVariable int userId) {
+    public ResponseEntity<ApiResponse<UserDto>> getUserById(@Parameter(description = "회원의 id(PK)") @PathVariable int userId) {
         UserDto user = userService.getUserById(userId);
 
         if (user == null) {
