@@ -22,6 +22,8 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 								   WebSocketHandler webSocketHandler,
 								   Map<String, Object> attributes) throws Exception{
 
+		log.info("[WebSocket] 클라이언트 연결 시도");
+
 		HttpServletRequest servletRequest = ((ServletServerHttpRequest) request).getServletRequest();
 		String token = servletRequest.getParameter("token");
 
@@ -45,7 +47,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 							   ServerHttpResponse response,
 							   WebSocketHandler wsHandler,
 							   Exception exception) {
-
+		log.info("[WebSocket] 클라이언트 연결 완료");
 	}
 
 
