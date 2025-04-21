@@ -13,7 +13,7 @@ import java.io.Serializable;
 public class UserInfo implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L; // 권장되는 직렬화 버전 UID
-
+    private final Long id; // 👈 추가
     private final String email;
     private final String username;
     private String password;
