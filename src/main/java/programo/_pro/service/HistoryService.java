@@ -5,6 +5,6 @@
 //@Service
 //public class HistoryService {
 //    public void getHistory(String testId) {
-//
+//        // testId 값을 받아오면,
 //    }
 //}
