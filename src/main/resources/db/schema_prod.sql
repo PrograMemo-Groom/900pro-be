@@ -188,3 +188,98 @@ CREATE TABLE password_reset_token
 INSERT INTO gubaekpro.user
 (id, email, user_name, password, created_at, is_active)
 VALUES(0, 'test123@example.com', 'test123', 'test123@!!', current_timestamp(), 1);
+
+
+-- 샘플 데이터 삽입
+-- ✅ user
+INSERT INTO user (email, user_name, password, is_active)
+VALUES
+    ('alice@example.com', 'Alice', 'pw1', TRUE),
+    ('bob@example.com', 'Bob', 'pw2', TRUE),
+    ('charlie@example.com', 'Charlie', 'pw3', TRUE);
+
+-- ✅ team
+INSERT INTO team (team_name, description, level, problem_count, start_time, duration_time, current_members, leader_id, is_active)
+VALUES
+    ('Team Alpha', 'First team', 'EASY', 2, NOW(), 60, 3, 1, TRUE),
+    ('Team Beta', 'Second team', 'MEDIUM', 3, NOW(), 90, 2, 2, TRUE);
+
+-- ✅ team_member
+INSERT INTO team_member (user_id, team_id, is_leader)
+VALUES
+    (1, 1, TRUE),
+    (2, 1, FALSE),
+    (3, 1, FALSE),
+    (2, 2, TRUE),
+    (3, 2, FALSE);
+
+-- ✅ problem
+INSERT INTO problem (baek_num, title, description, level, ex_input, ex_output, time_limit, memory_limit)
+VALUES
+    (1000, 'A + B', 'Add two numbers', 'EASY', '1 2', '3', 1, 128),
+    (1001, 'A - B', 'Subtract two numbers', 'EASY', '3 1', '2', 1, 128),
+    (1002, 'Multiply', 'Multiply numbers', 'MEDIUM', '2 3', '6', 2, 256);
+
+-- ✅ chatroom
+INSERT INTO chatroom (team_id)
+VALUES
+    (1), (2);
+
+-- ✅ message
+INSERT INTO message (chat_room_id, user_id, content)
+VALUES
+    (1, 1, 'Hello team!'),
+    (1, 2, 'Hi Alice!'),
+    (2, 2, 'Let’s start the test.');
+
+-- ✅ test
+INSERT INTO test (team_id)
+VALUES
+    (1),
+    (2);
+
+-- ✅ test_problem
+INSERT INTO test_problem (test_id, problem_id)
+VALUES
+    (1, 1),
+    (1, 2),
+    (2, 2),
+    (2, 3);
+
+-- ✅ code
+INSERT INTO code (test_id, problem_id, user_id, language, submit_code, status)
+VALUES
+    (1, 1, 1, 'Java', 'public class A {}', 'COMPLETED'),
+    (1, 2, 2, 'Python', 'print(1-2)', 'IN_PROGRESS'),
+    (2, 3, 3, 'C++', 'int main() {}', 'ABSENT');
+
+-- ✅ code_highlight
+INSERT INTO code_highlight (user_id, code_id, start_pos, end_pos, color, memo)
+VALUES
+    (1, 1, '1:1', '1:10', 'yellow', 'main logic'),
+    (2, 2, '2:5', '2:15', 'red', 'bug here');
+
+-- ✅ chatbot
+INSERT INTO chatbot (team_id, test_date, message)
+VALUES
+    (1, CURDATE(), 'Test will begin shortly'),
+    (2, CURDATE(), 'Reminder: test today');
+
+-- ✅ chatbot_problem
+INSERT INTO chatbot_problem (chatbot_id, problem_id)
+VALUES
+    (1, 1),
+    (1, 2),
+    (2, 3);
+
+-- ✅ email_verification
+INSERT INTO email_verification (email, code, expired_at)
+VALUES
+    ('alice@example.com', 123456, NOW() + INTERVAL 5 MINUTE),
+    ('bob@example.com', 654321, NOW() + INTERVAL 10 MINUTE);
+
+-- ✅ password_reset_token
+INSERT INTO password_reset_token (user_id, tempPassword)
+VALUES
+    (1, 'tempPw123!'),
+    (2, 'resetMe456!');
