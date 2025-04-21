@@ -45,6 +45,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     // 로그인 시도 시 자동 호출하고 인증 로직 처리 로직 실행
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        // 디버깅 추가
+        log.debug("Request {}, Response {}", request, request);
         if (postOnly && !request.getMethod().equals("POST")) {
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         } else {
