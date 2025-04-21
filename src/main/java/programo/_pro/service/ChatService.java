@@ -48,7 +48,7 @@ public class ChatService {
 		// 챗봇 메시지 조회
 		List<Chatbot> chatbots = chatbotRepository.findByTeam_Id(chatRoomId);
 
-		// 사용자의 메시지 + 챗봇 메시지를 합친 후 정렬
+		// 사용자 메시지 + 챗봇 메시지 가져오기
 		List<ChatMessageResponse> chatMessages = messages.stream()
 				.map(message -> new ChatMessageResponse(
 						message.getId(),
