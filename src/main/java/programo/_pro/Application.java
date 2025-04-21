@@ -23,7 +23,9 @@ public class Application {
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/**") // 모든 경로에 대한 HTTP 요청을 처리
                         .allowedMethods("*") // 모든 http 메소드를 허용
-                        .allowedOrigins("http://localhost:5173"); // "http://localhost:5173"에서 오는 요청만 허용
+                        .allowedOrigins("http://localhost:5173", "http://localhost:5174") // "http://localhost:5173"에서 오는 요청만 허용
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
             }
         };
     }
