@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import programo._pro.dto.chatDto.ChatMessageRequest;
 import programo._pro.dto.chatDto.ChatMessageResponse;
@@ -105,4 +107,12 @@ public class ChatController {
 			@PathVariable Long chatRoomId) {
 		chatService.sendChatbotMessageToChatRoom(chatRoomId); // 시험 시작 시간에 맞춰 챗봇 메시지 전송
 	}
+
+	// 웹소켓 메시지 전송 (웹소켓 메시지를 처리하는 부분)
+	@MessageMapping("/chat/{chatRoomId}/send-message")  // 웹소켓 경로
+	@SendTo("/sub/chat/room/{chatRoomId}")  // 클라이언트로 메시지 전송
+	public ChatMessageResponse sendMessage(ChatMessageRequest messageRequest) {
+		return chatService.processUserMessage(messageRequest);  // 메시지 처리 후 응답
+	}
+
 }
