@@ -53,7 +53,7 @@ public class JwtService {
     public String createToken(JwtUserInfoDto member) {
         Claims claims = Jwts.claims();
         claims.put("email", member.getEmail()); // 이메일을 토큰에 삽입
-        claims.put("id", member.getId()); // user_id를 토큰에 삽입
+        claims.put("userId", member.getId()); // user_id를 토큰에 삽입
 
         String accessToken = generateAccessToken(member);
         String refreshToken = generateRefreshToken(member);
@@ -65,7 +65,7 @@ public class JwtService {
     public String createToken(JwtUserInfoDto member, Instant expiredTime) {
         Claims claims = Jwts.claims();
         claims.put("email", member.getEmail()); // 이메일을 토큰에 삽입
-        claims.put("id", member.getId()); // user_id를 토큰에 삽입
+        claims.put("userId", member.getId()); // user_id를 토큰에 삽입
         Date expires = Date.from(expiredTime); //
 
         return makeToken(key, claims, expires);
@@ -85,7 +85,7 @@ public class JwtService {
     private String generateAccessToken(JwtUserInfoDto member) {
         Claims claims = Jwts.claims();
         claims.put("email", member.getEmail()); // 토큰에 이메일 삽입
-        claims.put("id", member.getId()); // 토큰에 id 삽입
+        claims.put("userId", member.getId()); // 토큰에 id 삽입
 
         long now = (new Date()).getTime();
         Date expires = new Date(now + accessTokenExpireTime);
@@ -97,7 +97,7 @@ public class JwtService {
     private String generateRefreshToken(JwtUserInfoDto member) {
         Claims claims = Jwts.claims();
         claims.put("email", member.getEmail()); // 토큰에 이메일 삽입
-        claims.put("id", member.getId()); // 토큰에 id 삽입
+        claims.put("userId", member.getId()); // 토큰에 id 삽입
 
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime expires = now.plusSeconds(refreshTokenExpireTime);

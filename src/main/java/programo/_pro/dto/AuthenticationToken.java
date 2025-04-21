@@ -11,7 +11,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class AuthenticationToken implements UserDetails {
-    private final Long id;
+    private final Long id; // userId
     private final String email;
     private final String password;
 
