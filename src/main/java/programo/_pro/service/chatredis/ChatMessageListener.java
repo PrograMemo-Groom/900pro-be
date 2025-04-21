@@ -4,11 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
-@RequiredArgsConstructor
 @Component
 public class ChatMessageListener {
 
 	private final SimpMessagingTemplate messagingTemplate;
+
+	public ChatMessageListener(SimpMessagingTemplate messagingTemplate) {
+		this.messagingTemplate = messagingTemplate;
+	}
 
 	// Redis에서 메시지가 도착했을 때 호출되는 메서드
 	public void onMessage(String message) {
