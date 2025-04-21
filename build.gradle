@@ -65,6 +65,8 @@ dependencies {
 	annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+	// Reactor Netty
+	implementation 'io.projectreactor.netty:reactor-netty:1.0.22'
 
 	// etc..
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
