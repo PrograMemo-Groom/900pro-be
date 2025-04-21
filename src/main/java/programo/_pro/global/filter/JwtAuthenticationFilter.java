@@ -45,6 +45,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     // 로그인 시도 시 자동 호출하고 인증 로직 처리 로직 실행
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        // 디버깅 추가
+        log.debug("Request {}, Response {}", request, request);
+
+        // Preflight 요청은 바로 pass
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            log.info("Preflight 요청, 인증 시도하지 않음");
+            return null; // 이러면 doFilterChain에서 인증 실패로 빠지지 않음
+        }
         if (postOnly && !request.getMethod().equals("POST")) {
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         } else {
@@ -53,9 +61,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 String email = requestDto.getEmail();
                 String password = requestDto.getPassword();
 
+                log.info("56: @@@@@@@@@@@@@@ Email: {}, Password: {}", email, password);
+
                 User user = userRepository.findByEmail(email).orElseThrow(() -> new AuthenticationServiceException("존재하지 않는 사용자입니다.")); // 로그인 실패 예외 던짐
 
+
+                log.info("@@@@@@@@@@@@@@ User: {}", user);
                 if (!user.isActive()) {
+                    log.error("63 : error발생!!!!!!!!@@!@#!@#!@#!@#!@#");
                     throw new AuthenticationServiceException("탈퇴한 계정이거나 존재하지 않습니다."); // 로그인 실패 예외 던짐
                 }
 
@@ -63,10 +76,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(email, password));
 
             } catch (IOException e) {
+                log.error("71 :" + e.getMessage());
                 // 추후 구체화 된 예외로 변경
                 throw new RuntimeException(e);
             } catch (AuthenticationException e) { // 로그인 실패 예외를 잡음
                 // 여기서 실패 처리 메소드를 직접 호출하고 null 반환
+                log.error("76 :" + e.getMessage());
                 try {
                     unsuccessfulAuthentication(request, response, e); // 실페 처리 메서드 호출
                 } catch (IOException ex) {
@@ -85,6 +100,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         User user = userRepository.findByEmail(email).orElseThrow(UserException::byEmail);
         Long userId = user.getId();
 
+        log.info("여기까지 왔으면 로그인 성공이야!!!!");
 
         String token = jwtService.createToken(new JwtUserInfoDto(userId ,email)); // 이메일을 이용해 JWT Token 생성
 
@@ -102,6 +118,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     // 여기서 로그인 예외를 잡아서 ErrorResponse 객체로 응답
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
+        // 로그인 실패
+        log.error("@@@@@@@@@@@@ FAILED" + failed.getMessage());
+
+
         ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.UNAUTHORIZED.value(), failed.getMessage(), "/login", "아이디와 비밀번호가 올바르지 않습니다.");
         String responseJSON = new ObjectMapper().writeValueAsString(errorResponse);
         response.setContentType("application/json; charset=UTF-8"); // JSON 타입 + UTF-8 설정
