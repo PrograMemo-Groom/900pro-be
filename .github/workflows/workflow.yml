@@ -58,7 +58,7 @@ jobs:
 
           echo "🚀 Running new container"
           docker run -d \
-            --env-file .env \
+            --env-file .env.prod \
             -p 8080:8080 \
             --name myapp \
             ${{ secrets.DOCKER_USERNAME }}/900pro:latest \

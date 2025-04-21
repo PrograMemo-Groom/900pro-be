@@ -1,5 +1,6 @@
 package programo._pro.global.filter;
 
+import programo._pro.service.CustomUserDetailsService;
 import programo._pro.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -11,7 +12,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -24,7 +24,8 @@ import java.io.IOException;
 토큰이 없거나 유효하지 않으면 인증 오류 반환 */
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
-    private final UserDetailsService userDetailsService;
+//    private final UserDetailsService userDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
     private final JwtService jwtService;
 
     @Override
@@ -36,7 +37,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 String token = authorizationHeader.substring(7);
                 if (jwtService.validateAccessToken(token, response)) {
                     String email = jwtService.getUserEmail(token);
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                    UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
 
                     if (userDetails != null) {
                         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

@@ -6,5 +6,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class JwtUserInfoDto {
+    private long Id;
     private String email;
 }

@@ -26,6 +26,7 @@ public class AuthController {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
+    @Operation(summary = "회원가입", description = "입력한 정보로 회원가입")
     @PostMapping("/join")
     public ResponseEntity<ApiResponse<User>> signUp(@RequestBody @Valid SignUpDto signUpDto) {
         return ResponseEntity.ok(ApiResponse.success(authService.signUp(signUpDto.toService())));
@@ -53,6 +54,7 @@ public class AuthController {
     }
 
     // 비밀번호 초기화 후 임시비밀번호를 입력해서 로그인 시도할 때 값 검증 메서드
+    @Operation(summary = "임시 비밀번호값 검증", description = "비밀번호 초기화 후 임시비밀번호를 입력해서 로그인 시도할 때 값 검증 메서드")
     @PostMapping("/verify")
     public ResponseEntity<ApiResponse<String>> authenticate(@RequestBody @Valid SignInDto signInDto) {
         boolean isMatch = authService.authenticate(signInDto.getEmail(), signInDto.getPassword());
