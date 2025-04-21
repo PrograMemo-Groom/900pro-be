@@ -2,6 +2,7 @@ package programo._pro.config.security;
 
 import programo._pro.global.filter.JwtAuthFilter;
 import programo._pro.global.filter.JwtAuthenticationFilter;
+import programo._pro.repository.UserRepository;
 import programo._pro.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +26,7 @@ public class SecurityConfig {
     private final UserDetailsService customUserDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
+    private final UserRepository userRepository;
 //   사용자 인증을 처리하는 핵심 매니저 객체를 꺼내서 Bean으로 등록하는 함수
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
@@ -35,7 +36,7 @@ public class SecurityConfig {
 //    클라이언트가 로그인 요청을 보냈을 때, 아이디/비밀번호를 인증하고 JWT를 생성하는 필터
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtService);
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtService, userRepository);
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return filter;
     }
@@ -61,7 +62,7 @@ public class SecurityConfig {
                         // 개발환경에서는 모든 요청 허용 -> 추후 운영서버는 수정
                         .anyRequest().permitAll()
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtService), UsernamePasswordAuthenticationFilter.class) // JWT 검증 필터 삽입
+                .addFilterBefore(new JwtAuthenticationFilter(jwtService, userRepository), UsernamePasswordAuthenticationFilter.class) // JWT 검증 필터 삽입
                 .addFilterAfter(new JwtAuthFilter(customUserDetailsService, jwtService), UsernamePasswordAuthenticationFilter.class) // JWT 검증 필터 삽입
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint));
         return http.build();

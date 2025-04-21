@@ -29,7 +29,7 @@ public class JwtService {
 
     private static final long ONE_SECOND = 1000;
     private static final long ONE_MINUTE = ONE_SECOND * 60;
-    private static final String EMAIL_KEY = "email";
+//    private static final String EMAIL_KEY = "email";
     private static final String INVALID_TOKEN_MESSAGE = "INVALID_TOKEN";
 
     // 여기서 Base64는 충분히 안전합니다. 그 이유는:
@@ -51,6 +51,10 @@ public class JwtService {
 
     // 토큰 생성 및 저장
     public String createToken(JwtUserInfoDto member) {
+        Claims claims = Jwts.claims();
+        claims.put("email", member.getEmail()); // 이메일을 토큰에 삽입
+        claims.put("userId", member.getId()); // user_id를 토큰에 삽입
+
         String accessToken = generateAccessToken(member);
         String refreshToken = generateRefreshToken(member);
         saveToRedis(accessToken, refreshToken); // Redis 저장
@@ -60,8 +64,9 @@ public class JwtService {
     // 토큰 만료 시간을 외부에서 지정하는 경우 사용
     public String createToken(JwtUserInfoDto member, Instant expiredTime) {
         Claims claims = Jwts.claims();
-        claims.put(EMAIL_KEY, member.getEmail());
-        Date expires = Date.from(expiredTime);
+        claims.put("email", member.getEmail()); // 이메일을 토큰에 삽입
+        claims.put("userId", member.getId()); // user_id를 토큰에 삽입
+        Date expires = Date.from(expiredTime); //
 
         return makeToken(key, claims, expires);
     }
@@ -79,7 +84,8 @@ public class JwtService {
     // Claims 객체는 토큰에 정보들을 담는 객체라고 한다
     private String generateAccessToken(JwtUserInfoDto member) {
         Claims claims = Jwts.claims();
-        claims.put(EMAIL_KEY, member.getEmail());
+        claims.put("email", member.getEmail()); // 토큰에 이메일 삽입
+        claims.put("userId", member.getId()); // 토큰에 id 삽입
 
         long now = (new Date()).getTime();
         Date expires = new Date(now + accessTokenExpireTime);
@@ -90,7 +96,9 @@ public class JwtService {
     // RefreshToken도 Claims에 이메일을 담아서 생성
     private String generateRefreshToken(JwtUserInfoDto member) {
         Claims claims = Jwts.claims();
-        claims.put(EMAIL_KEY, member.getEmail());
+        claims.put("email", member.getEmail()); // 토큰에 이메일 삽입
+        claims.put("userId", member.getId()); // 토큰에 id 삽입
+
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime expires = now.plusSeconds(refreshTokenExpireTime);
         return makeToken(refreshKey, claims, Date.from(now.toInstant()), Date.from(expires.toInstant()));
@@ -117,12 +125,12 @@ public class JwtService {
     }
 
     public String getUserEmail() {
-        return getUserInfo(EMAIL_KEY);
+        return getUserInfo("email");
     }
 
     public String getUserEmail(String accessToken) {
         return parseClaims(accessToken)
-                .get(EMAIL_KEY, String.class);
+                .get("email", String.class);
     }
 
     private String getUserInfo(String needKey) {
@@ -131,7 +139,7 @@ public class JwtService {
             userDetails = (UserDetails) authentication.getPrincipal();
             return switch (needKey) {
                 // UserDetails 인터페이스에서는 getUsername()이 실제로 이메일을 반환함
-                case EMAIL_KEY -> userDetails.getUsername();
+                case "email" -> userDetails.getUsername();
                 default -> throw new NotFoundUserException("유저 정보를 찾을 수 없습니다.");
             };
         }

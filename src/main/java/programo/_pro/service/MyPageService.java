@@ -53,4 +53,15 @@ public class MyPageService {
         // 해당 유저의 정보 업데이트
         userRepository.save(user);
     }
+
+    public void deleteUser(int userId) {
+        // 정보를 수정할 유저 객체 가져옴
+        User user = userRepository.findById((long) userId).orElseThrow(NotFoundUserException::byId);
+
+        // 회원 정보 비활성화 상태로 변경
+        user.setActive(false);
+
+        // 변경된 상태 업데이트
+        userRepository.save(user);
+    }
 }
