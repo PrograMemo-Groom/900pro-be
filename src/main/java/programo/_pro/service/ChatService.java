@@ -9,8 +9,8 @@ import programo._pro.dto.chatDto.ChatMessageRequest;
 import programo._pro.dto.chatDto.ChatMessageResponse;
 import programo._pro.entity.*;
 import programo._pro.global.exception.chatException.NotFoundChatException;
-import programo._pro.global.exception.teamException.NotFoundTeamException;
 
+import programo._pro.global.exception.teamException.TeamException;
 import programo._pro.repository.*;
 import programo._pro.service.chatredis.ChatPublisherService;
 
@@ -36,7 +36,7 @@ public class ChatService {
 	// 팀이 생성되면 자동으로 채팅방 생성
 	public void createChatRoom(Long teamId) {
 		Team team = teamRepository.findById(teamId)
-				.orElseThrow(NotFoundTeamException::new);
+				.orElseThrow(TeamException::NotFoundTeamException);
 
 		ChatRoom chatRoom = new ChatRoom();
 		chatRoom.setTeam(team);
