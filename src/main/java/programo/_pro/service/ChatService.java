@@ -134,7 +134,7 @@ public class ChatService {
 	}
 
 	// 사용자가 채팅 메시지 전송
-	public void processUserMessage(ChatMessageRequest request) {
+	public ChatMessageResponse processUserMessage(ChatMessageRequest request) {
 		ChatRoom chatRoom = chatRoomRepository.findById(request.getChatRoomId())
 				.orElseThrow(NotFoundChatException::NotFoundChatRoomException);
 
@@ -164,6 +164,7 @@ public class ChatService {
 		);
 
 		messagingTemplate.convertAndSend("/sub/chat/room/" + chatRoom.getId(), response);
+		return response;
 	}
 
 	@Scheduled(cron = "0 0/5 * * * ?")  // 매 5분마다 실행
