@@ -24,5 +24,6 @@ public class TeamMember {
 	private Team team;  // FK → team.id
 
 	@Column(name = "is_leader", nullable = false)
+	@Builder.Default
 	private boolean isLeader = false;
 }
