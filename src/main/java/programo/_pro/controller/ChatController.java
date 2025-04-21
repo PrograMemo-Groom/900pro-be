@@ -103,6 +103,6 @@ public class ChatController {
 	public void sendChatbotMessageAtTestStart(
 			@Parameter(description = "채팅방 ID에 따라 챗봇 메시지를 전송합니다.", required = true)
 			@PathVariable Long chatRoomId) {
-		chatService.sendChatbotMessageToTeam(chatRoomId); // 시험 시작 시간에 맞춰 챗봇 메시지 전송
+		chatService.sendChatbotMessageToChatRoom(chatRoomId); // 시험 시작 시간에 맞춰 챗봇 메시지 전송
 	}
 }
