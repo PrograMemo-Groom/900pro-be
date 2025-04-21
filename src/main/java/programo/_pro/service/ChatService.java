@@ -166,29 +166,33 @@ public class ChatService {
 		messagingTemplate.convertAndSend("/sub/chat/room/" + chatRoom.getId(), response);
 	}
 
-	@Scheduled(cron = "0 0/5 * * * ?")  // 매일 5분마다 실행
+	@Scheduled(cron = "0 0/5 * * * ?")  // 매 5분마다 실행
 	public void scheduleChatbotMessage() {
 		List<Team> teams = teamRepository.findAll();  // 모든 팀 가져오기
-		LocalDateTime now = LocalDateTime.now();  // 현재 시간
+		ZoneId seoulZone = ZoneId.of("Asia/Seoul");  // 서울 시간대 설정
 
 		for (Team team : teams) {
 			LocalDateTime testStartTime = team.getStartTime(); // 각 팀의 시험 시작 시간
+			LocalDateTime nowInSeoul = LocalDateTime.now(seoulZone); // 서울 시간 기준으로 현재 시간 가져오기
 
-			// 팀의 시험 시작 시간이 오늘과 동일한 경우, 해당 팀에 챗봇 메시지 전송
-			if (testStartTime.toLocalDate().isEqual(now.toLocalDate())) {
+			// 시험 시작 시간이 되면 바로 챗봇 메시지 전송
+			if (nowInSeoul.isEqual(testStartTime) || nowInSeoul.isAfter(testStartTime)) {
 				log.info("[팀 처리] 팀 {}의 시험 시작 시간이 도래했습니다. 챗봇 메시지 전송 시작.", team.getTeamName());
-				sendChatbotMessageToTeam(team.getId());  // 해당 팀에 챗봇 메시지 전송
+				sendChatbotMessageToChatRoom(team.getId());  // 해당 팀에 챗봇 메시지 전송
 			}
 		}
 	}
 
-	// 챗봇 메시지 전송 (팀에 맞게 챗봇 메시지를 전송)
-	public void sendChatbotMessageToTeam(Long teamId) {
-		Team team = teamRepository.findById(teamId)
-				.orElseThrow(NotFoundTeamException::new);
+	// 챗봇 메시지 전송 (채팅방에 맞게 챗봇 메시지를 전송)
+	public void sendChatbotMessageToChatRoom(Long chatRoomId) {
+		// chatRoomId를 이용해 팀을 찾아야 합니다.
+		ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+				.orElseThrow(NotFoundChatException::NotFoundChatRoomException);
+
+		Team team = chatRoom.getTeam();  // 해당 채팅방에 소속된 팀을 가져옵니다.
 
 		// 시험 시작 시간 체크 (만약 시험 시작 시간이 지나지 않았다면 메시지 전송하지 않음)
-		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 		LocalDateTime testStartTime = team.getStartTime();
 		if (now.isBefore(testStartTime)) {
 			log.info("[팀 처리] 팀 {}의 시험 시작 시간이 아직 되지 않았습니다.", team.getTeamName());
@@ -209,6 +213,7 @@ public class ChatService {
 				.filter(chatbot -> chatbot.getTestDate().toLocalDate().isEqual(now.toLocalDate()))  // 현재 날짜와 시험 날짜가 일치하는 메시지만 전송
 				.forEach(chatbot -> createAndSendChatbotMessage(chatbot, team));  // 해당 날짜의 챗봇 메시지만 보내기
 	}
+
 
 	// 공통적인 챗봇 메시지 생성 및 전송 형식
 	private void createAndSendChatbotMessage(Chatbot chatbot, Team team) {
