@@ -22,6 +22,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         // 조회된 유저의 id, email, password를 담은 커스텀 UserDetails 객체(AuthenticationToken)를 반환
         // 이 객체는 Spring Security의 인증 과정에서 사용자 정보로 사용됨
-        return new AuthenticationToken(user.getId(), user.getEmail(), user.getPassword());
+        return new AuthenticationToken(user.getEmail(), user.getPassword());
     }
 }

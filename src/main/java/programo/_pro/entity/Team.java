@@ -51,6 +51,7 @@ public class Team {
 	private LocalDateTime createdAt;
 
 	@Column(name = "is_active")
+	@Builder.Default
 	private boolean isActive = true;
 
 	//도메인메서드 : setter 대신 사용

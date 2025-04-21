@@ -40,3 +40,6 @@ out/
 *.env
 /.env.dev
 /.env.prod
+
+### QueryDsl이 생성하는 코드 ###
+/src/main/generated/

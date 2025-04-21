@@ -18,7 +18,10 @@ public class SignUpDto {
     private String email;
 
     @Size(max = 8, message = "닉네임은 최대 8자까지 가능합니다.")
-    @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "닉네임은 영문자와 숫자만 사용할 수 있습니다.")
+    @Pattern(
+            regexp = "^[a-zA-Z0-9가-힣]*$", // 한글 닉네임도 가능
+            message = "닉네임은 한글, 영문자, 숫자만 사용할 수 있습니다."
+    )
     @Schema(description = "사용자 닉네임", example = "dongdong123")
     private String username;
 

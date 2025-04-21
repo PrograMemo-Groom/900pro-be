@@ -1,23 +1,24 @@
 package programo._pro.config.security;
 
-import programo._pro.global.filter.JwtAuthFilter;
-import programo._pro.global.filter.JwtAuthenticationFilter;
-import programo._pro.repository.UserRepository;
-import programo._pro.service.CustomUserDetailsService;
-import programo._pro.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import programo._pro.global.filter.JwtAuthFilter;
+import programo._pro.global.filter.JwtAuthenticationFilter;
+import programo._pro.repository.UserRepository;
+import programo._pro.service.CustomUserDetailsService;
+import programo._pro.service.JwtService;
 
 @Configuration
 @EnableWebSecurity
@@ -28,17 +29,22 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final UserRepository userRepository;
-//   사용자 인증을 처리하는 핵심 매니저 객체를 꺼내서 Bean으로 등록하는 함수
+
+    //   사용자 인증을 처리하는 핵심 매니저 객체를 꺼내서 Bean으로 등록하는 함수
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(customUserDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+
+        return new ProviderManager(provider);
     }
 
-//    클라이언트가 로그인 요청을 보냈을 때, 아이디/비밀번호를 인증하고 JWT를 생성하는 필터
+    //    클라이언트가 로그인 요청을 보냈을 때, 아이디/비밀번호를 인증하고 JWT를 생성하는 필터
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
+    public JwtAuthenticationFilter jwtAuthenticationFilter(HttpSecurity http) throws Exception {
         JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtService, userRepository);
-        filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
+        filter.setAuthenticationManager(authenticationManager(http));
         return filter;
     }
 
