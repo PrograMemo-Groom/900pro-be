@@ -47,6 +47,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         // 디버깅 추가
         log.debug("Request {}, Response {}", request, request);
+
+        // Preflight 요청은 바로 pass
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            log.info("Preflight 요청, 인증 시도하지 않음");
+            return null; // 이러면 doFilterChain에서 인증 실패로 빠지지 않음
+        }
         if (postOnly && !request.getMethod().equals("POST")) {
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         } else {
