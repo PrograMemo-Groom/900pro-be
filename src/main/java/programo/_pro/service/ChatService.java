@@ -11,6 +11,7 @@ import programo._pro.global.exception.chatException.NotFoundChatException;
 import programo._pro.global.exception.teamException.NotFoundTeamException;
 
 import programo._pro.repository.*;
+import programo._pro.service.chatredis.ChatPublisherService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,6 +30,7 @@ public class ChatService {
 	private final ChatbotRepository chatbotRepository;
 	private final TeamRepository teamRepository;
 	private final SimpMessagingTemplate messagingTemplate;
+	private final ChatPublisherService chatPublisherService;
 
 	// 팀이 생성되면 자동으로 채팅방 생성
 	public void createChatRoom(Long teamId) {
@@ -143,6 +145,9 @@ public class ChatService {
 		message.setSendAt(ZonedDateTime.now());
 
 		messageRepository.save(message);
+
+		// Redis에 채팅 메시지 발행
+		chatPublisherService.publishMessage(chatRoom.getId().toString(), request.getContent());
 
 		// 메시지 전송
 		ChatMessageResponse response = new ChatMessageResponse(
