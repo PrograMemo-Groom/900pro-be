@@ -11,6 +11,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class AuthenticationToken implements UserDetails {
+    private final Long id;
     private final String email;
     private final String password;
 
@@ -31,6 +32,8 @@ public class AuthenticationToken implements UserDetails {
     public String getUsername() {
         return email;
     }
+
+    public Long getId(){ return id; }
 
     /**
      * 이메일을 반환하는 편의 메서드
@@ -61,6 +64,6 @@ public class AuthenticationToken implements UserDetails {
     }
 
     public static AuthenticationToken of(User u) {
-        return new AuthenticationToken(u.getEmail(), u.getPassword());
+        return new AuthenticationToken(u.getId(), u.getEmail(), u.getPassword());
     }
 }

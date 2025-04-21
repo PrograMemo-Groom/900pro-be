@@ -18,7 +18,6 @@ import programo._pro.dto.authDto.SignInDto;
 import programo._pro.entity.User;
 import programo._pro.global.ApiResponse;
 import programo._pro.global.ErrorResponse;
-import programo._pro.global.exception.userException.NotFoundUserException;
 import programo._pro.repository.UserRepository;
 import programo._pro.service.JwtService;
 
@@ -61,9 +60,19 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                     throw new AuthenticationServiceException("탈퇴한 계정이거나 존재하지 않습니다."); // 로그인 실패 예외 던짐
                 }
 
-                // 받아온 이메일, 패스워드 정보를 이용해 이메일이 존재하고, 비밀번호가 일치하면 성공 -> 성공시 인증정보가 담긴 객체 반환
-                return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(email, password));
+                // userId 추출
+                long userId = user.getId();
 
+//                return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(email, password));
+                // SpringSecurity 의 인증 매니저에게 인증 요청을 보냄
+                return getAuthenticationManager().authenticate(
+                        // 인증시 사용할 객체 UsernamePasswordAuthenticationToken 생성
+                        new UsernamePasswordAuthenticationToken(
+                                // 첫 번째 인자: principal(주체) - 우리가 만든 사용자 정보 객체(AuthenticationToken)
+                                new AuthenticationToken(userId, email, password), // userId, email, password
+                                // 두 번째 인자: credentials(자격 증명) - 비밀번호
+                                password // credentials
+                        ));
             } catch (IOException e) {
 
                 throw new RuntimeException(e); // 이외의 예외를 런타임 예외로 던져버림
@@ -83,8 +92,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     // 로그인 성공 시 스프링 시큐리티 내부에서 자동 호출
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        String email = ((AuthenticationToken) authResult.getPrincipal()).getUsername();
-        String token = jwtService.createToken(new JwtUserInfoDto(email)); // 이메일을 이용해 JWT Token 생성
+
+        // 기본 Spring Security 설정에서는 org.springframework.security.core.userdetails.User 객체가 반환됨
+        // 커스텀 Authentication 구현 시 직접 만든 객체(AuthenticationToken)이 반환됨
+        AuthenticationToken principal = (AuthenticationToken) authResult.getPrincipal();
+
+        String email = principal.getEmail();
+        long userId = principal.getId();
+        String token = jwtService.createToken(new JwtUserInfoDto(userId, email)); // 이메일, userId을 이용해 JWT Token 생성
 
         // 이 부분에서 사용자 정보가 담긴 토큰이 응답객체에 담김!@@#!#@!@@@@@@@
         ApiResponse<String> responseMessage = ApiResponse.success(token, "로그인에 성공했습니다");
