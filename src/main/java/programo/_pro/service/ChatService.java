@@ -3,6 +3,7 @@ package programo._pro.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import programo._pro.dto.chatDto.ChatMessageRequest;
 import programo._pro.dto.chatDto.ChatMessageResponse;
@@ -165,6 +166,22 @@ public class ChatService {
 		messagingTemplate.convertAndSend("/sub/chat/room/" + chatRoom.getId(), response);
 	}
 
+	@Scheduled(cron = "0 0 0 * * ?")  // 매일 자정에 실행 (매일 한 번 실행)
+	public void scheduleChatbotMessage() {
+		List<Team> teams = teamRepository.findAll();  // 모든 팀 가져오기
+		LocalDateTime now = LocalDateTime.now();  // 현재 시간
+
+		for (Team team : teams) {
+			LocalDateTime testStartTime = team.getStartTime(); // 각 팀의 시험 시작 시간
+
+			// 팀의 시험 시작 시간이 오늘과 동일한 경우, 해당 팀에 챗봇 메시지 전송
+			if (testStartTime.toLocalDate().isEqual(now.toLocalDate())) {
+				log.info("[팀 처리] 팀 {}의 시험 시작 시간이 도래했습니다. 챗봇 메시지 전송 시작.", team.getTeamName());
+				sendChatbotMessageToTeam(team.getId());  // 해당 팀에 챗봇 메시지 전송
+			}
+		}
+	}
+
 	// 챗봇 메시지 전송 (팀에 맞게 챗봇 메시지를 전송)
 	public void sendChatbotMessageToTeam(Long teamId) {
 		Team team = teamRepository.findById(teamId)
@@ -187,8 +204,10 @@ public class ChatService {
 			throw NotFoundChatException.NotFoundChatbotException();
 		}
 
-		// 챗봇 메시지 전송
-		chatbots.forEach(chatbot -> createAndSendChatbotMessage(chatbot, team));
+		// 챗봇 메시지 필터링: 해당 날짜에 시험 시작 시간일 경우, 메시지만 전송
+		chatbots.stream()
+				.filter(chatbot -> chatbot.getTestDate().toLocalDate().isEqual(now.toLocalDate()))  // 현재 날짜와 시험 날짜가 일치하는 메시지만 전송
+				.forEach(chatbot -> createAndSendChatbotMessage(chatbot, team));  // 해당 날짜의 챗봇 메시지만 보내기
 	}
 
 	// 공통적인 챗봇 메시지 생성 및 전송 형식
