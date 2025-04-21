@@ -166,7 +166,7 @@ public class ChatService {
 		messagingTemplate.convertAndSend("/sub/chat/room/" + chatRoom.getId(), response);
 	}
 
-	@Scheduled(cron = "0 0 0 * * ?")  // 매일 자정에 실행 (매일 한 번 실행)
+	@Scheduled(cron = "0 0/5 * * * ?")  // 매일 5분마다 실행
 	public void scheduleChatbotMessage() {
 		List<Team> teams = teamRepository.findAll();  // 모든 팀 가져오기
 		LocalDateTime now = LocalDateTime.now();  // 현재 시간
