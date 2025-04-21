@@ -3,6 +3,7 @@ package programo._pro.config.security;
 import programo._pro.global.filter.JwtAuthFilter;
 import programo._pro.global.filter.JwtAuthenticationFilter;
 import programo._pro.repository.UserRepository;
+import programo._pro.service.CustomUserDetailsService;
 import programo._pro.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtService jwtService;
-    private final UserDetailsService customUserDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final UserRepository userRepository;
