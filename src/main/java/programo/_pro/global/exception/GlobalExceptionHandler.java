@@ -3,7 +3,6 @@ package programo._pro.global.exception;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.NoResultException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import programo._pro.global.ApiResponse;
 import programo._pro.global.exception.chatException.NotFoundChatException;
-import programo._pro.global.exception.userException.NotFoundUserException;
+import programo._pro.global.exception.userException.UserException;
 
 @Slf4j
 @RestControllerAdvice
@@ -98,8 +97,8 @@ public class GlobalExceptionHandler {
     }
 
     // 유저 관련 예외처리
-    @ExceptionHandler(NotFoundUserException.class)
-    public ResponseEntity<ApiResponse<?>> handleNotFoundUserException(NotFoundUserException ex) {
+    @ExceptionHandler(UserException.class)
+    public ResponseEntity<ApiResponse<?>> handleNotFoundUserException(UserException ex) {
         ApiResponse<?> response = ApiResponse.fail(ex.getMessage());
         log.error(ex.getMessage(), ex);
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);

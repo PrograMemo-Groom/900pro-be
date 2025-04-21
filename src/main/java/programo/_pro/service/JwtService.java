@@ -4,7 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import programo._pro.dto.JwtUserInfoDto;
-import programo._pro.global.exception.userException.NotFoundUserException;
+import programo._pro.global.exception.userException.UserException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -140,7 +140,7 @@ public class JwtService {
             return switch (needKey) {
                 // UserDetails 인터페이스에서는 getUsername()이 실제로 이메일을 반환함
                 case "email" -> userDetails.getUsername();
-                default -> throw new NotFoundUserException("유저 정보를 찾을 수 없습니다.");
+                default -> throw new UserException("유저 정보를 찾을 수 없습니다.");
             };
         }
         return null;

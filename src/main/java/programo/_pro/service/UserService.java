@@ -3,7 +3,7 @@ package programo._pro.service;
 import programo._pro.dto.AuthenticationToken;
 import programo._pro.dto.userDto.UserDto;
 import programo._pro.entity.User;
-import programo._pro.global.exception.userException.NotFoundUserException;
+import programo._pro.global.exception.userException.UserException;
 import programo._pro.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,7 +18,7 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
 
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(NotFoundUserException::byEmail);
+        return userRepository.findByEmail(email).orElseThrow(UserException::byEmail);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class UserService implements UserDetailsService {
 
     public UserDto getUserById(int userId) {
         User user = userRepository.findById((long) userId)
-                .orElseThrow(NotFoundUserException::byId);
+                .orElseThrow(UserException::byId);
 
         UserDto userDto = UserDto.builder()
                 .id(user.getId())

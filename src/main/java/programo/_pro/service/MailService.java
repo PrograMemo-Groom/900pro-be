@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import programo._pro.dto.mailDto.EmailRequest;
 import programo._pro.entity.EmailVerification;
 import programo._pro.entity.User;
-import programo._pro.global.exception.userException.NotFoundUserException;
+import programo._pro.global.exception.userException.UserException;
 import programo._pro.repository.EmailVerificationRepository;
 import programo._pro.repository.UserRepository;
 
@@ -109,7 +109,7 @@ public class MailService {
             sendTemporaryPasswordMail(email, tempPassword);
 
             // 변경한 비밀번호로 회원정보 수정
-            User user = userRepository.findByEmail(email).orElseThrow(NotFoundUserException::byEmail);
+            User user = userRepository.findByEmail(email).orElseThrow(UserException::byEmail);
             String encodedPassword = passwordEncoder.encode(tempPassword); // 암호화 된 비밀번호 생성
             user.setPassword(encodedPassword); // 암호화된 임시 비밀번호 설정
 

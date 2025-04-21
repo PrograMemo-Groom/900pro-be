@@ -11,7 +11,7 @@ import programo._pro.entity.Team;
 import programo._pro.entity.TeamMember;
 import programo._pro.entity.User;
 import programo._pro.global.exception.teamException.TeamException;
-import programo._pro.global.exception.userException.NotFoundUserException;
+import programo._pro.global.exception.userException.UserException;
 import programo._pro.repository.TeamRepository;
 import programo._pro.repository.TeamMemberRepository;
 import programo._pro.repository.UserRepository;
@@ -105,7 +105,7 @@ public class TeamService {
     public Long createTeam(TeamCreateRequest dto, Long userId) {
         // ( 로그인된 ) 유저 id 받기 / 인증구현 완료전까진 컨트롤러에서 @RequestParam로 받아와서 쓰겠습니다
         User loginedUser = userRepository.findById(userId)
-                .orElseThrow(NotFoundUserException::byId);
+                .orElseThrow(UserException::byId);
 
         Team team = Team.builder()
                 .teamName(dto.getTeamName())
@@ -184,7 +184,7 @@ public class TeamService {
                 .orElseThrow(TeamException::NotFoundTeamException);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(NotFoundUserException::byId);
+                .orElseThrow(UserException::byId);
 
         team.setCurrentMembers(team.getCurrentMembers() + 1);
 

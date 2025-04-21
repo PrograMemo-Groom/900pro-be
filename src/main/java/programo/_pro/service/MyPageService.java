@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import programo._pro.dto.userDto.UserDto;
 import programo._pro.dto.userDto.UserInfoUpdateDto;
 import programo._pro.entity.User;
-import programo._pro.global.exception.userException.NotFoundUserException;
+import programo._pro.global.exception.userException.UserException;
 import programo._pro.repository.UserRepository;
 
 @Slf4j
@@ -23,7 +23,7 @@ public class MyPageService {
     public UserDto getUser(int userId) {
 
         // Id값으로 찾을 때 조회 실패시 예외 throw
-        User user = userRepository.findById((long) userId).orElseThrow(NotFoundUserException::byId);
+        User user = userRepository.findById((long) userId).orElseThrow(UserException::byId);
 
 
         // 응답용 객체에 데이터 세팅(비밀번호 포함x)
@@ -41,7 +41,7 @@ public class MyPageService {
     @Transactional
     public void updateUserInfo(int userId, UserInfoUpdateDto userInfoUpdateDto) {
         // 정보를 수정할 유저 객체 가져옴
-        User user = userRepository.findById((long) userId).orElseThrow(NotFoundUserException::byId);
+        User user = userRepository.findById((long) userId).orElseThrow(UserException::byId);
 
         // 입력한 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(userInfoUpdateDto.getPassword());
@@ -56,7 +56,7 @@ public class MyPageService {
 
     public void deleteUser(int userId) {
         // 정보를 수정할 유저 객체 가져옴
-        User user = userRepository.findById((long) userId).orElseThrow(NotFoundUserException::byId);
+        User user = userRepository.findById((long) userId).orElseThrow(UserException::byId);
 
         // 회원 정보 비활성화 상태로 변경
         user.setActive(false);
