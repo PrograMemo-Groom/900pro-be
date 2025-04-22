@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Base64;
+
 @Slf4j
 @Component
 public class JwtTokenProvider {
@@ -14,7 +16,10 @@ public class JwtTokenProvider {
 
 	public boolean validateToken(String token) {
 		try{
-			Jwts.parserBuilder().setSigningKey(secretKey.getBytes()).build().parseClaimsJws(token);
+			Jwts.parserBuilder()
+					.setSigningKey(Base64.getDecoder().decode(secretKey)) // ✅ 수정된 부분
+					.build()
+					.parseClaimsJws(token);
 			return true;
 		}
 		catch (Exception e){
