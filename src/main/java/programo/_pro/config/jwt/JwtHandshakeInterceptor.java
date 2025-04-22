@@ -25,7 +25,6 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 		log.info("[WebSocket] 클라이언트 연결 시도");
 
 		HttpServletRequest servletRequest = ((ServletServerHttpRequest) request).getServletRequest();
-		/*
 		String token = servletRequest.getParameter("token");
 
 		// 프론트측에서 /ws-chat으로 연결 테스트해야 나타나는 로그
@@ -39,8 +38,8 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 			return true;
 		}
 		log.warn("[WebSocket] JWT validation failed. Connection denied.");
-		 */
 
+		/*
 		String authHeader = servletRequest.getHeader("Authorization");
 		log.info("[WebSocket] Authorization 헤더: {}", authHeader);
 
@@ -55,6 +54,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 		}
 
 		log.warn("[WebSocket] JWT 유효하지 않음 ❌");
+		 */
 		return false;
 
 	}
