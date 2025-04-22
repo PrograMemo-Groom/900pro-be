@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -49,11 +48,16 @@ public class SecurityConfig {
         return filter;
     }
 
-    // 보안 필터를 아예 적용하지 않을 URL 패턴을 지정합니다.
+//    // 보안 필터를 아예 적용하지 않을 URL 패턴을 지정합니다.
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer() {
+//        // 개발 환경에서는 모든 요청에 대해 필터링을 적용하지 않습니다
+//        // 운영 환경에서는 절대 사용 금지 ****************************
+//        return webSecurity -> webSecurity.ignoring().requestMatchers("/**");
+//    }
+
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        // 개발 환경에서는 모든 요청에 대해 필터링을 적용하지 않습니다
-        // 운영 환경에서는 절대 사용 금지 ****************************
         return webSecurity -> webSecurity.ignoring().requestMatchers("/**");
     }
 
@@ -61,7 +65,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults()) // Cors 해결
                 // JWTs를 사용하는 REST API, CSRF 비활성화
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(AbstractHttpConfigurer::disable)
