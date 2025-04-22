@@ -15,14 +15,13 @@ public class JwtTokenProvider {
 	private String secretKey;
 
 	public boolean validateToken(String token) {
-		try{
+		try {
 			Jwts.parserBuilder()
-					.setSigningKey(Base64.getDecoder().decode(secretKey)) // ✅ 수정된 부분
+					.setSigningKey(Base64.getDecoder().decode(secretKey)) // ✅ Base64 decode
 					.build()
 					.parseClaimsJws(token);
 			return true;
-		}
-		catch (Exception e){
+		} catch (Exception e) {
 			log.warn("[JWT] Invalid token: {}", e.getMessage());
 			return false;
 		}
@@ -30,10 +29,11 @@ public class JwtTokenProvider {
 
 	public String getUserIdFromToken(String token) {
 		return Jwts.parserBuilder()
-				.setSigningKey(secretKey.getBytes())
+				.setSigningKey(Base64.getDecoder().decode(secretKey)) // ✅ 동일하게 decode
 				.build()
 				.parseClaimsJws(token)
 				.getBody()
 				.getSubject();
 	}
+
 }
