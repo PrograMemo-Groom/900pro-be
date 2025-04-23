@@ -33,6 +33,7 @@ public class EmailVerification {
     private LocalDateTime expiredAt;
 
     @Column(name = "is_verified", nullable = false)
+    @Builder.Default
     private boolean isVerified = false;
 
 
