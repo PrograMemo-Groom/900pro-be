@@ -5,8 +5,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Table(name = "code")
 @Entity
@@ -27,10 +29,13 @@ public class Code {
     @JoinColumn(name = "problem_id", nullable = false)
     private Problem problem;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "code", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private List<CodeHighight> codeHighlight;
 
     @Column(name = "language", nullable = false)
     private String language;
