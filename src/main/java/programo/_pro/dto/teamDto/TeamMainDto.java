@@ -26,7 +26,7 @@ public class TeamMainDto {
     @Schema(description = "문제 개수(3~5)", example = "5")
     private int problemCount;
 
-    @Schema(description = "시작 시각 (HH:mm 포맷)", example = "10:30")
+    @Schema(description = "시작 시각", example = "2025-04-22T10:00")
     private String startTime;
 
     @Schema(description = "응시 시간", example = "3")
