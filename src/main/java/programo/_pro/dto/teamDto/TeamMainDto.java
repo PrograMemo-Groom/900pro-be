@@ -20,7 +20,7 @@ public class TeamMainDto {
             "귀여운 햄스터를 보고싶다면 지금 당장 공부하세요. 찍찍\uD83D\uDC39 ")
     private String description;
 
-    @Schema(description = "난이도", example = "easy")
+    @Schema(description = "난이도", example = "EASY")
     private String level;
 
     @Schema(description = "문제 개수(3~5)", example = "5")

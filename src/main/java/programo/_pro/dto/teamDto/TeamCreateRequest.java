@@ -21,7 +21,7 @@ public class TeamCreateRequest {
     @Size(max = 700, message = "팀 설명은 적지 않거나, 최대 700자까지 입력 가능합니다")
     private String description;
 
-    @Schema(description = "팀 난이도", example = "medium", implementation = Level.class)
+    @Schema(description = "팀 난이도", example = "MEDIUM", implementation = Level.class)
     @NotNull
     private Level level;
 
