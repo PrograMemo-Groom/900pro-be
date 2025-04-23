@@ -10,4 +10,5 @@ import lombok.Setter;
 public class CodeRequestDto {
     private int test_id;
     private int problem_id;
+    private int user_id;
 }
