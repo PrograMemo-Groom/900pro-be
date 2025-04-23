@@ -48,7 +48,8 @@ public class TeamMainDto {
         this.description = team.getDescription();
         this.level = team.getLevel().name();
         this.problemCount = team.getProblemCount();
-        this.startTime = team.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"));
+//        this.startTime = team.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"));
+        this.startTime = team.getStartTime().toString();
         this.durationTime = team.getDurationTime();
         this.currentMembers = team.getCurrentMembers();
         this.leaderId = team.getLeader().getId();
