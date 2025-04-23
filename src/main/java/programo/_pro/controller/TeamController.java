@@ -40,7 +40,7 @@ public class TeamController {
     @GetMapping
     public ResponseEntity<List<TeamCardDto>> getAllTeams(
             @Parameter(description = "검색 키워드") @RequestParam(value = "keyword", required = false) String keyword,
-            @Parameter(description = "팀 난이도 필터 (all, 상, 중, 하)") @RequestParam(value = "level", required = false) String level,
+            @Parameter(description = "팀 난이도 필터 (all, EASY, MEDIUM, HARD)") @RequestParam(value = "level", required = false) String level,
             @Parameter(description = "일반 정렬 필터 (problemCount, name, createdAt, currentMembers)") @RequestParam(value = "sort", required = false) String sort
     ) {
         List<TeamCardDto> teamCards = teamService.getAllTeams(keyword, level, sort);
