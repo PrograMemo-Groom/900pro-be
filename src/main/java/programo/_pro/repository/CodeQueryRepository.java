@@ -4,7 +4,9 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import programo._pro.entity.Code;
+import programo._pro.entity.CodeHighight;
 import programo._pro.entity.QCode;
+import programo._pro.entity.QCodeHighight;
 
 import java.util.List;
 
@@ -13,19 +15,31 @@ import java.util.List;
 public class CodeQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
-
-    // test_id와 problem_id로 해당 problem_id 의 유저들의 풀이 리스트를 조회
-    public List<Code> findCodeByTestIdAndProblemId(long testId, long problemId) {
+    public List<Code> findCodeByTestIdAndProblemIdAndUserId(int testId, int problemId, int userId) {
         QCode qCode = QCode.code;
+//        QCodeHighight qHighlight = QCodeHighight.codeHighight;
 
-
-        List<Code> codes = jpaQueryFactory
-                .selectFrom(qCode) // Code 테이블에서 모든 컬럼을 가져온다
-                .where(qCode.id.eq(testId) // Code 테이블의 test_id 가 일치할 때
-                        .and(qCode.problem.id.eq(problemId))) // Code 테이블의 problem_id가 일치할 때
+        return jpaQueryFactory
+                .selectFrom(qCode)
+//                .leftJoin(qCode.codeHighlight, qHighlight).fetchJoin() // ✅ 연관관계 명확히 하고 fetchJoin
+                .where(
+                        qCode.test.id.eq((long) testId),
+                        qCode.problem.id.eq((long) problemId),
+                        qCode.user.id.eq((long) userId)
+                )
                 .fetch();
-
-        return codes;
     }
 
+    public List<CodeHighight> findHighlightByCodeIdAndUserId(int codeId, int userId) {
+        QCodeHighight qHighlight = QCodeHighight.codeHighight;
+
+        return jpaQueryFactory
+                .selectFrom(qHighlight)
+                .where(
+                        qHighlight.user.id.eq((long) userId),
+                        qHighlight.code.id.eq((long) codeId)
+                )
+                .fetch();
+
+    }
 }
