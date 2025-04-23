@@ -5,19 +5,15 @@ import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import programo._pro.dto.codeDto.CodeRequestDto;
-import programo._pro.entity.Code;
 import programo._pro.entity.Problem;
 import programo._pro.global.ApiResponse;
-import programo._pro.repository.CodeRepository;
 import programo._pro.service.CodeService;
 import programo._pro.service.HistoryService;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/history")
@@ -37,27 +33,12 @@ public class HistoryController {
     }
 
 
-//     팀원 코드 클릭 시 첫번째 팀원의 문제풀이를 조회
-    // test_id 와 problem_id를 받아야함
-    @PostMapping("/first-member/code")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> getFirstMemberCode(@RequestBody CodeRequestDto CodeRequestDto) {
-        Map<String, Object> data =  codeService.getFirstMemberCode(CodeRequestDto.getTest_id(), CodeRequestDto.getProblem_id());
+    // 팀원의 문제 풀이 정보와 하이라이트 테이블을 조회
+//     test_id 와 problem_id, user_id를 받아야함
+    @PostMapping("/member/code")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getCodeMemberCodeAndHighlight(@RequestBody CodeRequestDto CodeRequestDto) {
+        Map<String, Object> data =  codeService.getCodeMemberCodeAndHighlight(CodeRequestDto.getTest_id(), CodeRequestDto.getProblem_id(), CodeRequestDto.getUser_id());
 
         return ResponseEntity.ok(ApiResponse.success(data));
     }
-
-    // 문제 번호로 해당 문제의 정보를 조회합니다
-//    @GetMapping("/getproblem")
-//    public ResponseEntity<ApiResponse<Problem>> getProblem(@PathParam("problemId") int problemId) {
-//        Problem problem = historyService.getProblem(problemId);
-//
-//        return ResponseEntity.ok(ApiResponse.success(problem, "문제 정보를 성공적으로 조회했습니다"));
-//
-//    }
-
-//    // 팀원의 제출한 코드를 조회
-//    @GetMapping("/getSubmitCode")
-//    public ResponseEntity<ApiResponse<String>> getSubmitCode(@PathParam("submitCode") String submitCode) {
-//
-//    }
 }
