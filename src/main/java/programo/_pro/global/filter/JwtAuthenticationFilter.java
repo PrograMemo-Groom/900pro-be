@@ -15,14 +15,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import programo._pro.dto.AuthenticationToken;
 import programo._pro.dto.JwtUserInfoDto;
 import programo._pro.dto.authDto.SignInDto;
+import programo._pro.entity.Team;
+import programo._pro.entity.TeamMember;
 import programo._pro.entity.User;
 import programo._pro.global.ApiResponse;
 import programo._pro.global.ErrorResponse;
 import programo._pro.global.exception.userException.UserException;
+import programo._pro.repository.TeamMemberRepository;
 import programo._pro.repository.UserRepository;
 import programo._pro.service.JwtService;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /* UsernamePasswordAuthenticationFilter를 상속
 주 목적: 사용자 로그인 인증 처리
@@ -33,11 +39,13 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final TeamMemberRepository teamMemberRepository;
     private final boolean postOnly = true;
 
-    public JwtAuthenticationFilter(JwtService jwtService, UserRepository userRepository) {
+    public JwtAuthenticationFilter(JwtService jwtService, UserRepository userRepository, TeamMemberRepository teamMemberRepository) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
+        this.teamMemberRepository = teamMemberRepository;
 
         setFilterProcessesUrl("/api/auth/login"); // 이 필터가 처리할 url 직접 지정
     }
@@ -99,13 +107,37 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String email = ((AuthenticationToken) authResult.getPrincipal()).getUsername();
         User user = userRepository.findByEmail(email).orElseThrow(UserException::byEmail);
         Long userId = user.getId();
+        Long teamId = 0L; // 값 초기화
+
+        // userId, teamId 담기 위한 Map 객체
+        Map<String, Object> data = new HashMap<>();
+
+        // 해당 유저가 속한 팀을 조히
+        List<TeamMember> byUserId = teamMemberRepository.findByUserId(userId);
+
+        // 조회 결과 속한 팀이 없을 때
+        if(byUserId.isEmpty()){
+            teamId = null;
+        } else {
+            // 우리 프로젝트의 경우 특이 케이스로 딱 1개만 조회됨 유저 : 팀 = 1 : 1 관계
+            // 조회 데이터들 중 첫번 째 인덱스 값의 teamId 추출
+            Team team = byUserId.get(0).getTeam();
+            teamId = team.getId();
+        }
+        log.info("userId: " + userId + ", teamId: " + teamId);
 
         log.info("여기까지 왔으면 로그인 성공이야!!!!");
 
         String token = jwtService.createToken(new JwtUserInfoDto(userId ,email)); // 이메일을 이용해 JWT Token 생성
 
+        data.put("token" , token);
+        data.put("user_id" , userId);
+        data.put("team_id" , teamId); // team_id = null;
+
+        log.info("!@#!@#!@ data: {}", data);
+
         // 이 부분에서 사용자 정보가 담긴 토큰이 응답객체에 담김!@@#!#@!@@@@@@@
-        ApiResponse<String> responseMessage = ApiResponse.success(token, "로그인에 성공했습니다");
+        ApiResponse<Map<String, Object>> responseMessage = ApiResponse.success(data, "로그인에 성공했습니다");
 
         // 응답 객체 설정
         String responseJSON = new ObjectMapper().writeValueAsString(responseMessage);

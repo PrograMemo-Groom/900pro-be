@@ -12,6 +12,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import programo._pro.global.ApiResponse;
 import programo._pro.global.exception.chatException.NotFoundChatException;
+import programo._pro.global.exception.codeException.CodeException;
+import programo._pro.global.exception.highlightException.HighlightException;
+import programo._pro.global.exception.problemException.ProblemException;
+import programo._pro.global.exception.testException.TestException;
 import programo._pro.global.exception.userException.UserException;
 
 @Slf4j
@@ -104,5 +108,35 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    // 문제 관련 예외 처리
+    @ExceptionHandler(ProblemException.class)
+    public ResponseEntity<ApiResponse<?>> handleProblemException(ProblemException ex) {
+        ApiResponse<?> response = ApiResponse.fail(ex.getMessage());
+        log.error(ex.getMessage(), ex);
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
+    // 테스트 이벤트 관련 예외
+    @ExceptionHandler(TestException.class)
+    public ResponseEntity<ApiResponse<?>> handleTestException(TestException ex) {
+        ApiResponse<?> response = ApiResponse.fail(ex.getMessage());
+        log.error(ex.getMessage(), ex);
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    // 하이라이트 테이블 관련 예외
+    @ExceptionHandler(HighlightException.class)
+    public ResponseEntity<ApiResponse<?>> handleHighlightException(HighlightException ex) {
+        ApiResponse<?> response = ApiResponse.fail(ex.getMessage());
+        log.error(ex.getMessage(), ex);
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    // 제출 코드 관련 예외
+    @ExceptionHandler(CodeException.class)
+    public ResponseEntity<ApiResponse<?>> handleCodeException(CodeException ex) {
+        ApiResponse<?> response = ApiResponse.fail(ex.getMessage());
+        log.error(ex.getMessage(), ex);
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

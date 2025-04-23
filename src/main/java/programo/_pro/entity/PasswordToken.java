@@ -36,6 +36,7 @@ public class PasswordToken {
     private LocalDateTime expiredAt;
 
     @Column(name = "is_used", nullable = false)
+    @Builder.Default
     private boolean isUsed = false ;
 
 
