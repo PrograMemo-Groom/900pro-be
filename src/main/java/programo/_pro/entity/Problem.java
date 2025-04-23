@@ -44,6 +44,14 @@ public class Problem {
     @Schema(description = "예제 출력값")
     private String exOutput;
 
+    @Column(name = "input_des")
+    @Schema(description = "예제 입력값 설명")
+    private String inputDes;
+
+    @Column(name = "output_des")
+    @Schema(description = "예제 입력값 설명")
+    private String outputDes;
+
 
     @Column(name = "time_limit", nullable = false)
     @Schema(description = "문제의 시간제한")
