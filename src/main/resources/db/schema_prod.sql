@@ -1,6 +1,9 @@
 -- 데이터베이스 선택
 USE gubaekpro;
 
+-- DB 데이터베이스 문자셋 utf8mb4로 변경
+ALTER DATABASE gubaekpro CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
 DROP TABLE IF EXISTS
     password_reset_token,
     email_verification,
