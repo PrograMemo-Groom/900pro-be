@@ -121,7 +121,7 @@ CREATE TABLE code
     user_id      BIGINT NOT NULL,
     language     VARCHAR(50),
     submit_code  TEXT   NOT NULL,
-    submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    submit_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     status ENUM('IN_PROGRESS', 'COMPLETED', 'ABSENT') NOT NULL,
     FOREIGN KEY (test_id) REFERENCES test (id),
     FOREIGN KEY (problem_id) REFERENCES problem (id),
@@ -136,7 +136,7 @@ CREATE TABLE code_highlight
     code_id   BIGINT NOT NULL,
     start_pos TEXT   NOT NULL,
     end_pos   TEXT   NOT NULL,
-    color     ENUM('red', 'yellow', 'green', 'blue', 'pink', 'orange') DEFAULT 'yellow',
+    color     ENUM('RED', 'YELLOW', 'GREEN', 'BLUE', 'PINK', 'ORANGE') DEFAULT 'YELLOW',
     memo      TEXT,
     is_active BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (code_id) REFERENCES code (id),
@@ -256,8 +256,8 @@ VALUES
 -- ✅ code_highlight
 INSERT INTO code_highlight (user_id, code_id, start_pos, end_pos, color, memo)
 VALUES
-    (1, 1, '1:1', '1:10', 'yellow', 'main logic'),
-    (2, 2, '2:5', '2:15', 'red', 'bug here');
+    (1, 1, '1:1', '1:10', 'YELLOW', 'main logic'),
+    (2, 2, '2:5', '2:15', 'RED', 'bug here');
 
 -- ✅ chatbot
 INSERT INTO chatbot (team_id, test_date, message)
