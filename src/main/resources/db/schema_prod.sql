@@ -69,6 +69,8 @@ CREATE TABLE problem
     level ENUM('EASY', 'MEDIUM', 'HARD') NOT NULL,
     ex_input     TEXT,
     ex_output    TEXT,
+    input_des    TEXT,
+    output_des   TEXT,
     time_limit   INT,
     memory_limit INT
 );
@@ -256,8 +258,11 @@ VALUES
 -- ✅ code_highlight
 INSERT INTO code_highlight (user_id, code_id, start_pos, end_pos, color, memo)
 VALUES
+    (2, 1, '3:5', '10:20', 'BLUE', 'sub logic'),
     (1, 1, '1:1', '1:10', 'YELLOW', 'main logic'),
-    (2, 2, '2:5', '2:15', 'RED', 'bug here');
+    (2, 2, '2:5', '2:15', 'RED', 'bug here'),
+    (1, 1, '2:5', '2:15', 'RED', 'bug here'),
+    (1, 1, '2:5', '2:15', 'RED', 'bug here');
 
 -- ✅ chatbot
 INSERT INTO chatbot (team_id, test_date, message)
