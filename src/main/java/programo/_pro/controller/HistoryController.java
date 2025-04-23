@@ -1,5 +1,6 @@
 package programo._pro.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class HistoryController {
     private final CodeService codeService;
 
     // test이벤트 id 값으로 문제 정보와 문제 정보 리스트를 조회 (UI 상 왼쪽 화면 첫 세팅 API)
+    @Operation(summary = "테스트의 문제를 조회", description = "해당 테스트의 모든 문제 정보를 불러옵니다.")
     @GetMapping("/gethistory")
     public ResponseEntity<ApiResponse<List<Problem>>> getHistory(@PathParam("testId") int testId) {
         List<Problem> history = historyService.getHistory(testId);
@@ -35,6 +37,7 @@ public class HistoryController {
 
     // 팀원의 문제 풀이 정보와 하이라이트 테이블을 조회
 //     test_id 와 problem_id, user_id를 받아야함
+    @Operation(summary = "팀원 문제 풀이, 하이라이트,메모 조회", description = "팀원의 문제 풀이와 하이라이트 정보를 조회합니다.")
     @PostMapping("/member/code")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getCodeMemberCodeAndHighlight(@RequestBody CodeRequestDto CodeRequestDto) {
         Map<String, Object> data =  codeService.getCodeMemberCodeAndHighlight(CodeRequestDto.getTest_id(), CodeRequestDto.getProblem_id(), CodeRequestDto.getUser_id());
