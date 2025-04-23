@@ -19,17 +19,8 @@ import java.time.LocalDateTime;
 @Getter
 public class CodeResponseDto {
 
-    @Column(name = "language", nullable = false)
     private String language;
-
-    @Column(name = "submit_code")
     private String submitCode;
-
-    @Column(name = "submit_at")
     private LocalDateTime submitAt;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    @Schema(description = "응시자 상태", example = "IN_PROGRESS, COMPLETED, ABSENT")
     private Status status;
 }
