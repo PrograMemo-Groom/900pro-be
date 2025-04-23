@@ -20,10 +20,10 @@ public class Team {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "team_name", nullable = false)
+	@Column(name = "team_name", nullable = false, length = 10) // 10자로 길이 제한
 	private String teamName;
 
-	@Column(name = "description")
+	@Column(name = "description", length = 700) // 최대 700자, nullable
 	private String description;
 
 	@Enumerated(EnumType.STRING)
