@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import programo._pro.dto.codeDto.CodeRequestDto;
 import programo._pro.dto.codeDto.CodeResponseDto;
+import programo._pro.dto.codeDto.UpdateCodeDto;
 import programo._pro.dto.highlightDto.CodeHighlightResponseDto;
 import programo._pro.entity.Code;
 import programo._pro.entity.Status;
@@ -96,5 +97,24 @@ public class CodeService {
             userCode.setStatus(Status.COMPLETED);
             codeRepository.save(userCode);
         });
+    }
+
+
+    // 작성한 코드 DB 업데이트 기능
+    @Transactional
+    public void updateCode(UpdateCodeDto updateCodeDto) {
+        int testId = updateCodeDto.getCodeRequestDto().getTestId();
+        int userId = updateCodeDto.getCodeRequestDto().getUserId();
+        int problemId = updateCodeDto.getCodeRequestDto().getProblemId();
+
+        // 해당 제출 코드를 가져옴
+        Code findUserCode = codeRepository.findByTest_IdAndUser_IdAndProblem_Id(testId, userId, problemId);
+
+        // updateCodeDto에 포함된 작성 코드로 업데이트
+        findUserCode.setSubmitCode(updateCodeDto.getSubmitCode());
+        findUserCode.setSubmitAt(updateCodeDto.getSubmitAt());
+
+        // 업데이트
+        codeRepository.save(findUserCode);
     }
 }

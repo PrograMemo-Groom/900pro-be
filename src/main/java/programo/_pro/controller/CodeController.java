@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import programo._pro.dto.codeDto.CodeExecutionRequest;
 import programo._pro.dto.codeDto.CodeExecutionResponse;
 import programo._pro.dto.codeDto.CodeRequestDto;
+import programo._pro.dto.codeDto.UpdateCodeDto;
 import programo._pro.entity.Code;
 import programo._pro.global.ApiResponse;
 import programo._pro.service.CodeService;
@@ -25,12 +26,21 @@ public class CodeController {
     private final CodeService codeService;
 
     // user_id, test_id를 입력받아 해당 유저의 문제풀이들을 시험완료 상태로 업데이트
-    @PostMapping("/update")
+    @PostMapping("/update/is-coding")
     public ResponseEntity<ApiResponse<String>> updateSubmitCode(@RequestBody CodeRequestDto codeRequestDto) {
         codeService.updateSubmitCode(codeRequestDto);
 
-        return ResponseEntity.ok(ApiResponse.success("해당 유저의 코드가 정상적으로 시험완료 상태로 변경되었습니다."));
+        return ResponseEntity.ok(ApiResponse.success("해당 유저의 상태가 정상적으로 응시 완료 상태로 변경되었습니다."));
     }
+
+    @PostMapping("/update/code")
+    public ResponseEntity<ApiResponse<String>> updateCode(@RequestBody UpdateCodeDto updateCodeDto) {
+        codeService.updateCode(updateCodeDto);
+
+        return ResponseEntity.ok(ApiResponse.success("해당 유저의 코드가 정상적으로 시험완료 상태로 변경되었습니다."));
+
+    }
+
 
 
     @PostMapping("/execute/python")
