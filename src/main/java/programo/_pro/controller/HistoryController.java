@@ -43,7 +43,7 @@ public class HistoryController {
     @Operation(summary = "팀원 문제 풀이, 하이라이트,메모 조회", description = "팀원의 문제 풀이와 하이라이트 정보를 조회합니다.")
     @GetMapping("/member/code")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getCodeMemberCodeAndHighlight(@RequestBody CodeRequestDto CodeRequestDto) {
-        Map<String, Object> data =  codeService.getCodeMemberCodeAndHighlight(CodeRequestDto.getTest_id(), CodeRequestDto.getProblem_id(), CodeRequestDto.getUser_id());
+        Map<String, Object> data =  codeService.getCodeMemberCodeAndHighlight(CodeRequestDto.getTestId(), CodeRequestDto.getProblemId(), CodeRequestDto.getUserId());
 
         return ResponseEntity.ok(ApiResponse.success(data));
     }
