@@ -27,4 +27,8 @@ public class UserDto {
 
     @Column(name = "is_active", nullable = false)
     private boolean isActive;
+
+    private Long teamId;
+
+    private Boolean isTeamLeader;
 }
