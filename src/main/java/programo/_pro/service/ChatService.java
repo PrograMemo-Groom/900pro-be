@@ -193,7 +193,7 @@ public class ChatService {
 		Team team = chatRoom.getTeam();  // 해당 채팅방에 소속된 팀을 가져옵니다.
 
 		// 시험 시작 시간 체크 (만약 시험 시작 시간이 지나지 않았다면 메시지 전송하지 않음)
-		LocalDateTime nowInSeoul = LocalDateTime.now(ZoneId.of("Asia/Seoul"));  // 서울 시간 기준 현재 시간
+		LocalDateTime nowInSeoul = LocalDateTime.now();  // 서울 시간 기준 현재 시간
 		LocalDateTime testStartTime = team.getStartTime();  // 팀의 시험 시작 시간
 
 		if (nowInSeoul.isBefore(testStartTime)) {
@@ -232,7 +232,7 @@ public class ChatService {
 		chatbot.setMessage("응시하느라 고생하셨습니다.");
 
 		// 문제 번호 메시지 추가
-		StringBuilder messageContent = new StringBuilder("오늘의 문제 번호: ");
+		StringBuilder messageContent = new StringBuilder("응시하느라 고생하셨습니다 \n 오늘의 문제 번호: ");
 		for (int i = 1; i <= team.getProblemCount(); i++) {
 			messageContent.append(i).append(" ");
 		}
