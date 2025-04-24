@@ -2,6 +2,10 @@ spring:
   application:
     name: 900pro
 
+  #시간 설정
+  jackson:
+    time-zone: Asia/Seoul
+
   jpa:
     show-sql: true
     properties:
