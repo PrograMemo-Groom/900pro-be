@@ -9,10 +9,13 @@ import programo._pro.dto.codeDto.CodeResponseDto;
 import programo._pro.dto.highlightDto.CodeHighlightResponseDto;
 import programo._pro.entity.Code;
 import programo._pro.entity.Status;
+import programo._pro.entity.User;
 import programo._pro.global.exception.codeException.CodeException;
+import programo._pro.global.exception.userException.UserException;
 import programo._pro.repository.CodeHighlightRepository;
 import programo._pro.repository.CodeQueryRepository;
 import programo._pro.repository.CodeRepository;
+import programo._pro.repository.UserRepository;
 
 import java.util.*;
 
@@ -23,6 +26,7 @@ public class CodeService {
     private final CodeRepository codeRepository;
     private final CodeQueryRepository codeQueryRepository;
     private final CodeHighlightRepository codeHighlightRepository;
+    private final UserRepository userRepository;
 
 
     // 팀원의 첫번째 풀이와 하이라이트 정보를 조회
@@ -79,6 +83,11 @@ public class CodeService {
     public void updateSubmitCode(CodeRequestDto codeRequestDto) {
         int testId = codeRequestDto.getTestId();
         int userId = codeRequestDto.getUserId();
+
+        // 유저의 코딩 중 여부 업데이트
+        User user = userRepository.findById((long) userId).orElseThrow(UserException::byId);
+        user.setCoding(false);
+        userRepository.save(user);
 
         // testId, userId가 일치하는 문제들을 조회합니다
         List<Code> userCodes = codeRepository.findByTest_IdAndUser_Id(testId, userId);
