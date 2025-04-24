@@ -54,6 +54,9 @@ public class Team {
 	@Builder.Default
 	private boolean isActive = true;
 
+	@Column(name = "is_chat_sent")
+	private boolean isChatSent = false;
+
 	//도메인메서드 : setter 대신 사용
 	//teamUpdate가 TeamCreateRequest와 같은 포멧이라 dto 재활용하겠습니당
 	public void updateInfo(TeamCreateRequest req) {
