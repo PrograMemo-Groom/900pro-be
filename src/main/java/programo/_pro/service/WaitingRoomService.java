@@ -49,6 +49,7 @@ public class WaitingRoomService {
     public void broadcastReadyStatus(ReadyMessageDto message) {
         String topic = "/sub/waiting-room/" + message.getTeamId();
         messagingTemplate.convertAndSend(topic, message);
+        log.info("메시지 보냄: {}", message);
     }
 
     // Problem 테이블에서 현재 등록되어 있는 문제의 개수로 랜덤 문제를 가져오고 Test, Test_Problem, Problemq 테이블에 저장해야됨
