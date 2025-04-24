@@ -3,8 +3,9 @@ package programo._pro.entity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "chatbot")
@@ -27,7 +28,7 @@ public class Chatbot {
 
 	@Column(name = "test_date", nullable = false)
 	@Schema(description = "테스트 날짜", example = "2025-04-10")
-	private ZonedDateTime testDate;
+	private LocalDate testDate;
 
 	@Column(name = "message", nullable = false)
 	@Schema(description = "챗봇 메시지 내용", example = "응시하느라 고생하셨습니다!")
@@ -35,7 +36,7 @@ public class Chatbot {
 
 	@Column(name = "send_at")
 	@Schema(description = "메시지 전송 시간", example = "2025-04-10T15:44:00")
-	private ZonedDateTime sendAt;
+	private LocalDateTime sendAt;
 
 	// 챗봇과 문제 연결하는 컬럼은 추후, problem테이블 만들어진 후 생성해야함
 //	@ManyToMany
@@ -47,7 +48,7 @@ public class Chatbot {
 
 	@PrePersist
 	public void prePersist() {
-		this.sendAt = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
+		this.sendAt = LocalDateTime.now();
 	}
 
 	public Long getTeamId() {

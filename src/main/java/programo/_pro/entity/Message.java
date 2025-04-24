@@ -2,8 +2,8 @@ package programo._pro.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "message")
@@ -29,10 +29,10 @@ public class Message {
 	private String content;
 
 	@Column(name = "send_at")
-	private ZonedDateTime sendAt;
+	private LocalDateTime sendAt;
 
 	@PrePersist
 	public void prePersist() {
-		this.sendAt = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
+		this.sendAt = LocalDateTime.now();
 	}
 }
