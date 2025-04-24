@@ -110,9 +110,7 @@ public class ChatController {
 
 	// 웹소켓 메시지 전송 (웹소켓 메시지를 처리하는 부분)
 	@MessageMapping("/chat/{chatRoomId}/send-message")  // 웹소켓 경로
-	@SendTo("/sub/chat/room/{chatRoomId}")  // 클라이언트로 메시지 전송
 	public ChatMessageResponse sendMessage(ChatMessageRequest messageRequest) {
 		return chatService.processUserMessage(messageRequest);  // 메시지 처리 후 응답
 	}
-
 }
