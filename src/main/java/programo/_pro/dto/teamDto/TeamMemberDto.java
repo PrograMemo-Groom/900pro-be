@@ -8,6 +8,7 @@ import programo._pro.entity.TeamMember;
 
 @Getter
 @AllArgsConstructor
+@Schema(description = "팀원 정보 DTO")
 public class TeamMemberDto {
 
     @Schema(description = "팀원 ID", example = "3")
