@@ -36,7 +36,7 @@ public class MailController {
     }
 
     // 인증번호 일치여부 확인
-    @PostMapping("/mailCheck")
+    @PostMapping("/mail-check")
     @Operation(summary = "인증코드 검증", description = "이메일로 받은 인증코드와 일치하는 지 검증합니다.")
     public ResponseEntity<ApiResponse<String>> mailCheck(@RequestBody EmailVerficationRequest emailVerificationRequest) {
 
