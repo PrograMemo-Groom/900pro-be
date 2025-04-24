@@ -13,6 +13,7 @@ import programo._pro.global.ApiResponse;
 import programo._pro.service.CodeService;
 import programo._pro.service.HistoryService;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -26,10 +27,10 @@ public class HistoryController {
     private final CodeService codeService;
 
     // test이벤트 id 값으로 문제 정보와 문제 정보 리스트를 조회 (UI 상 왼쪽 화면 첫 세팅 API)
-    @Operation(summary = "테스트의 문제를 조회", description = "해당 테스트의 모든 문제 정보를 불러옵니다.")
+    @Operation(summary = "테스트의 문제를 조회", description = "해당 팀의 해당 날짜 모든 문제 정보를 불러옵니다.")
     @GetMapping("/gethistory")
-    public ResponseEntity<ApiResponse<List<Problem>>> getHistory(@PathParam("testId") int testId) {
-        List<Problem> history = historyService.getHistory(testId);
+    public ResponseEntity<ApiResponse<List<Problem>>> getHistory(@PathParam("teamId") int teamId, @PathParam("date") LocalDate date) {
+        List<Problem> history = historyService.getHistory(teamId, date);
 
         return ResponseEntity.ok(ApiResponse.success(history, "성공"));
     }
