@@ -29,7 +29,8 @@ CREATE TABLE user
     user_name  VARCHAR(255) NOT NULL,
     password   VARCHAR(255) NOT NULL,
     created_at DATE    DEFAULT CURRENT_TIMESTAMP,
-    is_active  BOOLEAN DEFAULT TRUE
+    is_active  BOOLEAN DEFAULT TRUE,
+    is_coding   BOOLEAN DEFAULT FALSE
 );
 
 -- ✅ 팀 테이블
