@@ -36,4 +36,8 @@ public class User {
     @Column(name = "is_active", nullable = false)
     @Builder.Default
     private boolean isActive = true;
+
+    @Column(name = "is_coding", nullable = false)
+    @Builder.Default
+    private boolean isCoding = false;
 }

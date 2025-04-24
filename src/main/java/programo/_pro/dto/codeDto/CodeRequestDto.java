@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class CodeRequestDto {
-    private int test_id;
-    private int problem_id;
-    private int user_id;
+    private int testId;
+    private int problemId;
+    private int userId;
 }

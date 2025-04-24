@@ -29,7 +29,8 @@ CREATE TABLE user
     user_name  VARCHAR(255) NOT NULL,
     password   VARCHAR(255) NOT NULL,
     created_at DATE    DEFAULT CURRENT_TIMESTAMP,
-    is_active  BOOLEAN DEFAULT TRUE
+    is_active  BOOLEAN DEFAULT TRUE,
+    is_coding   BOOLEAN DEFAULT FALSE
 );
 
 -- ✅ 팀 테이블
@@ -250,6 +251,8 @@ VALUES (1, 1),
 -- ✅ code
 INSERT INTO code (test_id, problem_id, user_id, language, submit_code, status)
 VALUES (1, 1, 1, 'Java', 'public class A {}', 'COMPLETED'),
+       (1, 2, 1, 'Java', 'public class A {}', 'COMPLETED'),
+       (1, 3, 1, 'Java', 'public class A {}', 'ABSENT'),
        (1, 2, 2, 'Python', 'print(1-2)', 'IN_PROGRESS'),
        (2, 3, 3, 'C++', 'int main() {}', 'ABSENT');
 
