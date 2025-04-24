@@ -54,6 +54,7 @@ public class MyPageService {
         userRepository.save(user);
     }
 
+    @Transactional
     public void deleteUser(int userId) {
         // 정보를 수정할 유저 객체 가져옴
         User user = userRepository.findById((long) userId).orElseThrow(UserException::byId);
