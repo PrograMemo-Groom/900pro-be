@@ -29,7 +29,7 @@ public class WaitingRoomController {
     }
 
     // WebSocket 메시지 수신 : 상태 전송 처리
-    @MessageMapping("/ready")
+    @MessageMapping("/waiting-room/ready")
     public void handleReady(@Payload ReadyMessageDto message) {
         waitingRoomService.broadcastReadyStatus(message);
     }
