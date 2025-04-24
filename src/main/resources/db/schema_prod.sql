@@ -102,8 +102,8 @@ CREATE TABLE message
 CREATE TABLE test
 (
     id         BIGINT PRIMARY KEY AUTO_INCREMENT,
-    team_id    BIGINT UNIQUE,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    team_id    BIGINT,
+    created_at DATE DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (team_id) REFERENCES team (id)
 );
 
@@ -223,7 +223,14 @@ INSERT INTO problem (baek_num, title, description, level, ex_input, ex_output, t
 VALUES
     (1000, 'A + B', 'Add two numbers', 'EASY', '1 2', '3', 1, 128),
     (1001, 'A - B', 'Subtract two numbers', 'EASY', '3 1', '2', 1, 128),
-    (1002, 'Multiply', 'Multiply numbers', 'MEDIUM', '2 3', '6', 2, 256);
+    (1002, 'Multiply', 'Multiply two numbers', 'MEDIUM', '2 3', '6', 2, 256),
+    (1003, 'Divide', 'Divide two numbers', 'MEDIUM', '6 2', '3', 2, 256),
+    (1004, 'Power', 'Calculate power', 'HARD', '2 3', '8', 2, 256),
+    (1005, 'Modulus', 'Calculate modulus', 'EASY', '10 3', '1', 1, 128),
+    (1006, 'Max of 3', 'Find the maximum of three numbers', 'MEDIUM', '3 7 2', '7', 1, 128),
+    (1007, 'Min of 4', 'Find the minimum of four numbers', 'MEDIUM', '5 9 1 3', '1', 1, 128),
+    (1008, 'Factorial', 'Calculate factorial', 'HARD', '5', '120', 2, 256),
+    (1009, 'Fibonacci', 'Find the nth Fibonacci number', 'HARD', '10', '55', 2, 256);
 
 -- ✅ chatroom
 INSERT INTO chatroom (team_id)
