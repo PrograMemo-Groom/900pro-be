@@ -30,7 +30,7 @@ CREATE TABLE user
     email      VARCHAR(255) NOT NULL UNIQUE,
     user_name  VARCHAR(255) NOT NULL,
     password   VARCHAR(255) NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at DATE DEFAULT CURRENT_TIMESTAMP,
     is_active  BOOLEAN  DEFAULT TRUE
 );
 
@@ -46,7 +46,7 @@ CREATE TABLE team
     duration_time   INT          NOT NULL,
     current_members INT          NOT NULL CHECK (current_members BETWEEN 1 AND 10),
     leader_id       BIGINT       NOT NULL,
-    created_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at      DATE DEFAULT CURRENT_TIMESTAMP,
     is_active       BOOLEAN  DEFAULT TRUE,
     FOREIGN KEY (leader_id) REFERENCES user (id)
 );
@@ -266,6 +266,7 @@ VALUES
     (2, 2, '2:5', '2:15', 'RED', 'bug here'),
     (1, 1, '2:5', '2:15', 'RED', 'bug here'),
     (1, 1, '2:5', '2:15', 'RED', 'bug here');
+
 
 -- ✅ chatbot
 INSERT INTO chatbot (team_id, test_date, message)

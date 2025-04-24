@@ -6,11 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+
 
 @Entity
 @Data
@@ -31,11 +29,11 @@ public class Test {
     private Team team;
 
     @Column(name = "created_at", nullable = false)
-    @Schema(description = "테스트 생성시각", example = "2025-04-21T10:15:30+09:00[Asia/Seoul]")
-    private ZonedDateTime createdAt;
+    @Schema(description = "테스트 생성시각", example = "2025-04-21T10:15:30+09:00")
+    private LocalDateTime createdAt;
 
     @PrePersist
     public void prePersist() {
-        this.createdAt = ZonedDateTime.now(ZoneId.of("Asia/Seoul")); // 테스트 생성 날짜 저장
+        this.createdAt = LocalDateTime.now(); // 테스트 생성 날짜 저장
     }
 }

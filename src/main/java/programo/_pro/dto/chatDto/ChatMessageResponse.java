@@ -3,6 +3,7 @@ package programo._pro.dto.chatDto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -15,10 +16,10 @@ public class ChatMessageResponse {
 	private String content;       // 메시지 내용
 	private LocalDateTime sendAt; // 메시지 전송 시간
 	private boolean isChatbot;   // 챗봇 여부
-	private LocalDateTime testDate;  // 챗봇 메시지에만 해당 (시험 날짜)
+	private LocalDate testDate;  // 챗봇 메시지에만 해당 (시험 날짜)
 	private String chatbotMessage;  // 챗봇 메시지 내용
 
-	public ChatMessageResponse(Long id, Long chatRoomId, Long userId, String userName, String content, LocalDateTime sendAt, boolean isChatbot, LocalDateTime testDate, String chatbotMessage) {
+	public ChatMessageResponse(Long id, Long chatRoomId, Long userId, String userName, String content, LocalDateTime sendAt, boolean isChatbot, LocalDate testDate, String chatbotMessage) {
 		this.id = id;
 		this.chatRoomId = chatRoomId;
 		this.userId = userId;
