@@ -46,6 +46,7 @@ CREATE TABLE team
     leader_id       BIGINT       NOT NULL,
     created_at      DATE    DEFAULT CURRENT_TIMESTAMP,
     is_active       BOOLEAN DEFAULT TRUE,
+    is_chat_sent    BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (leader_id) REFERENCES user (id)
 );
 
