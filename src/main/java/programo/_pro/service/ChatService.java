@@ -17,7 +17,6 @@ import programo._pro.service.chatredis.ChatPublisherService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,7 +56,7 @@ public class ChatService {
 						message.getUser().getId(),
 						message.getUser().getUsername(),
 						message.getContent(),
-						message.getSendAt().toLocalDateTime(),
+						message.getSendAt(),
 						false,      // 사용자 메시지는 isChatbot = false
 						null,       // 챗봇 관련 정보는 null
 						null))      // 챗봇 관련 메시지 내용은 null
@@ -71,9 +70,9 @@ public class ChatService {
 					null,  // 챗봇에는 사용자 ID가 없으므로 null
 					"Chatbot",  // 고정값: 챗봇 메시지
 					chatbot.getMessage(),
-					chatbot.getSendAt().toLocalDateTime(),
+					chatbot.getSendAt(),
 					true,       // 챗봇 메시지는 isChatbot = true
-					chatbot.getTestDate().toLocalDateTime(),  // 챗봇 메시지의 시험 날짜
+					chatbot.getTestDate(),  // 챗봇 메시지의 시험 날짜
 					chatbot.getMessage())); // 챗봇 메시지 내용
 		});
 
@@ -103,7 +102,7 @@ public class ChatService {
 						message.getUser().getId(),
 						message.getUser().getUsername(),
 						message.getContent(),
-						message.getSendAt().toLocalDateTime(),
+						message.getSendAt(),
 						false,      // 사용자 메시지는 isChatbot = false
 						null,       // 챗봇 관련 정보는 null
 						null))      // 챗봇 관련 메시지 내용은 null
@@ -124,7 +123,7 @@ public class ChatService {
 							message.getUser().getId(),
 							message.getUser().getUsername(),
 							highlightedContent,
-							message.getSendAt().toLocalDateTime(),
+							message.getSendAt(),
 							false,
 							null,
 							null
@@ -143,7 +142,7 @@ public class ChatService {
 		message.setChatRoom(chatRoom);
 		message.setUser(request.getUser());
 		message.setContent(request.getContent());
-		message.setSendAt(ZonedDateTime.now());
+		message.setSendAt(LocalDateTime.now());
 
 		messageRepository.save(message);
 
@@ -157,7 +156,7 @@ public class ChatService {
 				message.getUser().getId(),
 				message.getUser().getUsername(),
 				message.getContent(),
-				message.getSendAt().toLocalDateTime(),
+				message.getSendAt(),
 				false,
 				null,
 				null
@@ -215,10 +214,10 @@ public class ChatService {
 		chatbots.stream()
 				.filter(chatbot -> {
 					// 날짜 비교
-					boolean isSameDate = chatbot.getTestDate().toLocalDate().isEqual(nowInSeoul.toLocalDate());
+					boolean isSameDate = chatbot.getTestDate().isEqual(nowInSeoul.toLocalDate());
 					// 시간 비교 (시험 시작 시간과 비교)
-					boolean isWithinTime = nowInSeoul.isAfter(chatbot.getTestDate().toLocalDate().atStartOfDay())
-							&& nowInSeoul.isBefore(chatbot.getTestDate().toLocalDate().atStartOfDay().plusMinutes(5));
+					boolean isWithinTime = nowInSeoul.isAfter(chatbot.getTestDate().atStartOfDay())
+							&& nowInSeoul.isBefore(chatbot.getTestDate().atStartOfDay().plusMinutes(5));
 					return isSameDate && isWithinTime;  // 날짜와 시간이 모두 일치하는 경우만 필터링
 				})
 				.forEach(chatbot -> createAndSendChatbotMessage(chatbot, team));  // 해당 날짜 및 시간의 챗봇 메시지만 보내기
@@ -228,8 +227,8 @@ public class ChatService {
 	// 공통적인 챗봇 메시지 생성 및 전송 형식
 	private void createAndSendChatbotMessage(Chatbot chatbot, Team team) {
 		// 메시지 생성
-		chatbot.setSendAt(ZonedDateTime.now(ZoneId.of("Asia/Seoul")));
-		chatbot.setTestDate(LocalDate.now().atStartOfDay().atZone(ZoneId.of("Asia/Seoul")));
+		chatbot.setSendAt(LocalDateTime.now());
+		chatbot.setTestDate(LocalDate.now());
 		chatbot.setMessage("응시하느라 고생하셨습니다.");
 
 		// 문제 번호 메시지 추가
