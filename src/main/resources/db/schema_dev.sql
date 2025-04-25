@@ -41,7 +41,7 @@ CREATE TABLE team
     description     TEXT,
     level           ENUM('EASY', 'MEDIUM', 'HARD') NOT NULL,
     problem_count   INT          NOT NULL,
-    start_time      DATETIME     NOT NULL,
+    start_time      TEXT     NOT NULL,
     duration_time   INT          NOT NULL,
     current_members INT          NOT NULL CHECK (current_members BETWEEN 1 AND 10),
     leader_id       BIGINT       NOT NULL,
@@ -153,7 +153,7 @@ CREATE TABLE chatbot
 (
     id        BIGINT PRIMARY KEY AUTO_INCREMENT,
     team_id   BIGINT NOT NULL,
-    test_date DATE   NOT NULL,
+    test_date_time DATETIME   NOT NULL,
     message   TEXT   NOT NULL,
     send_at   DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (team_id) REFERENCES team (id)
@@ -204,8 +204,8 @@ VALUES ('alice@example.com', 'Alice', 'pw1', TRUE),
 -- ✅ team
 INSERT INTO team (team_name, description, level, problem_count, start_time, duration_time, current_members, leader_id,
                   is_active)
-VALUES ('Team Alpha', 'First team', 'EASY', 2, NOW(), 60, 3, 1, TRUE),
-       ('Team Beta', 'Second team', 'MEDIUM', 3, NOW(), 90, 2, 2, TRUE);
+VALUES ('Team Alpha', 'First team', 'EASY', 2, "15:00", 60, 3, 1, TRUE),
+       ('Team Beta', 'Second team', 'MEDIUM', 3, "16:00", 90, 2, 2, TRUE);
 
 -- ✅ team_member
 INSERT INTO team_member (user_id, team_id, is_leader)
@@ -266,7 +266,7 @@ VALUES (2, 1, '3:5', '10:20', 'BLUE', 'sub logic'),
 
 
 -- ✅ chatbot
-INSERT INTO chatbot (team_id, test_date, message)
+INSERT INTO chatbot (team_id, test_date_time, message)
 VALUES (1, CURDATE(), 'Test will begin shortly'),
        (2, CURDATE(), 'Reminder: test today');
 
