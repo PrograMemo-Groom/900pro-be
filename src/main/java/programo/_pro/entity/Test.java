@@ -30,10 +30,10 @@ public class Test {
 
     @Column(name = "created_at", nullable = false)
     @Schema(description = "테스트 생성시각", example = "2025-04-21")
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
     @PrePersist
     public void prePersist() {
-        this.createdAt = LocalDate.now(); // 테스트 생성 날짜 저장
+        this.createdAt = LocalDateTime.now(); // 테스트 생성 날짜 저장
     }
 }

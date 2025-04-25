@@ -64,7 +64,6 @@ public class WaitingRoomController {
     (@RequestBody ProblemGenerateRequestDto requestDto) {
         Map<String, Object> data = waitingRoomService.SetRandomProblem(requestDto);
 
-        return ResponseEntity.ok(programo._pro.global.ApiResponse
-                .success(data, "성공적으로 랜덤 문제를 조회 후 DB에 등록하였습니다."));
+        return ResponseEntity.ok(programo._pro.global.ApiResponse.success(data, "성공적으로 랜덤 문제를 조회 후 DB에 등록하였습니다."));
     }
 }

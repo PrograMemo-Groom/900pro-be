@@ -26,7 +26,7 @@ public class Chatbot {
 	private Team team;
 
 	@Column(name = "test_date_time", nullable = false)
-	@Schema(description = "테스트 날짜", example = "2025-04-10")
+	@Schema(description = "테스트 날짜", example = "2025-04-25T15:00:00")
 	private LocalDateTime testDateTime;
 
 	@Column(name = "message", nullable = false)

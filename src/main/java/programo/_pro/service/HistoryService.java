@@ -9,6 +9,7 @@ import programo._pro.entity.Test;
 import programo._pro.repository.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,7 +22,7 @@ public class HistoryService {
 
     // 해당 test_id의 모든 문제 정보들을 조회합니다
     @Transactional(readOnly = true)
-    public List<Problem> getHistory(int teamId, LocalDate date) {
+    public List<Problem> getHistory(int teamId, LocalDateTime date) {
 
         // 해당 팀의 해당 날짜의 테스트를 불러옴
         List<Test> tests = testRepository.findByTeamIdAndCreatedAt((long) teamId, date);
