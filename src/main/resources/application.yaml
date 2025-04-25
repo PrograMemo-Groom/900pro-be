@@ -6,6 +6,13 @@ spring:
   jackson:
     time-zone: Asia/Seoul
 
+
+#  정적 리소스 서빙 기능 비활성화
+  web:
+    resources:
+      add-mappings: false
+
+
   jpa:
     show-sql: true
     properties:
