@@ -101,41 +101,8 @@ public class WaitingRoomService {
             testProblemRepository.save(testProblem);
         }
 
-        // TestResponseDto 응답 객체
-//        TestResponseDto testResponseDto = TestResponseDto.builder()
-//                .createdAt(savedTest.getCreatedAt())
-//                .build();
-
-        // ProblemList
-//        pickedProblems.stream().map()
-
-//        data.put("Test", testResponseDto);
-        data.put("pickedProblem", pickedProblems);
+        data.put("testId", savedTestId);
 
         return data;
-    }
-
-    @Scheduled(cron = "0 * * * * *") // 매 분마다 실행 (테스트 용)
-    @Transactional
-    public void generateProblemsByStartTime() {
-        LocalDateTime now = LocalDateTime.now().withSecond(0).withNano(0); // 초 단위 절삭
-
-        List<Team> teams = teamRepository.findAll();
-        for (Team team : teams) {
-            if (team.getStartTime().withSecond(0).withNano(0).isEqual(now)) {
-                log.debug("⏰ [{}] 팀의 문제를 생성합니다", team.getTeamName());
-
-                ProblemGenerateRequestDto requestDto = ProblemGenerateRequestDto.builder()
-                        .teamId(team.getId())
-                        .problemCount(team.getProblemCount())
-                        .startTime(team.getStartTime())
-                        .build();
-
-                SetRandomProblem(requestDto);
-            }
-            else {
-                log.debug("⏰ [{}] 팀은 이미 생성되었거나 아직 시간이 아님", team.getTeamName());
-            }
-        }
     }
 }
