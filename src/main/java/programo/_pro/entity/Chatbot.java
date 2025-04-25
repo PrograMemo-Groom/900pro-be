@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -26,9 +25,9 @@ public class Chatbot {
 	@Schema(description = "소속 팀 ID", example = "101")
 	private Team team;
 
-	@Column(name = "test_date", nullable = false)
+	@Column(name = "test_date_time", nullable = false)
 	@Schema(description = "테스트 날짜", example = "2025-04-10")
-	private LocalDate testDate;
+	private LocalDateTime testDateTime;
 
 	@Column(name = "message", nullable = false)
 	@Schema(description = "챗봇 메시지 내용", example = "응시하느라 고생하셨습니다!")

@@ -20,7 +20,9 @@ import programo._pro.repository.UserRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -78,7 +80,7 @@ public class ChatService {
                     chatbot.getMessage(),
                     chatbot.getSendAt(),
                     true,       // 챗봇 메시지는 isChatbot = true
-                    chatbot.getTestDate(),  // 챗봇 메시지의 시험 날짜
+                    chatbot.getTestDateTime(),  // 챗봇 메시지의 시험 날짜
                     chatbot.getMessage())); // 챗봇 메시지 내용
         });
 
@@ -188,14 +190,18 @@ public class ChatService {
         ZoneId seoulZone = ZoneId.of("Asia/Seoul");  // 서울 시간대 설정
 
         for (Team team : teams) {
-            LocalDateTime testStartTime = team.getStartTime(); // 각 팀의 시험 시작 시간
-            LocalDateTime nowInSeoul = LocalDateTime.now(seoulZone); // 서울 시간 기준으로 현재 시간 가져오기
+            String testStartTime_String = team.getStartTime();
 
-            boolean isTargetTime = nowInSeoul.isAfter(testStartTime) && nowInSeoul.isBefore(testStartTime.plusMinutes(5));
+            LocalTime startTime = LocalTime.parse(testStartTime_String, DateTimeFormatter.ofPattern("HH:mm"));
+            // 각 팀의 시험 시작 시간
+//            LocalDateTime nowInSeoul = LocalDateTime.now(seoulZone); // 서울 시간 기준으로 현재 시간 가져오기
+            LocalTime nowTime = LocalTime.now(seoulZone);
+
+            boolean isTargetTime = nowTime.isAfter(startTime) && nowTime.isBefore(startTime.plusMinutes(5));
             boolean notSent = !team.isChatSent();
 
 
-            log.info("Checking if team {} is already sent at {}", team.getId(), testStartTime);
+            log.info("Checking if team {} is already sent at {}", team.getId(), startTime);
             if (isTargetTime && notSent) {
                 log.debug("[팀 처리] {}팀 시험 시작. 챗봇 메시지 전송", team.getTeamName());
 
@@ -206,21 +212,13 @@ public class ChatService {
                 team.setChatSent(true);
                 teamRepository.save(team); // 반드시 저장
             }
-
-            // 시험 시작 시간 이후 5분 이내에 챗봇 메시지 한 번만 보냄
-            // 5분 간격으로 반복해서 메시지를 보내는 것 아님 !! "단 한 번만 발송됩니다"
-//            if (nowInSeoul.isAfter(testStartTime) && nowInSeoul.isBefore(testStartTime.plusMinutes(5))) {
-//                log.info("[팀 처리] 팀 {}의 시험 시작 시간이 도래했습니다. 챗봇 메시지 전송 시작.", team.getTeamName());
-//                sendChatbotMessageToChatRoom(team.getId());  // 해당 팀에 챗봇 메시지 전송
-//            } else {
-//                log.error("챗봇 메시지 전송 실패 {}이 아직 안됐습니다 ", testStartTime);
-//            }
         }
     }
 
     // 챗봇 메시지 전송 (채팅방에 맞게 챗봇 메시지를 전송)
     @Transactional
     public void sendChatbotMessageToChatRoom(Long chatRoomId) {
+
         // chatRoomId를 이용해 팀을 찾아야 합니다.
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(NotFoundChatException::NotFoundChatRoomException);
@@ -228,8 +226,18 @@ public class ChatService {
         Team team = chatRoom.getTeam();  // 해당 채팅방에 소속된 팀을 가져옵니다.
 
         // 시험 시작 시간 체크 (만약 시험 시작 시간이 지나지 않았다면 메시지 전송하지 않음)
-        LocalDateTime nowInSeoul = LocalDateTime.now();  // 서울 시간 기준 현재 시간
-        LocalDateTime testStartTime = team.getStartTime();  // 팀의 시험 시작 시간
+        ZoneId seoulZone = ZoneId.of("Asia/Seoul");  // 서울 시간대 설정
+        LocalDateTime nowInSeoul = LocalDateTime.now(seoulZone);
+
+        String testStartTime_String = team.getStartTime();  // 팀의 시험 시작 시간
+        // 오늘 날짜
+        LocalDate today = LocalDate.now();
+
+        // 문자열을 LocalTime으로 파싱
+        LocalTime localTime = LocalTime.parse(testStartTime_String, DateTimeFormatter.ofPattern("HH:mm"));
+
+        // 오늘 날짜 + 시간 결합
+        LocalDateTime testStartTime = LocalDateTime.of(today, localTime);
 
         if (nowInSeoul.isBefore(testStartTime)) {
             log.debug("[팀 처리] 팀 {}의 시험 시작 시간이 아직 되지 않았습니다.", team.getTeamName());
@@ -248,11 +256,13 @@ public class ChatService {
         // 챗봇 메시지 필터링: 해당 날짜와 시간에 시험 시작 시간일 경우, 메시지만 전송
         chatbots.stream()
                 .filter(chatbot -> {
-                    // 날짜 비교
-                    boolean isSameDate = chatbot.getTestDate().isEqual(nowInSeoul.toLocalDate());
+                    // 날짜 비교 // chatbot.getTestDate() : 2025-04-10T15:00:00 , nowInSeoul : 15:00:00
+                    boolean isSameDate = chatbot.getTestDateTime().isEqual(nowInSeoul);
+
+
                     // 시간 비교 (시험 시작 시간과 비교)
-                    boolean isWithinTime = nowInSeoul.isAfter(chatbot.getTestDate().atStartOfDay())
-                            && nowInSeoul.isBefore(chatbot.getTestDate().atStartOfDay().plusMinutes(5));
+                    boolean isWithinTime = nowInSeoul.isAfter(chatbot.getTestDateTime())
+                            && nowInSeoul.isBefore(chatbot.getTestDateTime().plusMinutes(5));
                     return isSameDate && isWithinTime;  // 날짜와 시간이 모두 일치하는 경우만 필터링
                 })
                 .forEach(chatbot -> createAndSendChatbotMessage(chatbot, team));  // 해당 날짜 및 시간의 챗봇 메시지만 보내기
@@ -263,7 +273,7 @@ public class ChatService {
     private void createAndSendChatbotMessage(Chatbot chatbot, Team team) {
         // 메시지 생성
         chatbot.setSendAt(LocalDateTime.now());
-        chatbot.setTestDate(LocalDate.now());
+        chatbot.setTestDateTime(LocalDateTime.now());
         chatbot.setMessage("응시하느라 고생하셨습니다.");
 
         // 문제 번호 메시지 추가
