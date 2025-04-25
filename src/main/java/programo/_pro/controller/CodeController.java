@@ -4,10 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import programo._pro.dto.codeDto.CodeExecutionRequest;
 import programo._pro.dto.codeDto.CodeExecutionResponse;
 import programo._pro.dto.codeDto.CodeRequestDto;
@@ -26,14 +23,14 @@ public class CodeController {
     private final CodeService codeService;
 
     // user_id, test_id를 입력받아 해당 유저의 문제풀이들을 시험완료 상태로 업데이트
-    @PostMapping("/update/is-coding")
+    @PatchMapping("/update/end-coding")
     public ResponseEntity<ApiResponse<String>> updateSubmitCode(@RequestBody CodeRequestDto codeRequestDto) {
         codeService.updateSubmitCode(codeRequestDto);
 
         return ResponseEntity.ok(ApiResponse.success("해당 유저의 상태가 정상적으로 응시 완료 상태로 변경되었습니다."));
     }
 
-    @PostMapping("/update/code")
+    @PatchMapping("/update/submit")
     public ResponseEntity<ApiResponse<String>> updateCode(@RequestBody UpdateCodeDto updateCodeDto) {
         codeService.updateCode(updateCodeDto);
 
