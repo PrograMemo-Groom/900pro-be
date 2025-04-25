@@ -34,7 +34,7 @@ public class Team {
 	private int problemCount;
 
 	@Column(name = "start_time", nullable = false)
-	private LocalDateTime startTime;
+	private String startTime;
 
 	@Column(name = "duration_time", nullable = false)
 	private int durationTime;

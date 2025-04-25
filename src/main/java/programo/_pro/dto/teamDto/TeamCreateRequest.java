@@ -30,9 +30,9 @@ public class TeamCreateRequest {
     @Max(5)
     private int problemCount;
 
-    @Schema(description = "시작 시간", example = "2025-04-22T10:00:00")
+    @Schema(description = "시작 시간", example = "15:00")
     @NotNull
-    private LocalDateTime startTime;
+    private String startTime;
 
     @Schema(description = "응시 시간 (모의 코테 응시 시각)\n" + "(2,3,4,5시간)", example = "3")
     @Min(2)
