@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface TestRepository extends JpaRepository<Test, Integer> {
 
-    List<Test> findByTeamIdAndCreatedAt(Long teamId, LocalDateTime createdAt);
+    List<Test> findByTeamIdAndCreatedAt(Long teamId, LocalDate createdAt);
 }

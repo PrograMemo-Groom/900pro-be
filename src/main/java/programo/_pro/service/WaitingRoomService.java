@@ -77,7 +77,7 @@ public class WaitingRoomService {
         // 테스트 테이블 객체 초기화
         Test test = new Test();
         test.setTeam(team);
-        test.setCreatedAt(LocalDateTime.now());
+        test.setCreatedAt(LocalDate.now());
 
         // 테스트 테이블 삽입 완료
         Test savedTest = testRepository.save(test);

@@ -32,8 +32,8 @@ public class HistoryController {
     @Operation(summary = "테스트의 문제를 조회", description = "해당 팀의 해당 날짜 모든 문제 정보를 불러옵니다.")
     @GetMapping("/gethistory")
     public ResponseEntity<ApiResponse<List<Problem>>> getHistory(@Parameter(name = "teamId", example = "1") @PathParam("teamId") int teamId,
-                                                                 @Parameter(name = "dateTime", example = "2025-04-24T15:00:00") @PathParam("dateTime") LocalDateTime dateTime) {
-        List<Problem> history = historyService.getHistory(teamId, dateTime);
+                                                                 @Parameter(name = "date", example = "2025-04-24") @PathParam("date") LocalDate date) {
+        List<Problem> history = historyService.getHistory(teamId, date);
 
         return ResponseEntity.ok(ApiResponse.success(history, "성공"));
     }

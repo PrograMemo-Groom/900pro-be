@@ -103,7 +103,7 @@ CREATE TABLE test
 (
     id         BIGINT PRIMARY KEY AUTO_INCREMENT,
     team_id    BIGINT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at DATE DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (team_id) REFERENCES team (id)
 );
 

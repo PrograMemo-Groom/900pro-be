@@ -72,6 +72,8 @@ public class CodeService {
         // Json 추가
         data.put("code", codeResponseDto);
         data.put("highlights", highlightResponseDtos);
+        // 하이라이트 id 응답
+        data.put("highlightId", first.getId());
 
         return data;
     }
