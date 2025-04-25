@@ -12,5 +12,4 @@ import java.time.LocalDateTime;
 public class ProblemGenerateRequestDto {
     private long teamId;
     private int problemCount;
-    private LocalDateTime startTime;
 }

@@ -8,15 +8,10 @@ import programo._pro.dto.codeDto.CodeRequestDto;
 import programo._pro.dto.codeDto.CodeResponseDto;
 import programo._pro.dto.codeDto.UpdateCodeDto;
 import programo._pro.dto.highlightDto.CodeHighlightResponseDto;
-import programo._pro.entity.Code;
-import programo._pro.entity.Status;
-import programo._pro.entity.User;
+import programo._pro.entity.*;
 import programo._pro.global.exception.codeException.CodeException;
 import programo._pro.global.exception.userException.UserException;
-import programo._pro.repository.CodeHighlightRepository;
-import programo._pro.repository.CodeQueryRepository;
-import programo._pro.repository.CodeRepository;
-import programo._pro.repository.UserRepository;
+import programo._pro.repository.*;
 
 import java.util.*;
 
@@ -28,6 +23,8 @@ public class CodeService {
     private final CodeQueryRepository codeQueryRepository;
     private final CodeHighlightRepository codeHighlightRepository;
     private final UserRepository userRepository;
+    private final TestRepository testRepository;
+    private final TestProblemQueryRepository problemQueryRepository;
 
 
     // 팀원의 첫번째 풀이와 하이라이트 정보를 조회
@@ -116,5 +113,15 @@ public class CodeService {
 
         // 업데이트
         codeRepository.save(findUserCode);
+    }
+
+
+
+    // 테스트의 문제 리스트 조회
+    @Transactional(readOnly = true)
+    public List<Problem> getProblemsByTestId(int testId) {
+        List<Problem> problems = problemQueryRepository.findProblemsByTestId(testId);
+
+        return problems;
     }
 }

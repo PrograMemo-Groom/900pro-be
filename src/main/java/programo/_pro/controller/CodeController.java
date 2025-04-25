@@ -10,9 +10,12 @@ import programo._pro.dto.codeDto.CodeExecutionResponse;
 import programo._pro.dto.codeDto.CodeRequestDto;
 import programo._pro.dto.codeDto.UpdateCodeDto;
 import programo._pro.entity.Code;
+import programo._pro.entity.Problem;
 import programo._pro.global.ApiResponse;
 import programo._pro.service.CodeService;
 import programo._pro.service.executor.CodeExecutorService;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -38,6 +41,12 @@ public class CodeController {
 
     }
 
+    @GetMapping("/test/{testId}")
+    public ResponseEntity<ApiResponse<List<Problem>>> getProblemsByTestId(@PathVariable int testId) {
+        List<Problem> testProblems = codeService.getProblemsByTestId(testId);
+
+        return ResponseEntity.ok(ApiResponse.success(testProblems, "성공적으로 테스트의 문제들을 조회했습니다."));
+    }
 
 
     @PostMapping("/execute/python")
