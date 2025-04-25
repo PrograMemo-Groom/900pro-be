@@ -55,6 +55,7 @@ public class Team {
 	private boolean isActive = true;
 
 	@Column(name = "is_chat_sent")
+	@Builder.Default
 	private boolean isChatSent = false;
 
 	//도메인메서드 : setter 대신 사용
