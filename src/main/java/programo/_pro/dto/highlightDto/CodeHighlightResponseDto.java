@@ -7,6 +7,7 @@ import programo._pro.entity.Color;
 @Getter
 @Builder
 public class CodeHighlightResponseDto {
+    private long highlightId;
     private String startPosition;
     private String endPosition;
     private Color color;

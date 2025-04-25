@@ -56,6 +56,7 @@ public class CodeService {
         codeQueryRepository.findHighlightByCodeIdAndUserId((int) first.getId(), userId).forEach(
                 highlight -> {
                     CodeHighlightResponseDto codeHighlightResponseDto = CodeHighlightResponseDto.builder()
+                            .highlightId(highlight.getId())
                             .startPosition(highlight.getStartPosition())
                             .endPosition(highlight.getEndPosition())
                             .color(highlight.getColor())
@@ -73,7 +74,7 @@ public class CodeService {
         data.put("code", codeResponseDto);
         data.put("highlights", highlightResponseDtos);
         // 하이라이트 id 응답
-        data.put("highlightId", first.getId());
+//        data.put("highlightId", first.getId());
 
         return data;
     }

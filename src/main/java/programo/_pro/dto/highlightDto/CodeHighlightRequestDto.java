@@ -9,7 +9,7 @@ import programo._pro.entity.Color;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CodeHighlightRequestDto {
-    private Long id;          // 수정, 삭제 시 필요
+//    private Long id;          // 수정, 삭제 시 필요
     private Long codeId;      // 코드 ID
     private Long userId;      // 사용자 ID
     private String startPosition;

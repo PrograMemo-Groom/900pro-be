@@ -59,9 +59,9 @@ public class CodeHighlightService {
 
     // 하이라이트 수정
     @Transactional
-    public CodeHighlightResponseDto updateHighlight(CodeHighlightRequestDto requestDto) {
+    public CodeHighlightResponseDto updateHighlight(CodeHighlightRequestDto requestDto, Long highlightId) {
         // 하이라이트 조회
-        CodeHighight highlight = codeHighlightRepository.findById(requestDto.getId())
+        CodeHighight highlight = codeHighlightRepository.findById(highlightId)
                 .orElseThrow(HighlightException::NotFoundHighlightException);
 
         // 값 업데이트

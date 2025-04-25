@@ -2,6 +2,7 @@ package programo._pro.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,15 +30,16 @@ public class CodeHighlightController {
     }
 
     @Operation(summary = "하이라이트 수정", description = "기존 하이라이트 정보를 수정합니다.")
-    @PutMapping
+    @PatchMapping("/update/{highlightId}")
     public ResponseEntity<ApiResponse<CodeHighlightResponseDto>> updateHighlight(
+            @PathVariable("highlightId") Long highlightId,
             @RequestBody CodeHighlightRequestDto requestDto) {
-        CodeHighlightResponseDto responseDto = codeHighlightService.updateHighlight(requestDto);
+        CodeHighlightResponseDto responseDto = codeHighlightService.updateHighlight(requestDto, highlightId);
         return ResponseEntity.ok(ApiResponse.success(responseDto, "하이라이트 수정 성공"));
     }
 
     @Operation(summary = "하이라이트 삭제", description = "하이라이트를 비활성화(soft delete)합니다.")
-    @DeleteMapping("/{highlightId}")
+    @DeleteMapping("/delete/{highlightId}")
     public ResponseEntity<ApiResponse<Void>> deleteHighlight(@PathVariable Long highlightId) {
         codeHighlightService.deleteHighlight(highlightId);
         return ResponseEntity.ok(ApiResponse.success(null, "하이라이트 삭제 성공"));
