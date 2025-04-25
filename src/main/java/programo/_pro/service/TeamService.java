@@ -64,14 +64,14 @@ public class TeamService {
             teams.sort(Comparator.comparing(Team::getCurrentMembers).reversed());
         }
 
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+//        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
         return teams.stream()
                 .map(team -> TeamCardDto.builder()
                         .teamId(team.getId())
                         .teamName(team.getTeamName())
                         .level(team.getLevel().name())
-                        .startTime(team.getStartTime().format(timeFormatter))
+                        .startTime(team.getStartTime())
                         .problemCount(team.getProblemCount())
                         .currentMembers(team.getCurrentMembers())
                         .build())
