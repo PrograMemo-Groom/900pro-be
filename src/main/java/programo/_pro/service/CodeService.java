@@ -45,6 +45,7 @@ public class CodeService {
 
         // 제출한 풀이 응답객체 생성
         CodeResponseDto codeResponseDto = CodeResponseDto.builder()
+                .codeId(first.getId())
                 .submitCode(first.getSubmitCode())
                 .language(first.getLanguage())
                 .status(first.getStatus())

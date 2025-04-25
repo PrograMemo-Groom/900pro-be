@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 public class CodeResponseDto {
-
+    private long codeId;
     private String language;
     private String submitCode;
     private LocalDateTime submitAt;
