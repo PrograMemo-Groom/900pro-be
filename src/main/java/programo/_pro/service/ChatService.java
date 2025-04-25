@@ -8,17 +8,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import programo._pro.dto.chatDto.ChatMessageRequest;
 import programo._pro.dto.chatDto.ChatMessageResponse;
-import programo._pro.entity.ChatRoom;
-import programo._pro.entity.Chatbot;
-import programo._pro.entity.Message;
-import programo._pro.entity.Team;
+import programo._pro.entity.*;
 import programo._pro.global.exception.chatException.NotFoundChatException;
 import programo._pro.global.exception.teamException.TeamException;
 import programo._pro.repository.ChatRoomRepository;
 import programo._pro.repository.ChatbotRepository;
 import programo._pro.repository.MessageRepository;
 import programo._pro.repository.TeamRepository;
-import programo._pro.service.chatredis.ChatPublisherService;
+import programo._pro.repository.UserRepository;
+//import programo._pro.service.chatredis.ChatPublisherService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,8 +33,9 @@ public class ChatService {
     private final MessageRepository messageRepository;
     private final ChatbotRepository chatbotRepository;
     private final TeamRepository teamRepository;
+    private final UserRepository userRepository;
     private final SimpMessagingTemplate messagingTemplate;
-    private final ChatPublisherService chatPublisherService;
+//    private final ChatPublisherService chatPublisherService;
 
     // 팀이 생성되면 자동으로 채팅방 생성
     public void createChatRoom(Long teamId) {
@@ -147,24 +146,29 @@ public class ChatService {
         ChatRoom chatRoom = chatRoomRepository.findById(request.getChatRoomId())
                 .orElseThrow(NotFoundChatException::NotFoundChatRoomException);
 
+        //userId로 영속 객체 직접 조회
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
         // 메시지 생성 및 저장
         Message message = new Message();
         message.setChatRoom(chatRoom);
-        message.setUser(request.getUser());
+        message.setUser(user);
         message.setContent(request.getContent());
         message.setSendAt(LocalDateTime.now());
 
         messageRepository.save(message);
 
-        // Redis에 채팅 메시지 발행
-        chatPublisherService.publishMessage(chatRoom.getId().toString(), request.getContent());
+//
+//        // Redis에 채팅 메시지 발행
+//        chatPublisherService.publishMessage(chatRoom.getId().toString(), request.getContent());
 
         // 메시지 전송
         ChatMessageResponse response = new ChatMessageResponse(
                 message.getId(),
                 chatRoom.getId(),
-                message.getUser().getId(),
-                message.getUser().getUsername(),
+                user.getId(),
+                user.getUsername(),
                 message.getContent(),
                 message.getSendAt(),
                 false,

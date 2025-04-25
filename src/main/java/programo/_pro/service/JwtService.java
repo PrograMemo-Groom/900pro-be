@@ -23,7 +23,6 @@ import java.util.Date;
 public class JwtService {
     private final Key key;
     private final Key refreshKey;
-    private final RedisService redisService;
     private final long accessTokenExpireTime;
     private final long refreshTokenExpireTime;
 
@@ -40,11 +39,10 @@ public class JwtService {
     // 5. 실제 보안은 JWT_SECRET 키의 관리와 서명 알고리즘에 의존합니다.
     public JwtService(@Value("${jwt.secret}") String secretKey,
                       @Value("${jwt.refresh_secret}") String refreshSecretKey,
-                      @Value("${jwt.expiration_time}") long accessTokenExpiresTime,
-                      RedisService redisService) {
+                      @Value("${jwt.expiration_time}") long accessTokenExpiresTime)
+    {
         this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
         this.refreshKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(refreshSecretKey));
-        this.redisService = redisService;
         accessTokenExpireTime = ONE_MINUTE * accessTokenExpiresTime;        // 12 hours (720 min)
         refreshTokenExpireTime = ONE_MINUTE * (accessTokenExpiresTime * 2); // 24 hours (1440 min)
     }
@@ -57,7 +55,6 @@ public class JwtService {
 
         String accessToken = generateAccessToken(member);
         String refreshToken = generateRefreshToken(member);
-        saveToRedis(accessToken, refreshToken); // Redis 저장
         return accessToken;
     }
 
@@ -172,17 +169,13 @@ public class JwtService {
         }
     }
 
-    private void saveToRedis(String accessToken, String refreshToken) {
-        redisService.add(accessToken, refreshToken);
-    }
 
-
-    private String renewToken(String accessToken) {
-        String refreshToken = redisService.getValue(accessToken);
-        boolean isValid = validateRefreshToken(refreshToken);
-        if (isValid) return generateAccessToken(parseClaimsForRefresh(refreshToken));
-        throw new ExpiredJwtException(null, null, null, null);
-    }
+//    private String renewToken(String accessToken) {
+//        String refreshToken = redisService.getValue(accessToken);
+//        boolean isValid = validateRefreshToken(refreshToken);
+//        if (isValid) return generateAccessToken(parseClaimsForRefresh(refreshToken));
+//        throw new ExpiredJwtException(null, null, null, null);
+//    }
 
     public boolean validateAccessToken(String token, HttpServletResponse response) {
         try {
@@ -191,10 +184,10 @@ public class JwtService {
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info(INVALID_TOKEN_MESSAGE, e);
             throw new MalformedJwtException(INVALID_TOKEN_MESSAGE);
-        } catch (ExpiredJwtException e) {
-            log.info("Expired JWT Token", e);
-            response.addHeader("Authorization", "Bearer " + renewToken(token));
-            return true;
+//        } catch (ExpiredJwtException e) {
+//            log.info("Expired JWT Token", e);
+//            response.addHeader("Authorization", "Bearer " + renewToken(token));
+//            return true;
         } catch (UnsupportedJwtException e) {
             log.info("Unsupported JWT Token", e);
         } catch (IllegalArgumentException e) {
