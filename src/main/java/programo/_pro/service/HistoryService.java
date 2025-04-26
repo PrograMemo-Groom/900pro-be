@@ -10,7 +10,10 @@ import programo._pro.repository.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -22,13 +25,15 @@ public class HistoryService {
 
     // 해당 test_id의 모든 문제 정보들을 조회합니다
     @Transactional(readOnly = true)
-    public List<Problem> getHistory(int teamId, LocalDate date) {
+    public Map<String, Object> getHistory(int teamId, LocalDate date) {
+        // Json 응답 객체 초기화
+        Map<String, Object> data = new HashMap<>();
 
         // 해당 팀의 해당 날짜의 테스트를 불러옴
         List<Test> tests = testRepository.findByTeamIdAndCreatedAt((long) teamId, date);
 
         // 해당 날짜의 테스트 1개 가져옴
-        Long testId = tests.stream()
+        long testId = tests.stream()
                 .findFirst()
                 .map(Test::getId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 날짜의 테스트가 없습니다."));
@@ -42,6 +47,10 @@ public class HistoryService {
         // 테스트 id로 조회한 문제들 리스트
         log.info("problem List : {} ", problems.toString());
 
-        return problems;
+        // testId 응답에 추가
+        data.put("testId", testId);
+        data.put("problems", problems);
+
+        return data;
     }
 }

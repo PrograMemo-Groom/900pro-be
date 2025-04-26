@@ -31,9 +31,9 @@ public class HistoryController {
     // test이벤트 id 값으로 문제 정보와 문제 정보 리스트를 조회 (UI 상 왼쪽 화면 첫 세팅 API)
     @Operation(summary = "테스트의 문제를 조회", description = "해당 팀의 해당 날짜 모든 문제 정보를 불러옵니다.")
     @GetMapping("/gethistory")
-    public ResponseEntity<ApiResponse<List<Problem>>> getHistory(@Parameter(name = "teamId", example = "1") @PathParam("teamId") int teamId,
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getHistory(@Parameter(name = "teamId", example = "1") @PathParam("teamId") int teamId,
                                                                  @Parameter(name = "date", example = "2025-04-24") @PathParam("date") LocalDate date) {
-        List<Problem> history = historyService.getHistory(teamId, date);
+        Map<String, Object> history = historyService.getHistory(teamId, date);
 
         return ResponseEntity.ok(ApiResponse.success(history, "성공"));
     }
