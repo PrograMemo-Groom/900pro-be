@@ -162,4 +162,26 @@ public class WaitingRoomService {
             });
         });
     }
+
+    public void updateUser(Long userId, Long teamId) {
+        List<Test> tests = testRepository.findByTeam_Id(teamId);
+
+        if (tests.isEmpty()) {
+            log.warn("해당 팀에 등록된 테스트가 없습니다. teamId={}", teamId);
+            throw TestException.NotFoundTestException();
+        }
+
+        Test latestTest = tests.get(tests.size() - 1); // 리스트 마지막 요소
+
+        long testId = latestTest.getId();
+
+        // 해당 테스트의 그 유저의 코드 리스트를 불러오기
+        List<Code> userCodes = codeRepository.findByTest_IdAndUser_Id(testId, userId);
+
+
+        // 해당 유저의 코드 리스트를 순회하며 모두 응시 중 상태로 변경
+        userCodes.forEach(c -> {
+            c.setStatus(Status.IN_PROGRESS);
+        });
+    }
 }

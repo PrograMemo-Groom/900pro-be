@@ -61,9 +61,17 @@ public class WaitingRoomController {
 
 
     // teamId를 입력 받고 테스트 아이디를 가져와서 해당 테스트의 모든 유저들의 상태를 ABSENT 초기화
-    @PostMapping("/inti-user")
+    @PostMapping("/init-user")
     public ResponseEntity<programo._pro.global.ApiResponse<String>> initUser(@RequestParam Long teamId) {
         waitingRoomService.initUser(teamId);
         return ResponseEntity.ok(programo._pro.global.ApiResponse.success("success"));
     }
+
+    @PatchMapping("/attend-check")
+    public ResponseEntity<programo._pro.global.ApiResponse<String>> updateUser(@RequestParam Long userId, @RequestParam Long teamId) {
+        waitingRoomService.updateUser(userId, teamId);
+
+        return ResponseEntity.ok(programo._pro.global.ApiResponse.success("success"));
+    }
+
 }
