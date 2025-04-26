@@ -30,7 +30,7 @@ public class CodeHighlightController {
     }
 
     @Operation(summary = "하이라이트 수정", description = "기존 하이라이트 정보를 수정합니다.")
-    @PatchMapping("/update/{highlightId}")
+    @PatchMapping("/{highlightId}")
     public ResponseEntity<ApiResponse<CodeHighlightResponseDto>> updateHighlight(
             @PathVariable("highlightId") Long highlightId,
             @RequestBody CodeHighlightRequestDto requestDto) {
@@ -39,7 +39,7 @@ public class CodeHighlightController {
     }
 
     @Operation(summary = "하이라이트 삭제", description = "하이라이트를 비활성화(soft delete)합니다.")
-    @DeleteMapping("/delete/{highlightId}")
+    @DeleteMapping("/{highlightId}")
     public ResponseEntity<ApiResponse<Void>> deleteHighlight(@PathVariable Long highlightId) {
         codeHighlightService.deleteHighlight(highlightId);
         return ResponseEntity.ok(ApiResponse.success(null, "하이라이트 삭제 성공"));

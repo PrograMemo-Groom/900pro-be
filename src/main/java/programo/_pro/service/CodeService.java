@@ -114,6 +114,7 @@ public class CodeService {
         // updateCodeDto에 포함된 작성 코드로 업데이트
         findUserCode.setSubmitCode(updateCodeDto.getSubmitCode());
         findUserCode.setSubmitAt(updateCodeDto.getSubmitAt());
+        findUserCode.setLanguage(updateCodeDto.getLanguage());
 
         // 업데이트
         codeRepository.save(findUserCode);

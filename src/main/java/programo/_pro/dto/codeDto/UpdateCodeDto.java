@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 public class UpdateCodeDto {
     CodeRequestDto codeRequestDto;
 
+    String language;
     String submitCode;
     LocalDateTime submitAt = LocalDateTime.now();
 }
