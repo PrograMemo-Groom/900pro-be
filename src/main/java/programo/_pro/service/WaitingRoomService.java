@@ -66,8 +66,8 @@ public class WaitingRoomService {
             // String -> LocalDate
             LocalTime startTime = LocalTime.parse(startTime_str, formatter);
 
-            // startTime의 30분 전으로 테스트 생성 시간을 변경
-            LocalTime generateTime = startTime.minusMinutes(30);
+            // startTime의 1분 전으로 테스트 생성 시간을 변경
+            LocalTime generateTime = startTime.minusMinutes(1);
 
             // 현재 시간을 String으로 포맷팅 합니다
             LocalTime currentTime = LocalTime.now();
