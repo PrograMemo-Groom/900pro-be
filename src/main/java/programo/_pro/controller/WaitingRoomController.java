@@ -56,14 +56,4 @@ public class WaitingRoomController {
     public void handleReady(@Payload ReadyMessageDto message) {
         waitingRoomService.broadcastReadyStatus(message);
     }
-
-
-    // 스케쥴링 통해 해당 팀의 시험 시작 시간에 자동으로 랜덤 문제 조회 후 문제 세팅
-    @PostMapping("/set-problem")
-    public ResponseEntity<programo._pro.global.ApiResponse<Map<String, Object>>> SetRandomProblem
-    (@RequestBody ProblemGenerateRequestDto requestDto) {
-        Map<String, Object> data = waitingRoomService.SetRandomProblem(requestDto);
-
-        return ResponseEntity.ok(programo._pro.global.ApiResponse.success(data, "성공적으로 랜덤 문제를 조회 후 DB에 등록하였습니다."));
-    }
 }
