@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import programo._pro.dto.waitingRoomDto.ReadyMessageDto;
 import programo._pro.entity.*;
+import programo._pro.global.exception.testException.TestException;
 import programo._pro.repository.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +30,7 @@ public class WaitingRoomService {
     private final TestRepository testRepository;
     private final TeamRepository teamRepository;
     private final TestProblemRepository testProblemRepository;
+    private final CodeRepository codeRepository;
 
     // 대기실 처음 입장 시 초기 상태, 팀원 정보
     @Transactional
@@ -122,5 +123,43 @@ public class WaitingRoomService {
                 log.info("teamName : {} 아직 시험 30분 전이 되지 않았습니다. 문제 생성을 하지 않습니다.", team.getTeamName());
             }
         }
+    }
+
+    // teamId를 입력 받고 테스트 아이디를 가져와서 해당 테스트의 모든 유저들의 상태를 ABSENT 초기화
+    public void initUser(Long teamId) {
+        // teamId 로 테스트 리스트 조회
+        List<Test> tests = testRepository.findByTeam_Id(teamId);
+
+        if (tests.isEmpty()) {
+            log.warn("해당 팀에 등록된 테스트가 없습니다. teamId={}", teamId);
+            throw TestException.NotFoundTestException();
+        }
+
+        Test latestTest = tests.get(tests.size() - 1); // 리스트 마지막 요소
+        long testId = latestTest.getId();
+
+        // 테스트의 문제들을 조회
+        List<TestProblem> problems = testProblemRepository.findAllByTest_id(testId);
+
+
+        // 해당 팀의 멤버들을 조회
+        List<TeamMember> teamMembers = teamMemberRepository.findAllByTeam_Id(teamId);
+
+        // 팀 멤버를 모두 순회
+        teamMembers.forEach(tm -> {
+            // 테스트의 문제들을 순회
+            problems.forEach(p -> {
+                // 각 문제에 대해 코드 엔티티를 생성
+                Code newCode = new Code();
+                newCode.setTest(latestTest);
+                newCode.setProblem(p.getProblem());
+                newCode.setStatus(Status.ABSENT);
+                newCode.setSubmitCode("");
+                newCode.setUser(tm.getUser());
+                newCode.setLanguage("Python");
+
+                codeRepository.save(newCode);
+            });
+        });
     }
 }

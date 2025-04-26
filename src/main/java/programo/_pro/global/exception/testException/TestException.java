@@ -5,7 +5,7 @@ public class TestException extends RuntimeException {
         super(message);
     }
 
-    public static TestException NotFoundTestException(String testId) {
+    public static TestException NotFoundTestException() {
         return new TestException("테스트를 찾을 수 없습니다.");
     }
 }

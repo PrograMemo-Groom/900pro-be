@@ -4,8 +4,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -55,5 +57,13 @@ public class WaitingRoomController {
     @MessageMapping("/waiting-room/ready")
     public void handleReady(@Payload ReadyMessageDto message) {
         waitingRoomService.broadcastReadyStatus(message);
+    }
+
+
+    // teamId를 입력 받고 테스트 아이디를 가져와서 해당 테스트의 모든 유저들의 상태를 ABSENT 초기화
+    @PostMapping("/inti-user")
+    public ResponseEntity<programo._pro.global.ApiResponse<String>> initUser(@RequestParam Long teamId) {
+        waitingRoomService.initUser(teamId);
+        return ResponseEntity.ok(programo._pro.global.ApiResponse.success("success"));
     }
 }
