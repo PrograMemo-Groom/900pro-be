@@ -4,7 +4,8 @@ spring:
       on-profile: dev
 
   datasource:
-    url: jdbc:mariadb://localhost:3307/${MYSQL_DATABASE}
+    url: jdbc:mariadb://localhost:3307/${MYSQL_DATABASE}?serverTimezone=Asia/Seoul
+
     username: ${MYSQL_USER}
     password: ${MYSQL_PASSWORD}
     driver-class-name: org.mariadb.jdbc.Driver

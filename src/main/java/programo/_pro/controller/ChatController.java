@@ -92,22 +92,6 @@ public class ChatController {
 		chatService.processUserMessage(messageRequest);
 	}
 
-	// 챗봇 메시지 전송 - 시험 시작 시간에 맞춰 메시지를 전송
-	@Operation(
-			summary = "시험 시작 시 챗봇 메시지 전송",
-			description = "팀에 대해 시험 시작 시간에 맞춰 챗봇 메시지를 전송합니다.",
-			responses = {
-					@ApiResponse(responseCode = "200", description = "챗봇 메시지 전송 성공"),
-					@ApiResponse(responseCode = "400", description = "잘못된 요청: 메시지 전송 실패"),
-					@ApiResponse(responseCode = "500", description = "서버 오류: 메시지 전송 중 문제가 발생했습니다.")
-			})
-	@PostMapping("/{chatRoomId}/chatbot/test-start")
-	public void sendChatbotMessageAtTestStart(
-			@Parameter(description = "채팅방 ID에 따라 챗봇 메시지를 전송합니다.", required = true)
-			@PathVariable Long chatRoomId) {
-		chatService.sendChatbotMessageToChatRoom(chatRoomId); // 시험 시작 시간에 맞춰 챗봇 메시지 전송
-	}
-
 	// 웹소켓 메시지 전송 (웹소켓 메시지를 처리하는 부분)
 	@MessageMapping("/chat/{chatRoomId}/send-message")  // 웹소켓 경로
 	public ChatMessageResponse sendMessage(ChatMessageRequest messageRequest) {

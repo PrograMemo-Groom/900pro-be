@@ -191,10 +191,7 @@ public class ChatService {
 
         for (Team team : teams) {
             String testStartTime_String = team.getStartTime();
-
             LocalTime startTime = LocalTime.parse(testStartTime_String, DateTimeFormatter.ofPattern("HH:mm"));
-            // 각 팀의 시험 시작 시간
-//            LocalDateTime nowInSeoul = LocalDateTime.now(seoulZone); // 서울 시간 기준으로 현재 시간 가져오기
             LocalTime nowTime = LocalTime.now(seoulZone);
 
             boolean isTargetTime = nowTime.isAfter(startTime) && nowTime.isBefore(startTime.plusMinutes(5));
@@ -246,60 +243,38 @@ public class ChatService {
 
         log.debug("[팀 처리] 팀 {}의 시험이 시작되었거나 종료되었습니다.", team.getTeamName());
 
-        // 챗봇 메시지 조회
-        List<Chatbot> chatbots = chatbotRepository.findByTeam_Id(team.getId());
-
-        if (chatbots.isEmpty()) {
-            Chatbot chatbot = new Chatbot();
-            chatbot.setTeam(team);
-            chatbot.setTestDateTime(nowInSeoul);  // 지금 시간으로 기본 세팅
-            chatbot.setMessage("응시하느라 고생하셨습니다.");  // 기본 메시지
-
-            chatbotRepository.save(chatbot);
-            createAndSendChatbotMessage(chatbot, team);
-
-            chatbots = List.of(chatbot);  // 리스트로 만들어서 이후 처리 계속 진행
-        }
-
-        // 챗봇 메시지 필터링: 해당 날짜와 시간에 시험 시작 시간일 경우, 메시지만 전송
-        chatbots.stream()
-                .filter(chatbot -> {
-                    // 날짜 비교 // chatbot.getTestDate() : 2025-04-10T15:00:00 , nowInSeoul : 15:00:00
-                    boolean isSameDate = chatbot.getTestDateTime().isEqual(nowInSeoul);
-
-
-                    // 시간 비교 (시험 시작 시간과 비교)
-                    boolean isWithinTime = nowInSeoul.isAfter(chatbot.getTestDateTime())
-                            && nowInSeoul.isBefore(chatbot.getTestDateTime().plusMinutes(5));
-                    return isSameDate && isWithinTime;  // 날짜와 시간이 모두 일치하는 경우만 필터링
-                })
-                .forEach(chatbot -> createAndSendChatbotMessage(chatbot, team));  // 해당 날짜 및 시간의 챗봇 메시지만 보내기
+        createAndSendChatbotMessage(team);
     }
 
 
     // 공통적인 챗봇 메시지 생성 및 전송 형식
-    private void createAndSendChatbotMessage(Chatbot chatbot, Team team) {
-        // 메시지 생성
-        chatbot.setSendAt(LocalDateTime.now());
-        chatbot.setTestDateTime(LocalDateTime.now());
-        chatbot.setMessage("응시하느라 고생하셨습니다.");
+    private void createAndSendChatbotMessage(Team team) {
 
-        // 문제 번호 메시지 추가
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+
+        // 메시지 생성
         StringBuilder messageContent = new StringBuilder("응시하느라 고생하셨습니다 \n 오늘의 문제 번호: ");
         for (int i = 1; i <= team.getProblemCount(); i++) {
             messageContent.append(i).append(" ");
         }
-        chatbot.setMessage(messageContent.toString());
 
-        // 메시지 저장
+        // 챗봇메시지 생성
+        Chatbot chatbot = Chatbot.builder()
+                .team(team)
+                .testDateTime(now)         // 시험 시작 시간
+                .message(messageContent.toString()) // 메세지
+                .build();
+
+        // DB 저장 (sendAt은 @PrePersist로 자동 입력)
         chatbotRepository.save(chatbot);
 
-        // 메시지 전송
-        Long teamId = chatbot.getTeam().getId();
-        ChatRoom chatRoom = chatRoomRepository.findByTeam_Id(teamId)
+        // 채팅방 조회
+        ChatRoom chatRoom = chatRoomRepository.findByTeam_Id(team.getId())
                 .orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다."));
 
-        messagingTemplate.convertAndSend("/sub/chat/room/" + chatRoom.getId(), messageContent.toString());
-        log.debug("[메시지 전송] teamId={} 메시지: {}", teamId, chatbot.getMessage());
+        // WebSocket 전송
+        messagingTemplate.convertAndSend("/sub/chat/room/" + chatRoom.getId(), chatbot.getMessage());
+
+        log.debug("[메시지 전송] teamId={} 메시지: {}", team.getId(), chatbot.getMessage());
     }
 }
