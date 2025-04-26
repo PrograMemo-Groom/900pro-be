@@ -35,6 +35,7 @@ public class UserService implements UserDetailsService {
         return AuthenticationToken.of(user);
     }
 
+    @Transactional
     public UserDto getUserById(int userId) {
         User user = userRepository.findById((long) userId)
                 .orElseThrow(UserException::byId);
