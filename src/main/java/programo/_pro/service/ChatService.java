@@ -250,7 +250,15 @@ public class ChatService {
         List<Chatbot> chatbots = chatbotRepository.findByTeam_Id(team.getId());
 
         if (chatbots.isEmpty()) {
-            throw NotFoundChatException.NotFoundChatbotException();
+            Chatbot chatbot = new Chatbot();
+            chatbot.setTeam(team);
+            chatbot.setTestDateTime(nowInSeoul);  // 지금 시간으로 기본 세팅
+            chatbot.setMessage("응시하느라 고생하셨습니다.");  // 기본 메시지
+
+            chatbotRepository.save(chatbot);
+            createAndSendChatbotMessage(chatbot, team);
+
+            chatbots = List.of(chatbot);  // 리스트로 만들어서 이후 처리 계속 진행
         }
 
         // 챗봇 메시지 필터링: 해당 날짜와 시간에 시험 시작 시간일 경우, 메시지만 전송
