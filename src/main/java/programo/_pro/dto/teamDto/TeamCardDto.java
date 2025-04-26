@@ -14,6 +14,9 @@ public class TeamCardDto {
     @Schema(description = "팀 이름", example = "코테 최강 프로그래모")
     private String teamName;
 
+    @Schema(description = "팀 설명", example = "우리팀 짱짱임 들어오셈")
+    private String description;
+
     @Schema(description = "난이도", example = "HARD")
     private String level;
 

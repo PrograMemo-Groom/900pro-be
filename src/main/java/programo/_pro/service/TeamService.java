@@ -70,6 +70,7 @@ public class TeamService {
                 .map(team -> TeamCardDto.builder()
                         .teamId(team.getId())
                         .teamName(team.getTeamName())
+                        .description(team.getDescription())
                         .level(team.getLevel().name())
                         .startTime(team.getStartTime())
                         .problemCount(team.getProblemCount())
