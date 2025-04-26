@@ -49,6 +49,8 @@ public class UserService implements UserDetailsService {
                 .build();
 
         List<TeamMember> teamMembers = teamMemberRepository.findByUserId(user.getId());
+
+        // 팀 멤버가 비어있지 않다면 == 팀 멤버가 있다면
         if (!teamMembers.isEmpty()) {
             TeamMember teamMember = teamMembers.get(0);
             userDto.setTeamId(teamMember.getTeam().getId());
