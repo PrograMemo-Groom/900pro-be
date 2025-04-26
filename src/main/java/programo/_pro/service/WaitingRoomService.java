@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -49,7 +50,7 @@ public class WaitingRoomService {
     }
 
     // Problem 테이블에서 현재 등록되어 있는 문제의 개수로 랜덤 문제를 가져오고 Test, Test_Problem, Problemq 테이블에 저장해야됨
-    // 시험 시작 30분 전 문제를 자동으로 생성합니다.
+    // 시험 시작 1분 전 문제를 자동으로 생성합니다.
     @Scheduled(cron = "0 * * * * *") // 매 분마다 실행 (테스트 용)
     @Transactional
     public void SetRandomProblem() {
@@ -67,13 +68,14 @@ public class WaitingRoomService {
             LocalTime startTime = LocalTime.parse(startTime_str, formatter);
 
             // startTime의 1분 전으로 테스트 생성 시간을 변경
-            LocalTime generateTime = startTime.minusMinutes(1);
+//            LocalTime generateTime = startTime.minusMinutes(1);
 
             // 현재 시간을 String으로 포맷팅 합니다
             LocalTime currentTime = LocalTime.now();
+            currentTime = currentTime.withSecond(0).withNano(0);
 
-            // 현재 시간이 "30분 전" 이후 ~ "30분 후" 사이면 생성 시도
-            if (!currentTime.isBefore(generateTime) && currentTime.isBefore(generateTime.plusMinutes(1))) {
+            // 현재 시간이 "1분 전" 이후 ~ "1분 후" 사이면 생성 시도
+            if (currentTime.equals(startTime)) {
 
                 List<Problem> allProblems = problemRepository.findAll();
                 int total = allProblems.size();
@@ -119,6 +121,10 @@ public class WaitingRoomService {
                 }
 
                 log.info("테스트가 정상적으로 생성되었습니다. testId : {} ", savedTestId);
+
+                // 유저들의 제출 코드 상태 초기화 메서드 호출
+                initUser(team.getId(), savedTestId);
+
             } else {
                 log.info("teamName : {} 아직 시험 30분 전이 되지 않았습니다. 문제 생성을 하지 않습니다.", team.getTeamName());
             }
@@ -126,17 +132,21 @@ public class WaitingRoomService {
     }
 
     // teamId를 입력 받고 테스트 아이디를 가져와서 해당 테스트의 모든 유저들의 상태를 ABSENT 초기화
-    public void initUser(Long teamId) {
+    @Transactional
+    public void initUser(long teamId, long testId) {
         // teamId 로 테스트 리스트 조회
-        List<Test> tests = testRepository.findByTeam_Id(teamId);
+//        List<Test> tests = testRepository.findByTeam_Id(teamId);
+//
+//        if (tests.isEmpty()) {
+//            log.warn("해당 팀에 등록된 테스트가 없습니다. teamId={}", teamId);
+//            throw TestException.NotFoundTestException();
+//        }
+//
+//        Test latestTest = tests.get(tests.size() - 1); // 리스트 마지막 요소
+//        long testId = latestTest.getId();
 
-        if (tests.isEmpty()) {
-            log.warn("해당 팀에 등록된 테스트가 없습니다. teamId={}", teamId);
-            throw TestException.NotFoundTestException();
-        }
-
-        Test latestTest = tests.get(tests.size() - 1); // 리스트 마지막 요소
-        long testId = latestTest.getId();
+        // test_id로 테스트 엔티티 조회
+        Test test = testRepository.findById((int) testId).orElseThrow(TestException::NotFoundTestException);
 
         // 테스트의 문제들을 조회
         List<TestProblem> problems = testProblemRepository.findAllByTest_id(testId);
@@ -151,7 +161,7 @@ public class WaitingRoomService {
             problems.forEach(p -> {
                 // 각 문제에 대해 코드 엔티티를 생성
                 Code newCode = new Code();
-                newCode.setTest(latestTest);
+                newCode.setTest(test);
                 newCode.setProblem(p.getProblem());
                 newCode.setStatus(Status.ABSENT);
                 newCode.setSubmitCode("");
@@ -163,6 +173,7 @@ public class WaitingRoomService {
         });
     }
 
+    @Transactional
     public void updateUser(Long userId, Long teamId) {
         List<Test> tests = testRepository.findByTeam_Id(teamId);
 
