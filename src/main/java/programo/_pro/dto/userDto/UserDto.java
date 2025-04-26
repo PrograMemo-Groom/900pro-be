@@ -31,4 +31,7 @@ public class UserDto {
     private Long teamId;
 
     private Boolean isTeamLeader;
+
+    @Column(name = "is_coding", nullable = false)
+    private boolean isCoding;
 }

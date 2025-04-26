@@ -44,6 +44,7 @@ public class UserService implements UserDetailsService {
                 .email(user.getEmail())
                 .isActive(user.isActive())
                 .username(user.getUsername())
+                .isCoding(user.isCoding())
                 .build();
 
         List<TeamMember> teamMembers = teamMemberRepository.findByUserId(user.getId());
@@ -54,5 +55,16 @@ public class UserService implements UserDetailsService {
         }
 
         return userDto;
+    }
+
+    @Transactional
+    public UserDto updateUserCodingStatus(Long userId, boolean isCoding) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserException::byId);
+
+        user.setCoding(isCoding);
+        userRepository.save(user);
+
+        return getUserById(userId.intValue());
     }
 }
