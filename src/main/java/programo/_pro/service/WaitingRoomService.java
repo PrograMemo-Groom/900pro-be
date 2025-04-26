@@ -174,7 +174,7 @@ public class WaitingRoomService {
     }
 
     @Transactional
-    public void updateUser(Long userId, Long teamId) {
+    public long updateUser(Long userId, Long teamId) {
         List<Test> tests = testRepository.findByTeam_Id(teamId);
 
         if (tests.isEmpty()) {
@@ -194,5 +194,7 @@ public class WaitingRoomService {
         userCodes.forEach(c -> {
             c.setStatus(Status.IN_PROGRESS);
         });
+
+        return testId;
     }
 }

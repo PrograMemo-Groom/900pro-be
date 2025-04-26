@@ -20,6 +20,7 @@ import programo._pro.dto.waitingRoomDto.ReadyMessageDto;
 import programo._pro.service.WaitingRoomService;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -68,10 +69,14 @@ public class WaitingRoomController {
 //    }
 
     @PatchMapping("/attend-check")
-    public ResponseEntity<programo._pro.global.ApiResponse<String>> updateUser(@RequestParam Long userId, @RequestParam Long teamId) {
-        waitingRoomService.updateUser(userId, teamId);
+    public ResponseEntity<programo._pro.global.ApiResponse<Map<String, Object>>> updateUser(@RequestParam Long userId, @RequestParam Long teamId) {
+        long testId = waitingRoomService.updateUser(userId, teamId);
 
-        return ResponseEntity.ok(programo._pro.global.ApiResponse.success("success"));
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "success");
+        response.put("testId", testId);
+
+        return ResponseEntity.ok(programo._pro.global.ApiResponse.success(response));
     }
 
 }
