@@ -1,7 +1,9 @@
 package programo._pro.service;
 
+import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -214,6 +216,7 @@ public class ChatService {
 
     // 챗봇 메시지 전송 (채팅방에 맞게 챗봇 메시지를 전송)
     @Transactional
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     public void sendChatbotMessageToChatRoom(Long chatRoomId) {
 
         // chatRoomId를 이용해 팀을 찾아야 합니다.
