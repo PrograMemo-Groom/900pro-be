@@ -58,6 +58,11 @@ public class WaitingRoomService {
 
         // 모든 팀 적용
         for (Team team : teams) {
+
+            if (!team.isActive()) { // is_active == false 면 건너뛰기
+                continue;
+            }
+
             // 팀의 시험 시작 시간을 가져옴 1500 형식
             String startTime_str = team.getStartTime();
 
