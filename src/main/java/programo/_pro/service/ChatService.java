@@ -219,7 +219,7 @@ public class ChatService {
 //        }
 //    }
 
-    @Scheduled(cron = "0 * * * * *") // 매 1분 0초마다 실행
+    @Scheduled(cron = "6 * * * * *") // 매 분 6초대 마다 실행
     @Transactional
     public void scheduleChatbotMessage() {
         List<Team> teams = teamRepository.findAll();
