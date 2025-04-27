@@ -219,13 +219,16 @@ public class ChatService {
 //        }
 //    }
 
-    @Scheduled(cron = "0 * * * * *") // 매 초마다 실행
+    @Scheduled(cron = "0 * * * * *") // 매 1분 0초마다 실행
     @Transactional
     public void scheduleChatbotMessage() {
         List<Team> teams = teamRepository.findAll();
         ZoneId seoulZone = ZoneId.of("Asia/Seoul");
 
         for (Team team : teams) {
+            if (!team.isActive()) {
+                continue; // 비활성 팀이면 건너뛰어야함
+            }
             String testStartTime_String = team.getStartTime(); // "HH:mm" 형태
             LocalTime startLocalTime = LocalTime.parse(testStartTime_String, DateTimeFormatter.ofPattern("HH:mm"));
             LocalDate today = LocalDate.now(seoulZone);
