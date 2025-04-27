@@ -17,6 +17,8 @@ import programo._pro.repository.ChatRoomRepository;
 import programo._pro.repository.ChatbotRepository;
 import programo._pro.repository.MessageRepository;
 import programo._pro.repository.TeamRepository;
+import programo._pro.repository.TestRepository;
+import programo._pro.repository.TestProblemRepository;
 import programo._pro.repository.UserRepository;
 //import programo._pro.service.chatredis.ChatPublisherService;
 
@@ -39,6 +41,8 @@ public class ChatService {
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    private final TestRepository testRepository;
+    private final TestProblemRepository testProblemRepository;
 //    private final ChatPublisherService chatPublisherService;
 
     // 팀이 생성되면 자동으로 채팅방 생성
@@ -287,12 +291,25 @@ public class ChatService {
     private void createAndSendChatbotMessage(Team team) {
 
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+        LocalDate today = now.toLocalDate();
 
-        // 메시지 생성
+        Test test = testRepository.findByTeam_IdAndCreatedAt(team.getId(), today)
+                .orElseThrow(() -> new RuntimeException("오늘 생성된 테스트를 찾을 수 없습니다."));
+
+        List<TestProblem> testProblems = testProblemRepository.findByTest_Id(test.getId());
+
+        // 문제들의 baekNum을 뽑아서 메시지 만들기
         StringBuilder messageContent = new StringBuilder("응시하느라 고생하셨습니다 \n 오늘의 문제 번호: ");
-        for (int i = 1; i <= team.getProblemCount(); i++) {
-            messageContent.append(i).append(" ");
+        for (TestProblem testProblem : testProblems) {
+            int baekNum = testProblem.getProblem().getBaekNum();
+            messageContent.append(baekNum).append(" ");
         }
+
+//        // 메시지 생성
+//        StringBuilder messageContent = new StringBuilder("응시하느라 고생하셨습니다 \n 오늘의 문제 번호: ");
+//        for (int i = 1; i <= team.getProblemCount(); i++) {
+//            messageContent.append(i).append(" ");
+//        }
 
         // 챗봇메시지 생성
         Chatbot chatbot = Chatbot.builder()

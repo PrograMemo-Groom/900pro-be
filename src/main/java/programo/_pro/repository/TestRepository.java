@@ -6,6 +6,7 @@ import programo._pro.entity.Test;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface TestRepository extends JpaRepository<Test, Integer> {
 
@@ -14,4 +15,7 @@ public interface TestRepository extends JpaRepository<Test, Integer> {
     List<Test> team(Team team);
 
     List<Test> findByTeam_Id(Long teamId);
+
+    Optional<Test> findByTeam_IdAndCreatedAt(Long teamId, LocalDate createdAt);
+
 }
