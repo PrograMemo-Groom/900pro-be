@@ -185,34 +185,67 @@ public class ChatService {
     }
 
     //	@Scheduled(cron = "0 0/5 * * * ?")  // 매 5분마다 실행
-    @Scheduled(cron = "0 * * * * *") // 매 분마다 실행 (테스트 용)
+//    @Scheduled(cron = "0 * * * * *") // 매 분마다 실행 (테스트 용)
+//    @Transactional
+//    public void scheduleChatbotMessage() {
+//        List<Team> teams = teamRepository.findAll();  // 모든 팀 가져오기
+//        ZoneId seoulZone = ZoneId.of("Asia/Seoul");  // 서울 시간대 설정
+//
+//        for (Team team : teams) {
+//            String testStartTime_String = team.getStartTime();
+//            LocalTime startTime = LocalTime.parse(testStartTime_String, DateTimeFormatter.ofPattern("HH:mm"));
+//            LocalTime nowTime = LocalTime.now(seoulZone);
+//
+//
+//            boolean isTargetTime = nowTime.isAfter(startTime) && nowTime.isBefore(startTime.plusMinutes(5));
+//            boolean notSent = !team.isChatSent();
+//
+//
+//            log.info("Checking if team {} is already sent at {}", team.getId(), startTime);
+//            if (isTargetTime && notSent) {
+//                log.debug("[팀 처리] {}팀 시험 시작. 챗봇 메시지 전송", team.getTeamName());
+//
+//                // 메시지 전송
+//                sendChatbotMessageToChatRoom(team.getId());
+//
+//                // 플래그 true로 설정하여 중복 전송 방지
+//                team.setChatSent(true);
+//                teamRepository.save(team); // 반드시 저장
+//            }
+//        }
+//    }
+
+    @Scheduled(cron = "0 * * * * *") // 매 초마다 실행
     @Transactional
     public void scheduleChatbotMessage() {
-        List<Team> teams = teamRepository.findAll();  // 모든 팀 가져오기
-        ZoneId seoulZone = ZoneId.of("Asia/Seoul");  // 서울 시간대 설정
+        List<Team> teams = teamRepository.findAll();
+        ZoneId seoulZone = ZoneId.of("Asia/Seoul");
 
         for (Team team : teams) {
-            String testStartTime_String = team.getStartTime();
-            LocalTime startTime = LocalTime.parse(testStartTime_String, DateTimeFormatter.ofPattern("HH:mm"));
-            LocalTime nowTime = LocalTime.now(seoulZone);
+            String testStartTime_String = team.getStartTime(); // "HH:mm" 형태
+            LocalTime startLocalTime = LocalTime.parse(testStartTime_String, DateTimeFormatter.ofPattern("HH:mm"));
+            LocalDate today = LocalDate.now(seoulZone);
+            LocalDateTime startTime = LocalDateTime.of(today, startLocalTime);
 
-            boolean isTargetTime = nowTime.isAfter(startTime) && nowTime.isBefore(startTime.plusMinutes(5));
+            LocalDateTime now = LocalDateTime.now(seoulZone);
+
+            boolean isAfter3Seconds = now.isAfter(startTime.plusSeconds(5));
+            boolean isBefore5Minutes = now.isBefore(startTime.plusMinutes(5));
             boolean notSent = !team.isChatSent();
 
-
             log.info("Checking if team {} is already sent at {}", team.getId(), startTime);
-            if (isTargetTime && notSent) {
-                log.debug("[팀 처리] {}팀 시험 시작. 챗봇 메시지 전송", team.getTeamName());
 
-                // 메시지 전송
+            if (isAfter3Seconds && isBefore5Minutes && notSent) {
+                log.debug("[팀 처리] {}팀 시험 시작 3초 후. 챗봇 메시지 전송", team.getTeamName());
+
                 sendChatbotMessageToChatRoom(team.getId());
 
-                // 플래그 true로 설정하여 중복 전송 방지
                 team.setChatSent(true);
-                teamRepository.save(team); // 반드시 저장
+                teamRepository.save(team);
             }
         }
     }
+
 
     // 챗봇 메시지 전송 (채팅방에 맞게 챗봇 메시지를 전송)
     @Transactional
