@@ -1,5 +1,7 @@
 package programo._pro.config.jwt;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,5 +37,27 @@ public class JwtTokenProvider {
 				.getBody()
 				.getSubject();
 	}
+
+	// 🔥 여기 추가
+	public Long getUserId(String token) {
+		Claims claims = parseClaims(token);
+//		return Long.parseLong(claims.getSubject()); // subject를 userId로 쓰는 경우
+		return claims.get("userId", Long.class);  // ✅ subject가 아니라, "userId" 필드
+	}
+	/**
+	 * JWT Claims 추출
+	 *
+	 * @return JWT Claims
+	 */
+	// ✨ 새로운 parseClaims
+	private Claims parseClaims(String token) {
+		return Jwts.parserBuilder()
+				.setSigningKey(Base64.getDecoder().decode(secretKey))
+				.build()
+				.parseClaimsJws(token)
+				.getBody();
+	}
+
+
 
 }
