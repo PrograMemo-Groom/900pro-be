@@ -14,12 +14,12 @@ import programo._pro.config.jwt.JwtTokenProvider;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-	private final JwtTokenProvider jwtTokenProvider;
+//	private final JwtTokenProvider jwtTokenProvider;
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/ws-chat")
-				.addInterceptors(new JwtHandshakeInterceptor(jwtTokenProvider))
+//				.addInterceptors(new JwtHandshakeInterceptor(jwtTokenProvider))
 				.setAllowedOriginPatterns("*")
 				.withSockJS(); // SockJs 추가
 	}
