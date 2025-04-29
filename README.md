@@ -165,7 +165,8 @@
       <td align="center">
         팀 리스트 팀 메인 기능<br/>
         (유저권한에 따른 기능)<br/>
-        WebSocket + Stomp 개발 및 연결
+        WebSocket + Stomp 개발 및 연결<br/>
+        대기실, 채팅 보수
       </td>
       <td align="center">
         CI/CD 자동화 및 서버 배포<br/>
