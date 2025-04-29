@@ -20,7 +20,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/ws-chat")
 				.addInterceptors(new JwtHandshakeInterceptor(jwtTokenProvider))
-				.setAllowedOriginPatterns("*");
+				.setAllowedOriginPatterns("*")
+				.withSockJS(); // SockJs 추가
 	}
 
 	//대신, Spring 서버 메모리 기반(SimpleBroker)로 임시 전환
