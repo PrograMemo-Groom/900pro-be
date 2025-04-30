@@ -143,7 +143,7 @@
         <a href="https://github.com/Saaad9" target="_blank">심동훈</a>
       </td>
       <td align="center">
-        <a href="https://github.com/happygirll" target="_blank">이보미</a>
+        <a href="https://github.com/happygirlll" target="_blank">이보미</a>
       </td>
     </tr>
     <tr>
